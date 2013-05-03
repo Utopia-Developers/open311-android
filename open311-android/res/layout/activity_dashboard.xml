@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" 
+ 	android:layout_width="fill_parent" 
+ 	android:layout_height="wrap_content"
+ 	android:gravity="center_horizontal"
+ 	>
+ 
+ 	<LinearLayout android:orientation="horizontal" 
+ 			android:layout_width="wrap_content" 
+ 			android:layout_height="wrap_content" 
+ 			android:layout_centerHorizontal="true"
+ 			android:gravity="center_horizontal"
+ 			>
+ 		 
+ 		 <TextView
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:layout_gravity="center_horizontal"
+        	android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:padding="10dp"
+        	android:text="@string/app_name" />
+      	</LinearLayout>
+ 
+ 	<LinearLayout android:orientation="horizontal" 
+ 			android:layout_width="fill_parent" 
+ 			android:layout_height="wrap_content" 
+ 			android:padding="20dp"
+ 			android:layout_weight="1">
+ 		<Button android:id="@+id/report_button" 
+ 				style="@style/dashboard_button" 
+ 				android:onClick="onClickReport" 
+ 				android:background="#c0c0c0"
+ 				android:drawableLeft="@drawable/ic_menu_start_conversation"
+ 				android:text="@string/menu_report"  				
+ 				/>
+ 			 
+      	</LinearLayout>
+      	
+      	<LinearLayout android:orientation="horizontal" 
+ 			android:layout_width="fill_parent" 
+ 			android:layout_height="wrap_content" 
+ 			android:padding="20dp"
+ 			android:layout_weight="1">	  	
+        	
+ 		<Button android:id="@+id/settings_button" 
+ 				style="@style/dashboard_button" 
+ 				android:onClick="onClickSettings" 
+ 				android:drawableLeft="@drawable/action_settings"
+ 				android:text="@string/menu_settings" 
+ 				android:background="#c0c0c0"
+ 				 
+ 				/>
+ 			 
+        			
+ 		</LinearLayout>
+ 			<LinearLayout android:orientation="horizontal" 
+ 			android:layout_width="fill_parent" 
+ 			android:layout_height="wrap_content" 
+ 			android:padding="20dp"
+ 			android:layout_weight="1">	  	
+        	
+ 		<Button android:id="@+id/archive_button" 
+ 				style="@style/dashboard_button" 
+ 				android:onClick="onClickArchive" 
+ 				android:background="#c0c0c0"
+ 				android:drawableLeft="@drawable/ic_menu_archive"
+ 				android:text="@string/menu_archive" 
+ 				/>
+ 	    			
+ 		</LinearLayout>
+ 		<LinearLayout android:orientation="horizontal" 
+ 			android:layout_width="fill_parent" 
+ 			android:layout_height="wrap_content" 
+ 			android:padding="20dp"
+ 			android:layout_weight="1">	  	
+        	
+ 		<Button android:id="@+id/about_button" 
+ 				style="@style/dashboard_button" 
+ 				android:onClick="onClickAbout" 			
+ 				android:background="#c0c0c0"
+ 				android:drawableLeft="@drawable/ic_action_search"
+ 				android:text="@string/menu_about" 
+ 				/>
+ 				<!--
+ 		 <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_gravity="center_horizontal"
+        	android:gravity="left"
+        	android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:padding="10dp"
+        	android:text="@string/menu_about" />
+        			-->
+ 		</LinearLayout>
+ 		
+ 		
+ 
+ </LinearLayout>
