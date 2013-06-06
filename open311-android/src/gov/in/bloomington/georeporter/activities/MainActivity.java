@@ -22,87 +22,92 @@ import android.view.View;
 import android.widget.ImageView;
 
 public class MainActivity extends BaseActivity {
-    private static String SPLASH_IMAGE = "splash_image";
+	private static String SPLASH_IMAGE = "splash_image";
 
-    @Override
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		JSONObject current_server = Preferences.getCurrentServer(this);
-		
+
 		if (current_server == null) {
+
 			startActivity(new Intent(this, SettingsActivity.class));
-		}
-		else {
+
+		} else {
 			new EndpointLoader(this).execute(current_server);
-			
+
 			try {
-                getSupportActionBar().setTitle(current_server.getString(Open311.NAME));
-            }
-            catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-			
-            String imageName = current_server.optString(SPLASH_IMAGE);
-            if (imageName != "") {
-                ImageView splash = (ImageView) findViewById(R.id.splash);
-                splash.setImageResource(getResources().getIdentifier(imageName, "drawable", getPackageName()));
-                try {
-                    splash.setContentDescription(current_server.getString(Open311.NAME));
-                }
-                catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
+				getSupportActionBar().setTitle(
+						current_server.getString(Open311.NAME));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			String imageName = current_server.optString(SPLASH_IMAGE);
+			if (imageName != "") {
+				ImageView splash = (ImageView) findViewById(R.id.splash);
+				splash.setImageResource(getResources().getIdentifier(imageName,
+						"drawable", getPackageName()));
+				try {
+					splash.setContentDescription(current_server
+							.getString(Open311.NAME));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
-	
+
 	/**
 	 * OnClick handler for activity_main layout
 	 * 
 	 * @param v
-	 * void
+	 *            void
 	 */
 	public void onTouchImage(View v) {
 		Intent intent = new Intent(this, ReportActivity.class);
-        startActivity(intent);
+		startActivity(intent);
 	}
-	
+
 	private class EndpointLoader extends AsyncTask<JSONObject, Void, Boolean> {
 		private ProgressDialog dialog;
 		Context context;
-		
+
 		private EndpointLoader(Context context) {
-            this.context = context;
-        }
+			this.context = context;
+		}
+
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			dialog = ProgressDialog.show(MainActivity.this, getString(R.string.dialog_loading_services), "", true);
+			dialog = ProgressDialog.show(MainActivity.this,
+					getString(R.string.dialog_loading_services), "", true);
 		}
-		
+
 		@Override
 		protected Boolean doInBackground(JSONObject... server) {
 			return Open311.setEndpoint(server[0], MainActivity.this);
 		}
-		
+
 		@Override
 		protected void onPostExecute(Boolean result) {
 			dialog.dismiss();
 			if (!result) {
-				Util.displayCrashDialog(MainActivity.this, getString(R.string.failure_loading_services));
+				Util.displayCrashDialog(MainActivity.this,
+						getString(R.string.failure_loading_services));
 			} else {
 				Intent intent = new Intent(this.context, ReportActivity.class);
-		        startActivity(intent);				
+				startActivity(intent);
 			}
 		}
 	}
