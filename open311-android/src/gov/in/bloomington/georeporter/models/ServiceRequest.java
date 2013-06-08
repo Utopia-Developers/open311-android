@@ -17,9 +17,13 @@ package gov.in.bloomington.georeporter.models;
 
 import java.util.Iterator;
 
+import com.google.gson.Gson;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import gov.in.bloomington.georeporter.json.ServerAttributeJson;
+import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 import gov.in.bloomington.georeporter.util.Media;
 import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
@@ -35,11 +39,13 @@ public class ServiceRequest {
     public static final String STATUS             = "status";
     public static final String REQUESTED_DATETIME = "requested_datetime";
     public static final String UPDATED_DATETIME   = "updated_datetime";
+    
+    private Gson gson;
 	
 	/**
-	 * The JSON definition from raw/available_servers.json
+	 * The {@link ServerAttributeJson} definition from raw/available_servers.json
 	 */
-	public JSONObject endpoint;
+	public ServerAttributeJson endpoint;
 	/**
 	 * The JSON for a single service from GET Service List
 	 */
@@ -114,9 +120,11 @@ public class ServiceRequest {
 	 * @param json
 	 */
 	public ServiceRequest(String json) {
+		gson = new Gson();
 		try {
 			JSONObject sr = new JSONObject(json);
-			if (sr.has(ENDPOINT))           endpoint           = sr.getJSONObject(ENDPOINT);
+			//TODO
+			if (sr.has(ENDPOINT))           endpoint           = gson.fromJson(sr.getJSONObject(ENDPOINT).toString(),ServerAttributeJson.class);
 			if (sr.has(SERVICE))            service            = sr.getJSONObject(SERVICE);
 			if (sr.has(SERVICE_DEFINITION)) service_definition = sr.getJSONObject(SERVICE_DEFINITION);
             if (sr.has(POST_DATA))          post_data          = sr.getJSONObject(POST_DATA);
@@ -288,8 +296,8 @@ public class ServiceRequest {
 	 * @throws JSONException
 	 */
 	public String getServiceRequestUrl(String request_id) throws JSONException {
-	    String baseUrl      = endpoint.getString(Open311.URL);
-	    String jurisdiction = endpoint.optString(Open311.JURISDICTION);
+	    String baseUrl      = endpoint.url;
+	    String jurisdiction = endpoint.jurisdiction_id;
 	    return String.format("%s/requests/%s.json?%s=%s", baseUrl, request_id, Open311.JURISDICTION, jurisdiction);
 	}
 	
@@ -301,8 +309,8 @@ public class ServiceRequest {
 	 * @throws JSONException
 	 */
 	public String getServiceRequestIdFromTokenUrl(String token) throws JSONException {
-        String baseUrl      = endpoint.getString(Open311.URL);
-        String jurisdiction = endpoint.optString(Open311.JURISDICTION);
+        String baseUrl      = endpoint.url;
+        String jurisdiction = endpoint.jurisdiction_id;
         return String.format("%s/tokens/%s.json?%s=%s", baseUrl, token, Open311.JURISDICTION, jurisdiction);
 	}
 	

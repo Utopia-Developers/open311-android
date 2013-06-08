@@ -79,8 +79,8 @@ public class ServiceRequestAdapter extends BaseAdapter {
         mLayoutInflater = LayoutInflater.from(c);
 
         // When endpoints do not support Media, we must remove the media label
-        if ((sr.endpoint != null && !sr.endpoint.optBoolean(Open311.SUPPORTS_MEDIA))
-             || !Preferences.getCurrentServer(c).optBoolean(Open311.SUPPORTS_MEDIA)) {
+        if ((sr.endpoint != null && !sr.endpoint.supports_media)
+             || !Preferences.getCurrentServer(c).supports_media) {
             labels.remove(1);
         }
 

@@ -6,6 +6,7 @@
 package gov.in.bloomington.georeporter.activities;
 
 import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.Preferences;
 import gov.in.bloomington.georeporter.util.Util;
@@ -35,7 +36,7 @@ public class MainActivity extends BaseActivity {
 	protected void onResume() {
 		super.onResume();
 
-		JSONObject current_server = Preferences.getCurrentServer(this);
+		ServerAttributeJson current_server = Preferences.getCurrentServer(this);
 
 		if (current_server == null) {
 
@@ -44,26 +45,16 @@ public class MainActivity extends BaseActivity {
 		} else {
 			new EndpointLoader(this).execute(current_server);
 
-			try {
-				getSupportActionBar().setTitle(
-						current_server.getString(Open311.NAME));
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			getSupportActionBar().setTitle(current_server.name);
 
-			String imageName = current_server.optString(SPLASH_IMAGE);
+			String imageName = current_server.splash_image;
 			if (imageName != "") {
 				ImageView splash = (ImageView) findViewById(R.id.splash);
 				splash.setImageResource(getResources().getIdentifier(imageName,
 						"drawable", getPackageName()));
-				try {
-					splash.setContentDescription(current_server
-							.getString(Open311.NAME));
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				splash.setContentDescription(current_server.name);
+
 			}
 		}
 	}
@@ -79,7 +70,8 @@ public class MainActivity extends BaseActivity {
 		startActivity(intent);
 	}
 
-	private class EndpointLoader extends AsyncTask<JSONObject, Void, Boolean> {
+	private class EndpointLoader extends
+			AsyncTask<ServerAttributeJson, Void, Boolean> {
 		private ProgressDialog dialog;
 		Context context;
 
@@ -95,7 +87,7 @@ public class MainActivity extends BaseActivity {
 		}
 
 		@Override
-		protected Boolean doInBackground(JSONObject... server) {
+		protected Boolean doInBackground(ServerAttributeJson... server) {
 			return Open311.setEndpoint(server[0], MainActivity.this);
 		}
 

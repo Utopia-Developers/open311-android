@@ -5,7 +5,10 @@
  */
 package gov.in.bloomington.georeporter.adapters;
 
+import java.util.ArrayList;
+
 import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.Preferences;
 
@@ -21,26 +24,26 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 public class ServersAdapter extends BaseAdapter {
-	private JSONArray mServers;
+	private ArrayList<ServerAttributeJson> mServers;
 	private static LayoutInflater mInflater;
 	private String mCurrentServerName;
 	
-	public ServersAdapter(JSONArray d, Context c) {
+	public ServersAdapter(ArrayList<ServerAttributeJson> d, Context c) {
 		mServers  = d;
 		mInflater = LayoutInflater.from(c);
 		
-		JSONObject currentServer = Preferences.getCurrentServer(c);
-		mCurrentServerName = currentServer==null ? "" : currentServer.optString(Open311.NAME);
+		ServerAttributeJson currentServer = Preferences.getCurrentServer(c);
+		mCurrentServerName = currentServer==null ? "" : currentServer.name;
 	}
 
 	@Override
 	public int getCount() {
-		return (mServers == null) ? 0 : mServers.length();
+		return (mServers == null) ? 0 : mServers.size();
 	}
 
 	@Override
-	public JSONObject getItem(int position) {
-		return mServers.optJSONObject(position);
+	public ServerAttributeJson getItem(int position) {
+		return mServers.get(position);
 	}
 
 	@Override
@@ -72,8 +75,8 @@ public class ServersAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
-		String name = mServers.optJSONObject(position).optString(Open311.NAME);
-		String url  = mServers.optJSONObject(position).optString(Open311.URL);
+		String name = mServers.get(position).name;
+		String url  = mServers.get(position).url;
 		if (name.equals(mCurrentServerName)) {
 			holder.radio.setChecked(true);
 		}

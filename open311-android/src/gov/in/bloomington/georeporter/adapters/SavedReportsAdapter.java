@@ -83,7 +83,7 @@ public class SavedReportsAdapter extends BaseAdapter {
         ServiceRequest sr = getItem(position);
 		try {
 			holder.serviceName.setText(sr.service        .getString(Open311.SERVICE_NAME));
-			holder.endpoint   .setText(sr.endpoint       .getString(Open311.NAME));
+			holder.endpoint   .setText(sr.endpoint       .name);
 			holder.address    .setText(sr.post_data      .optString(Open311.ADDRESS_STRING));
 			holder.status     .setText(sr.service_request.optString(ServiceRequest.STATUS));
             holder.date       .setText(mDateFormat.format(mISODate.parse(sr.post_data.optString(ServiceRequest.REQUESTED_DATETIME))));
