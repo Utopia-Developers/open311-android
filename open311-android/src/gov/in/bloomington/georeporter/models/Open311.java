@@ -222,6 +222,7 @@ public class Open311 {
 
 		try {
 			Open311Parser mParser = new Open311Parser(mFormat);
+			//TODO
 			sServiceList = mParser.parseServices(loadStringFromUrl(
 					getServiceListUrl(), context));
 			if (sServiceList == null) {
@@ -253,11 +254,14 @@ public class Open311 {
 				}
 			}
 		} catch (Exception e) {
+			Log.d("Ready", sReady.toString());
 			e.printStackTrace();
+			
 			return false;
 		}
 		sEndpoint = current_server;
 		sReady = true;
+		Log.d("Ready", sReady.toString());
 		return sReady;
 	}
 

@@ -25,6 +25,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -154,6 +155,7 @@ public class ServersFragment extends SherlockFragment implements
 		server.jurisdiction_id = jurisdiction.getText().toString();
 		server.api_key = api_key.getText().toString();
 		server.supports_media = supports_media.isChecked();
+		Log.d("Selected Item",format.getSelectedItem().toString());
 		server.format = format.getSelectedItem().toString();
 
 		mCustomServers.add(server);

@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 
 public class Util {
 	/**
@@ -54,6 +55,7 @@ public class Util {
 	 * void
 	 */
 	public static void displayCrashDialog(Context c, String message) {
+		Log.d("Crash Dialog", "K");
 		AlertDialog.Builder builder = new AlertDialog.Builder(c);
 		builder.setTitle("Error")
 			   .setMessage(message)

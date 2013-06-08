@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -39,7 +40,7 @@ public class MainActivity extends BaseActivity {
 		ServerAttributeJson current_server = Preferences.getCurrentServer(this);
 
 		if (current_server == null) {
-
+			Log.d("Current Server Null","K");
 			startActivity(new Intent(this, SettingsActivity.class));
 
 		} else {
@@ -48,7 +49,8 @@ public class MainActivity extends BaseActivity {
 			getSupportActionBar().setTitle(current_server.name);
 
 			String imageName = current_server.splash_image;
-			if (imageName != "") {
+			Log.d("Image Name", imageName+"");
+			if (imageName != null) {
 				ImageView splash = (ImageView) findViewById(R.id.splash);
 				splash.setImageResource(getResources().getIdentifier(imageName,
 						"drawable", getPackageName()));
@@ -82,18 +84,22 @@ public class MainActivity extends BaseActivity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			dialog = ProgressDialog.show(MainActivity.this,
-					getString(R.string.dialog_loading_services), "", true);
+			dialog = new ProgressDialog(MainActivity.this);
+			dialog.setTitle(getString(R.string.dialog_loading_services));
+			dialog.show();
 		}
 
 		@Override
 		protected Boolean doInBackground(ServerAttributeJson... server) {
-			return Open311.setEndpoint(server[0], MainActivity.this);
+			boolean result = Open311.setEndpoint(server[0], MainActivity.this);
+			Log.d("Result1", result+"");
+			return result;
 		}
 
 		@Override
 		protected void onPostExecute(Boolean result) {
 			dialog.dismiss();
+			Log.d("Result2", result.toString());
 			if (!result) {
 				Util.displayCrashDialog(MainActivity.this,
 						getString(R.string.failure_loading_services));

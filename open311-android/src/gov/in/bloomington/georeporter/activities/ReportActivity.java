@@ -18,6 +18,7 @@ import gov.in.bloomington.georeporter.util.json.JSONObject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 
@@ -32,7 +33,7 @@ public class ReportActivity extends BaseFragmentActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		Log.d("Report Activity", "K");
 		mActionBar = getSupportActionBar();
 		mActionBar.setTitle(R.string.menu_report);
 		
