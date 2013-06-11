@@ -5,6 +5,7 @@
  * @license http://www.gnu.org/licenses/gpl.txt GNU/GPL, see LICENSE.txt
  * @author Cliff Ingham <inghamn@bloomington.in.gov>
  */
+
 package gov.in.bloomington.georeporter.adapters;
 
 import gov.in.bloomington.georeporter.R;
@@ -36,27 +37,26 @@ public class ServiceRequestAdapter extends BaseAdapter {
     private static LayoutInflater mLayoutInflater;
 
     public static final int TYPE_HEADER = 0;
-    public static final int TYPE_ITEM   = 1;
-    public static final int TYPE_MEDIA  = 2;
+    public static final int TYPE_ITEM = 1;
+    public static final int TYPE_MEDIA = 2;
 
     /**
-     * A key string for every item in the listview
-     * We use this to define the order of fields in the listview
+     * A key string for every item in the listview We use this to define the
+     * order of fields in the listview
      */
     public ArrayList<String> labels = new ArrayList<String>(Arrays.asList(
-        Open311.SERVICE_NAME,
-        Open311.MEDIA,
-        Open311.ADDRESS_STRING,
-        Open311.DESCRIPTION
-    ));
+            Open311.SERVICE_NAME,
+            Open311.MEDIA,
+            Open311.ADDRESS_STRING,
+            Open311.DESCRIPTION
+            ));
     /**
      * The int positions of labels that are supposed to be headers
      */
     private ArrayList<Integer> headers = new ArrayList<Integer>(Arrays.asList(0));
 
     /**
-     * @param key
-     * void
+     * @param key void
      */
     private void addHeader(String key) {
         labels.add(key);
@@ -64,13 +64,12 @@ public class ServiceRequestAdapter extends BaseAdapter {
     }
 
     /**
-     * Prepares display strings from the ServiceRequest
-     *
-     * Reads all the neccessary information from the ServiceRequest into the
-     * local variables used for display.  The actual raw data the user enters
-     * will still be stored in the ServiceRequest.  Later, the ServiceRequest
-     * will be handed off to Open311 for submitting to the endpoint.
-     *
+     * Prepares display strings from the ServiceRequest Reads all the neccessary
+     * information from the ServiceRequest into the local variables used for
+     * display. The actual raw data the user enters will still be stored in the
+     * ServiceRequest. Later, the ServiceRequest will be handed off to Open311
+     * for submitting to the endpoint.
+     * 
      * @param sr
      * @param c
      */
@@ -80,7 +79,7 @@ public class ServiceRequestAdapter extends BaseAdapter {
 
         // When endpoints do not support Media, we must remove the media label
         if ((sr.endpoint != null && !sr.endpoint.supports_media)
-             || !Preferences.getCurrentServer(c).supports_media) {
+                || !Preferences.getCurrentServer(c).supports_media) {
             labels.remove(1);
         }
 
@@ -93,7 +92,7 @@ public class ServiceRequestAdapter extends BaseAdapter {
                 // Loop over all the attributes and add each attribute code
                 // to the labels list
                 int len = attributes.length();
-                for (int i=0; i<len; i++) {
+                for (int i = 0; i < len; i++) {
                     JSONObject a = attributes.getJSONObject(i);
                     String code = a.getString(Open311.CODE);
                     if (a.getBoolean(Open311.VARIABLE)) {
@@ -111,12 +110,10 @@ public class ServiceRequestAdapter extends BaseAdapter {
     }
 
     /**
-     * Updates the display with new data
-     *
-     * Call this function whenever the user changes data in the ServiceRequest
-     *
-     * @param sr
-     * void
+     * Updates the display with new data Call this function whenever the user
+     * changes data in the ServiceRequest
+     * 
+     * @param sr void
      */
     public void updateServiceRequest(ServiceRequest sr) {
         mServiceRequest = sr;
@@ -175,20 +172,22 @@ public class ServiceRequestAdapter extends BaseAdapter {
                 if (convertView == null) {
                     convertView = mLayoutInflater.inflate(R.layout.list_item_header, null);
                     header = new HeaderViewHolder();
-                    header.title = (TextView)convertView;
+                    header.title = (TextView) convertView;
                     convertView.setTag(header);
                 }
                 else {
-                    header = (HeaderViewHolder)convertView.getTag();
+                    header = (HeaderViewHolder) convertView.getTag();
                 }
 
                 if (labelKey.equals(Open311.SERVICE_NAME)) {
                     header.title.setText(mServiceRequest.service.optString(Open311.DESCRIPTION));
                 }
                 else if (labelKey.equals(Open311.ATTRIBUTES)) {
-                    header.title.setText(convertView.getResources().getString(R.string.report_attributes));
+                    header.title.setText(convertView.getResources().getString(
+                            R.string.report_attributes));
                 }
-                // Attributes with variable=false should get displayed as headers.
+                // Attributes with variable=false should get displayed as
+                // headers.
                 else {
                     header.title.setText(mServiceRequest.getAttributeDescription(labelKey));
                 }
@@ -200,11 +199,11 @@ public class ServiceRequestAdapter extends BaseAdapter {
                 if (convertView == null) {
                     convertView = mLayoutInflater.inflate(R.layout.list_item_media, null);
                     media = new MediaViewHolder();
-                    media.image = (ImageView)convertView.findViewById(R.id.media);
+                    media.image = (ImageView) convertView.findViewById(R.id.media);
                     convertView.setTag(media);
                 }
                 else {
-                    media = (MediaViewHolder)convertView.getTag();
+                    media = (MediaViewHolder) convertView.getTag();
                 }
 
                 Bitmap bmp = mServiceRequest.getMediaBitmap(80, 80, mLayoutInflater.getContext());
@@ -218,17 +217,18 @@ public class ServiceRequestAdapter extends BaseAdapter {
                 ItemViewHolder item;
 
                 if (convertView == null) {
-                    convertView = mLayoutInflater.inflate(android.R.layout.simple_list_item_2, null);
+                    convertView = mLayoutInflater
+                            .inflate(android.R.layout.simple_list_item_2, null);
                     item = new ItemViewHolder();
-                    item.label        = (TextView)convertView.findViewById(android.R.id.text1);
-                    item.displayValue = (TextView)convertView.findViewById(android.R.id.text2);
+                    item.label = (TextView) convertView.findViewById(android.R.id.text1);
+                    item.displayValue = (TextView) convertView.findViewById(android.R.id.text2);
                     convertView.setTag(item);
                 }
                 else {
-                    item = (ItemViewHolder)convertView.getTag();
+                    item = (ItemViewHolder) convertView.getTag();
                 }
 
-                String label        = "";
+                String label = "";
                 String displayValue = "";
 
                 if (labelKey.equals(Open311.ADDRESS_STRING)) {
@@ -241,7 +241,7 @@ public class ServiceRequestAdapter extends BaseAdapter {
                     label = convertView.getResources().getString(R.string.location);
                     displayValue = mServiceRequest.post_data.optString(Open311.ADDRESS_STRING);
                     if (displayValue.equals("")) {
-                        double latitude  = mServiceRequest.post_data.optDouble(Open311.LATITUDE);
+                        double latitude = mServiceRequest.post_data.optDouble(Open311.LATITUDE);
                         double longitude = mServiceRequest.post_data.optDouble(Open311.LONGITUDE);
                         if (!Double.isNaN(latitude) && !Double.isNaN(longitude)) {
                             displayValue = String.format("%f, %f", latitude, longitude);
@@ -256,9 +256,10 @@ public class ServiceRequestAdapter extends BaseAdapter {
                     // For each attribute, display what the user has entered.
                     // We'll need to do some custom formatting depending on the
                     // attribute type
-                    label              = mServiceRequest.getAttributeDescription(labelKey);
-                    String type        = mServiceRequest.getAttributeDatatype   (labelKey);
-                    String code        = String.format("%s[%s]", AttributeEntryActivity.ATTRIBUTE, labelKey);
+                    label = mServiceRequest.getAttributeDescription(labelKey);
+                    String type = mServiceRequest.getAttributeDatatype(labelKey);
+                    String code = String.format("%s[%s]", AttributeEntryActivity.ATTRIBUTE,
+                            labelKey);
                     String chosenValue = mServiceRequest.post_data.optString(code);
 
                     if (mServiceRequest.isAttributeRequired(labelKey)) {
@@ -266,30 +267,36 @@ public class ServiceRequestAdapter extends BaseAdapter {
                     }
 
                     if (!chosenValue.equals("")) {
-                        if (type.equals(Open311.SINGLEVALUELIST) || type.equals(Open311.MULTIVALUELIST)) {
+                        if (type.equals(Open311.SINGLEVALUELIST)
+                                || type.equals(Open311.MULTIVALUELIST)) {
                             try {
-                                JSONArray attributeValues = mServiceRequest.getAttributeValues(labelKey);
+                                JSONArray attributeValues = mServiceRequest
+                                        .getAttributeValues(labelKey);
                                 int len = attributeValues.length();
 
                                 if (type.equals(Open311.SINGLEVALUELIST)) {
-                                    // chosenValue will contain the attribute.value.key.
+                                    // chosenValue will contain the
+                                    // attribute.value.key.
                                     // Display the attribute.value.name
-                                    displayValue = mServiceRequest.getAttributeValueName(labelKey, chosenValue);
+                                    displayValue = mServiceRequest.getAttributeValueName(labelKey,
+                                            chosenValue);
                                 }
                                 else if (type.equals(Open311.MULTIVALUELIST)) {
-                                    // chosenValue will contain a JSONArray of keys.
-                                    // Display the names of these keys as a comma-
+                                    // chosenValue will contain a JSONArray of
+                                    // keys.
+                                    // Display the names of these keys as a
+                                    // comma-
                                     // separated list
                                     ArrayList<String> names = new ArrayList<String>();
-                                    JSONArray keys          = new JSONArray(chosenValue);
-                                    len     = keys.length();
-                                    for (int i=0; i<len; i++) {
-                                        names.add(mServiceRequest.getAttributeValueName(labelKey, keys.getString(i)));
+                                    JSONArray keys = new JSONArray(chosenValue);
+                                    len = keys.length();
+                                    for (int i = 0; i < len; i++) {
+                                        names.add(mServiceRequest.getAttributeValueName(labelKey,
+                                                keys.getString(i)));
                                     }
                                     displayValue = TextUtils.join(", ", names);
                                 }
-                            }
-                            catch (JSONException e) {
+                            } catch (JSONException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
                             }
@@ -299,7 +306,7 @@ public class ServiceRequestAdapter extends BaseAdapter {
                         }
                     }
                 }
-                item.label       .setText(label);
+                item.label.setText(label);
                 item.displayValue.setText(displayValue);
                 break;
         }

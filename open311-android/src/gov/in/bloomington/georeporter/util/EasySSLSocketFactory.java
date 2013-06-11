@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package gov.in.bloomington.georeporter.util;
 
 import ch.boye.httpclientandroidlib.conn.ConnectTimeoutException;
@@ -33,8 +34,9 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 
 /**
- * This socket factory will create ssl socket that accepts self signed certificate
- *
+ * This socket factory will create ssl socket that accepts self signed
+ * certificate
+ * 
  * @author olamy
  * @version $Id$
  * @since 1.2.3
@@ -45,12 +47,13 @@ public class EasySSLSocketFactory implements SchemeSocketFactory, SchemeLayeredS
 
     private static SSLContext createEasySSLContext() throws IOException {
         try {
-            SSLContext context = SSLContext.getInstance( "SSL" );
-            context.init( null, new TrustManager[]{new EasyX509TrustManager( null )}, null );
+            SSLContext context = SSLContext.getInstance("SSL");
+            context.init(null, new TrustManager[] {
+                    new EasyX509TrustManager(null)
+            }, null);
             return context;
-        }
-        catch (Exception e) {
-            throw new IOException( e.getMessage() );
+        } catch (Exception e) {
+            throw new IOException(e.getMessage());
         }
     }
 
@@ -62,13 +65,16 @@ public class EasySSLSocketFactory implements SchemeSocketFactory, SchemeLayeredS
     }
 
     /**
-     * @see ch.boye.httpclientandroidlib.conn.scheme.SchemeSocketFactory#connectSocket(java.net.Socket, java.net.InetSocketAddress, java.net.InetSocketAddress, ch.boye.httpclientandroidlib.params.HttpParams)
+     * @see ch.boye.httpclientandroidlib.conn.scheme.SchemeSocketFactory#connectSocket(java.net.Socket,
+     *      java.net.InetSocketAddress, java.net.InetSocketAddress,
+     *      ch.boye.httpclientandroidlib.params.HttpParams)
      */
     @Override
-    public Socket connectSocket(Socket sock, InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpParams params)
+    public Socket connectSocket(Socket sock, InetSocketAddress remoteAddress,
+            InetSocketAddress localAddress, HttpParams params)
             throws IOException, UnknownHostException, ConnectTimeoutException {
-        int connTimeout = HttpConnectionParams.getConnectionTimeout( params );
-        int soTimeout   = HttpConnectionParams.getSoTimeout( params );
+        int connTimeout = HttpConnectionParams.getConnectionTimeout(params);
+        int soTimeout = HttpConnectionParams.getSoTimeout(params);
 
         SSLSocket sslsock = (SSLSocket) ((sock != null) ? sock : createSocket(params));
 
@@ -77,8 +83,8 @@ public class EasySSLSocketFactory implements SchemeSocketFactory, SchemeLayeredS
             sslsock.bind(localAddress);
         }
 
-        sslsock.connect( remoteAddress, connTimeout );
-        sslsock.setSoTimeout( soTimeout );
+        sslsock.connect(remoteAddress, connTimeout);
+        sslsock.setSoTimeout(soTimeout);
         return sslsock;
     }
 
@@ -98,17 +104,20 @@ public class EasySSLSocketFactory implements SchemeSocketFactory, SchemeLayeredS
     }
 
     /**
-     * @see ch.boye.httpclientandroidlib.conn.scheme.SchemeLayeredSocketFactory#createLayeredSocket(java.net.Socket, java.lang.String, int, ch.boye.httpclientandroidlib.params.HttpParams)
+     * @see ch.boye.httpclientandroidlib.conn.scheme.SchemeLayeredSocketFactory#createLayeredSocket(java.net.Socket,
+     *      java.lang.String, int,
+     *      ch.boye.httpclientandroidlib.params.HttpParams)
      */
     @Override
-    public Socket createLayeredSocket(Socket socket, String host, int port, HttpParams params) throws IOException, UnknownHostException {
+    public Socket createLayeredSocket(Socket socket, String host, int port, HttpParams params)
+            throws IOException, UnknownHostException {
         return getSSLContext().getSocketFactory().createSocket();
     }
 
     // -------------------------------------------------------------------
-    //  javadoc in ch.boye.httpclientandroidlib.conn.scheme.SocketFactory says :
-    //  Both Object.equals() and Object.hashCode() must be overridden 
-    //  for the correct operation of some connection managers
+    // javadoc in ch.boye.httpclientandroidlib.conn.scheme.SocketFactory says :
+    // Both Object.equals() and Object.hashCode() must be overridden
+    // for the correct operation of some connection managers
     // -------------------------------------------------------------------
     public boolean equals(Object obj) {
         return ((obj != null) && obj.getClass().equals(EasySSLSocketFactory.class));

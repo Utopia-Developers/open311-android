@@ -3,6 +3,7 @@
  * @license http://www.gnu.org/licenses/gpl.txt GNU/GPL, see LICENSE.txt
  * @author Cliff Ingham <inghamn@bloomington.in.gov>
  */
+
 package gov.in.bloomington.georeporter.activities;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -23,49 +24,53 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 public class ChooseLocationActivity extends SherlockFragmentActivity {
-	private GoogleMap mMap;
-	private LocationManager mLocationManager;
-	private MapListener mLocationListener;
-	private RadioGroup mapRadio;
-	
-	public static final int UPDATE_GOOGLE_MAPS_REQUEST = 0;
-	
-	public static final int DEFAULT_ZOOM = 17;
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+    private GoogleMap mMap;
+    private LocationManager mLocationManager;
+    private MapListener mLocationListener;
+    private RadioGroup mapRadio;
+
+    public static final int UPDATE_GOOGLE_MAPS_REQUEST = 0;
+
+    public static final int DEFAULT_ZOOM = 17;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_chooser);
         setUpMapIfNeeded();
-	}
-	
-	@Override
-	protected void onResume() {
-	    super.onResume();
-	    setUpMapIfNeeded();
-	}
-	
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpMapIfNeeded();
+    }
+
     /**
-     * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-     * installed) and the map has not already been instantiated.. This will ensure that we only ever
-     * call {@link #setUpMap()} once when {@link #mMap} is not null.
+     * Sets up the map if it is possible to do so (i.e., the Google Play
+     * services APK is correctly installed) and the map has not already been
+     * instantiated.. This will ensure that we only ever call
+     * {@link #setUpMap()} once when {@link #mMap} is not null.
      * <p>
      * If it isn't installed {@link SupportMapFragment} (and
-     * {@link com.google.android.gms.maps.MapView
-     * MapView}) will show a prompt for the user to install/update the Google Play services APK on
-     * their device.
+     * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt
+     * for the user to install/update the Google Play services APK on their
+     * device.
      * <p>
-     * A user can return to this Activity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the Activity may not have been
-     * completely destroyed during this process (it is likely that it would only be stopped or
-     * paused), {@link #onCreate(Bundle)} may not be called again so we should call this method in
-     * {@link #onResume()} to guarantee that it will be called.
+     * A user can return to this Activity after following the prompt and
+     * correctly installing/updating/enabling the Google Play services. Since
+     * the Activity may not have been completely destroyed during this process
+     * (it is likely that it would only be stopped or paused),
+     * {@link #onCreate(Bundle)} may not be called again so we should call this
+     * method in {@link #onResume()} to guarantee that it will be called.
      */
     private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
+        // Do a null check to confirm that we have not already instantiated the
+        // map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+                    .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 setUpMap();
@@ -74,156 +79,166 @@ public class ChooseLocationActivity extends SherlockFragmentActivity {
     }
 
     /**
-     * This is where we can add markers or lines, add listeners or move the camera.
+     * This is where we can add markers or lines, add listeners or move the
+     * camera.
      * <p>
-     * This should only be called once and when we are sure that {@link #mMap} is not null.
+     * This should only be called once and when we are sure that {@link #mMap}
+     * is not null.
      */
     private void setUpMap() {
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setMyLocationEnabled(false);
         mMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));
         mapRadio = (RadioGroup) findViewById(R.id.map_radio);
-        
+
         mapRadio.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
-                    case R.id.rb_satellite: mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE); break;
-                    case R.id.rb_hybrid:    mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);    break; 
-                    default:                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                    case R.id.rb_satellite:
+                        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                        break;
+                    case R.id.rb_hybrid:
+                        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                        break;
+                    default:
+                        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 }
             }
         });
     }
 
-	@Override
-	protected void onStart() {
-		super.onStart();
-		
-		mLocationListener = new MapListener();
-		
-		mLocationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
-		
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mLocationListener = new MapListener();
+
+        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,     0, 0, mLocationListener);
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,
+                    mLocationListener);
         }
-		if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-	        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
-		}
-	}
+        if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0,
+                    mLocationListener);
+        }
+    }
 
-	private class MapListener implements LocationListener {
+    private class MapListener implements LocationListener {
         private static final int TWO_MINUTES = 1000 * 60 * 2;
-	    private Location mCurrentBestLocation;
-	    
-		@Override
-		public void onLocationChanged(Location location) {
-		    if (isBetterLocation(location, mCurrentBestLocation)) {
-		        mLocationManager.removeUpdates(this);
-		    }
-		    
-		    LatLng p = new LatLng(location.getLatitude(), location.getLongitude());
-		    mMap.moveCamera(CameraUpdateFactory.newLatLng(p));
-		}
+        private Location mCurrentBestLocation;
 
-		@Override
-		public void onProviderDisabled(String provider) {
-			// TODO Auto-generated method stub
-		}
+        @Override
+        public void onLocationChanged(Location location) {
+            if (isBetterLocation(location, mCurrentBestLocation)) {
+                mLocationManager.removeUpdates(this);
+            }
 
-		@Override
-		public void onProviderEnabled(String provider) {
-			// TODO Auto-generated method stub
-		}
+            LatLng p = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(p));
+        }
 
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-			// TODO Auto-generated method stub
-		}
+        @Override
+        public void onProviderDisabled(String provider) {
+            // TODO Auto-generated method stub
+        }
 
-		/**
-		 * Determines whether one Location reading is better than the current Location fix
-		 * @param location  The new Location that you want to evaluate
-		 * @param currentBestLocation  The current Location fix, to which you want to compare the new one
-		 */
-		protected boolean isBetterLocation(Location location, Location currentBestLocation) {
-		    if (currentBestLocation == null) {
-		        // A new location is always better than no location
-		        return true;
-		    }
+        @Override
+        public void onProviderEnabled(String provider) {
+            // TODO Auto-generated method stub
+        }
 
-		    // Check whether the new location fix is newer or older
-		    long timeDelta = location.getTime() - currentBestLocation.getTime();
-		    boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-		    boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
-		    boolean isNewer = timeDelta > 0;
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            // TODO Auto-generated method stub
+        }
 
-		    // If it's been more than two minutes since the current location, use the new location
-		    // because the user has likely moved
-		    if (isSignificantlyNewer) {
-		        return true;
-		    // If the new location is more than two minutes older, it must be worse
-		    } else if (isSignificantlyOlder) {
-		        return false;
-		    }
+        /**
+         * Determines whether one Location reading is better than the current
+         * Location fix
+         * 
+         * @param location The new Location that you want to evaluate
+         * @param currentBestLocation The current Location fix, to which you
+         *            want to compare the new one
+         */
+        protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+            if (currentBestLocation == null) {
+                // A new location is always better than no location
+                return true;
+            }
 
-		    // Check whether the new location fix is more or less accurate
-		    int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-		    boolean isLessAccurate = accuracyDelta > 0;
-		    boolean isMoreAccurate = accuracyDelta < 0;
-		    boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+            // Check whether the new location fix is newer or older
+            long timeDelta = location.getTime() - currentBestLocation.getTime();
+            boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
+            boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+            boolean isNewer = timeDelta > 0;
 
-		    // Check if the old and new location are from the same provider
-		    boolean isFromSameProvider = isSameProvider(location.getProvider(),
-		            currentBestLocation.getProvider());
+            // If it's been more than two minutes since the current location,
+            // use the new location
+            // because the user has likely moved
+            if (isSignificantlyNewer) {
+                return true;
+                // If the new location is more than two minutes older, it must
+                // be worse
+            } else if (isSignificantlyOlder) {
+                return false;
+            }
 
-		    // Determine location quality using a combination of timeliness and accuracy
-		    if (isMoreAccurate) {
-		        return true;
-		    } else if (isNewer && !isLessAccurate) {
-		        return true;
-		    } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-		        return true;
-		    }
-		    return false;
-		}
+            // Check whether the new location fix is more or less accurate
+            int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+            boolean isLessAccurate = accuracyDelta > 0;
+            boolean isMoreAccurate = accuracyDelta < 0;
+            boolean isSignificantlyLessAccurate = accuracyDelta > 200;
 
-		/**
-		 * Checks whether two providers are the same
-		 */
-		private boolean isSameProvider(String provider1, String provider2) {
-		    if (provider1 == null) {
-		      return provider2 == null;
-		    }
-		    return provider1.equals(provider2);
-		}
-	}
-	
-	/**
-	 * OnClick handler for the submit button
-	 * 
-	 * Reads the lat/long at the center of the map and returns
-	 * them to the activity that opened the map
-	 * 
-	 * lat/long will be of type double
-	 */
-	public void submit(View v) {
-	    LatLng center = mMap.getCameraPosition().target;
-		
-		Intent result = new Intent();
-		result.putExtra(Open311.LATITUDE,  center.latitude);
-		result.putExtra(Open311.LONGITUDE, center.longitude);
-		setResult(RESULT_OK, result);
-		finish();
-	}
-	
-	/**
-	 * OnClick handler for the cancel button
-	 * 
-	 * void
-	 */
-	public void cancel(View v) {
-		setResult(RESULT_CANCELED);
-		finish();
-	}
+            // Check if the old and new location are from the same provider
+            boolean isFromSameProvider = isSameProvider(location.getProvider(),
+                    currentBestLocation.getProvider());
+
+            // Determine location quality using a combination of timeliness and
+            // accuracy
+            if (isMoreAccurate) {
+                return true;
+            } else if (isNewer && !isLessAccurate) {
+                return true;
+            } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Checks whether two providers are the same
+         */
+        private boolean isSameProvider(String provider1, String provider2) {
+            if (provider1 == null) {
+                return provider2 == null;
+            }
+            return provider1.equals(provider2);
+        }
+    }
+
+    /**
+     * OnClick handler for the submit button Reads the lat/long at the center of
+     * the map and returns them to the activity that opened the map lat/long
+     * will be of type double
+     */
+    public void submit(View v) {
+        LatLng center = mMap.getCameraPosition().target;
+
+        Intent result = new Intent();
+        result.putExtra(Open311.LATITUDE, center.latitude);
+        result.putExtra(Open311.LONGITUDE, center.longitude);
+        setResult(RESULT_OK, result);
+        finish();
+    }
+
+    /**
+     * OnClick handler for the cancel button void
+     */
+    public void cancel(View v) {
+        setResult(RESULT_CANCELED);
+        finish();
+    }
 }

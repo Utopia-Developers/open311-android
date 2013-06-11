@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package gov.in.bloomington.georeporter.util;
 
 import java.security.KeyStore;
@@ -38,10 +39,12 @@ public class EasyX509TrustManager implements X509TrustManager {
     /**
      * Constructor for EasyX509TrustManager.
      */
-    public EasyX509TrustManager( KeyStore keystore ) throws NoSuchAlgorithmException, KeyStoreException {
+    public EasyX509TrustManager(KeyStore keystore) throws NoSuchAlgorithmException,
+            KeyStoreException {
         super();
-        TrustManagerFactory factory = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
-        factory.init( keystore );
+        TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory
+                .getDefaultAlgorithm());
+        factory.init(keystore);
         TrustManager[] trustmanagers = factory.getTrustManagers();
         if (trustmanagers.length == 0) {
             throw new NoSuchAlgorithmException("no trust manager found");
@@ -50,27 +53,28 @@ public class EasyX509TrustManager implements X509TrustManager {
     }
 
     /**
-     * @see javax.net.ssl.X509TrustManager#checkClientTrusted(X509Certificate[], String authType)
+     * @see javax.net.ssl.X509TrustManager#checkClientTrusted(X509Certificate[],
+     *      String authType)
      */
     @SuppressWarnings("javadoc")
-    public void checkClientTrusted( X509Certificate[] certificates, String authType ) throws CertificateException {
-        standardTrustManager.checkClientTrusted( certificates, authType );
+    public void checkClientTrusted(X509Certificate[] certificates, String authType)
+            throws CertificateException {
+        standardTrustManager.checkClientTrusted(certificates, authType);
     }
 
     /**
-     * @see javax.net.ssl.X509TrustManager#checkServerTrusted(X509Certificate[], String authType)
+     * @see javax.net.ssl.X509TrustManager#checkServerTrusted(X509Certificate[],
+     *      String authType)
      */
     @SuppressWarnings("javadoc")
-    public void checkServerTrusted( X509Certificate[] certificates, String authType ) throws CertificateException
+    public void checkServerTrusted(X509Certificate[] certificates, String authType)
+            throws CertificateException
     {
         /*
-        if (certificates != null) {
-            Log.i(TAG, "Server certificate chain:");
-            for ( int i = 0; i < certificates.length; i++ ) {
-                Log.i(TAG, "X509Certificate[" + i + "]=" + certificates[i] );
-            }
-        }
-        */
+         * if (certificates != null) { Log.i(TAG, "Server certificate chain:");
+         * for ( int i = 0; i < certificates.length; i++ ) { Log.i(TAG,
+         * "X509Certificate[" + i + "]=" + certificates[i] ); } }
+         */
         if ((certificates != null) && (certificates.length == 1)) {
             certificates[0].checkValidity();
         }

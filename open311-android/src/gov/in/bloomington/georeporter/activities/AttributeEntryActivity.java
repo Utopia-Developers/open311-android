@@ -8,6 +8,7 @@
  * @license http://www.gnu.org/licenses/gpl.txt GNU/GPL, see LICENSE.txt
  * @author Cliff Ingham <inghamn@bloomington.in.gov>
  */
+
 package gov.in.bloomington.georeporter.activities;
 
 import gov.in.bloomington.georeporter.R;
@@ -32,31 +33,32 @@ import android.widget.TextView;
 
 public class AttributeEntryActivity extends BaseActivity {
     public static final String ATTRIBUTE = "attribute";
-    public static final String VALUE     = "value";
-    
-    private JSONObject   mAttribute;
-    private String       mCode;
-    private String       mDatatype;
+    public static final String VALUE = "value";
+
+    private JSONObject mAttribute;
+    private String mCode;
+    private String mDatatype;
     private LinearLayout mLayout;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         setContentView(R.layout.activity_data_entry);
-                    mLayout = (LinearLayout) findViewById(R.id.attribute_layout);
-        TextView     prompt = (TextView)     findViewById(R.id.prompt);
-        
+        mLayout = (LinearLayout) findViewById(R.id.attribute_layout);
+        TextView prompt = (TextView) findViewById(R.id.prompt);
+
         Intent i = getIntent();
         try {
             mAttribute = new JSONObject(i.getStringExtra(ATTRIBUTE));
-            mCode      = mAttribute.getString(Open311.CODE);
-            mDatatype  = mAttribute.optString(Open311.DATATYPE, Open311.STRING);
-            
+            mCode = mAttribute.getString(Open311.CODE);
+            mDatatype = mAttribute.optString(Open311.DATATYPE, Open311.STRING);
+
             prompt.setText(mAttribute.getString(Open311.DESCRIPTION));
             mLayout.addView(loadAttributeEntryView());
-            
-            if (mDatatype.equals(Open311.STRING) || mDatatype.equals(Open311.NUMBER) || mDatatype.equals(Open311.TEXT)) {
+
+            if (mDatatype.equals(Open311.STRING) || mDatatype.equals(Open311.NUMBER)
+                    || mDatatype.equals(Open311.TEXT)) {
                 this.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
             }
         } catch (JSONException e) {
@@ -64,24 +66,22 @@ public class AttributeEntryActivity extends BaseActivity {
             finish();
         }
     }
-    
+
     /**
-     * Inflates the custom views for each attribute datatype
+     * Inflates the custom views for each attribute datatype Each of the views
+     * should create a view with +id/input. That way, we can pull the user's
+     * data entry out when they hit the submit button. Note: DateTime attributes
+     * are not handled here It was easier to directly open a datePicker dialog
+     * in ReportFragment. Look in ReportFragment for DateTime attribute
+     * handling.
      * 
-     * Each of the views should create a view with +id/input.  That way, we can
-     * pull the user's data entry out when they hit the submit button.
-     * 
-     * Note: DateTime attributes are not handled here
-     * It was easier to directly open a datePicker dialog in ReportFragment.
-     * Look in ReportFragment for DateTime attribute handling.
-     * 
-     * @return
-     * View
+     * @return View
      */
     private View loadAttributeEntryView() {
         LayoutInflater inflater = getLayoutInflater();
-        
-        if (mDatatype.equals(Open311.STRING) || mDatatype.equals(Open311.NUMBER) || mDatatype.equals(Open311.TEXT)) {
+
+        if (mDatatype.equals(Open311.STRING) || mDatatype.equals(Open311.NUMBER)
+                || mDatatype.equals(Open311.TEXT)) {
             View v = inflater.inflate(R.layout.attribute_entry_string, null);
             EditText input = (EditText) v.findViewById(R.id.input);
 
@@ -93,13 +93,13 @@ public class AttributeEntryActivity extends BaseActivity {
             }
             return v;
         }
-        else if (mDatatype.equals(Open311.SINGLEVALUELIST) || mDatatype.equals(Open311.MULTIVALUELIST)) {
+        else if (mDatatype.equals(Open311.SINGLEVALUELIST)
+                || mDatatype.equals(Open311.MULTIVALUELIST)) {
             /**
-             * Each value object has a key and a name: {key:"", name:""}
-             * We want to display the name to the user, but need to POST
-             * the key to the endpoint.
-             * 
-             * We rely on the order to keep track of which value is which
+             * Each value object has a key and a name: {key:"", name:""} We want
+             * to display the name to the user, but need to POST the key to the
+             * endpoint. We rely on the order to keep track of which value is
+             * which
              */
             JSONArray values = mAttribute.optJSONArray(Open311.VALUES);
             int len = values.length();
@@ -107,7 +107,7 @@ public class AttributeEntryActivity extends BaseActivity {
             if (mDatatype.equals(Open311.SINGLEVALUELIST)) {
                 View v = inflater.inflate(R.layout.attribute_entry_singlevaluelist, null);
                 RadioGroup input = (RadioGroup) v.findViewById(R.id.input);
-                for (int i=0; i<len; i++) {
+                for (int i = 0; i < len; i++) {
                     JSONObject value = values.optJSONObject(i);
                     RadioButton button = (RadioButton) inflater.inflate(R.layout.radiobutton, null);
                     button.setText(value.optString(Open311.NAME));
@@ -118,7 +118,7 @@ public class AttributeEntryActivity extends BaseActivity {
             else if (mDatatype.equals(Open311.MULTIVALUELIST)) {
                 View v = inflater.inflate(R.layout.attribute_entry_multivaluelist, null);
                 LinearLayout input = (LinearLayout) v.findViewById(R.id.input);
-                for (int i=0; i<len; i++) {
+                for (int i = 0; i < len; i++) {
                     JSONObject value = values.optJSONObject(i);
                     CheckBox checkbox = (CheckBox) inflater.inflate(R.layout.checkbox, null);
                     checkbox.setText(value.optString(Open311.NAME));
@@ -131,38 +131,36 @@ public class AttributeEntryActivity extends BaseActivity {
     }
 
     /**
-     * OnClick handler for the submit button
+     * OnClick handler for the submit button Send the entered data back to
+     * ReportFragment. Multivaluelist data should be sent as a serialized
+     * JSONArray. All the other datatypes should be sent as a plain string.
      * 
-     * Send the entered data back to ReportFragment.
-     * Multivaluelist data should be sent as a serialized JSONArray.
-     * All the other datatypes should be sent as a plain string.
-     * 
-     * @param v
-     * void
+     * @param v void
      */
     public void submit(View v) {
         Intent result = new Intent();
-        result.putExtra(Open311.CODE,     mCode);
+        result.putExtra(Open311.CODE, mCode);
         result.putExtra(Open311.DATATYPE, mDatatype);
-        
-        if (mDatatype.equals(Open311.STRING) || mDatatype.equals(Open311.NUMBER) || mDatatype.equals(Open311.TEXT)) {
+
+        if (mDatatype.equals(Open311.STRING) || mDatatype.equals(Open311.NUMBER)
+                || mDatatype.equals(Open311.TEXT)) {
             EditText input = (EditText) mLayout.findViewById(R.id.input);
             result.putExtra(VALUE, input.getText().toString());
         }
-        else if (mDatatype.equals(Open311.SINGLEVALUELIST) || mDatatype.equals(Open311.MULTIVALUELIST)) {
+        else if (mDatatype.equals(Open311.SINGLEVALUELIST)
+                || mDatatype.equals(Open311.MULTIVALUELIST)) {
             /**
-             * Each value object has a key and a name: { key:"", name:"" }
-             * We want to display the name to the user, but need to POST
-             * the key to the endpoint.
-             * 
-             * We rely on the order to keep track of which value is which
+             * Each value object has a key and a name: { key:"", name:"" } We
+             * want to display the name to the user, but need to POST the key to
+             * the endpoint. We rely on the order to keep track of which value
+             * is which
              */
             JSONArray values = mAttribute.optJSONArray(Open311.VALUES);
 
             try {
                 if (mDatatype.equals(Open311.SINGLEVALUELIST)) {
-                    RadioGroup  input = (RadioGroup)  mLayout.findViewById(R.id.input);
-                    
+                    RadioGroup input = (RadioGroup) mLayout.findViewById(R.id.input);
+
                     int count = input.getChildCount();
                     for (int i = 0; i < count; i++) {
                         RadioButton b = (RadioButton) input.getChildAt(i);
@@ -171,12 +169,12 @@ public class AttributeEntryActivity extends BaseActivity {
                         }
                     }
                 }
-                else if (mDatatype.equals(Open311.MULTIVALUELIST)){
+                else if (mDatatype.equals(Open311.MULTIVALUELIST)) {
                     JSONArray submittedValues = new JSONArray();
-                    
+
                     LinearLayout input = (LinearLayout) mLayout.findViewById(R.id.input);
                     int count = input.getChildCount();
-                    for (int i=0; i < count; i++) {
+                    for (int i = 0; i < count; i++) {
                         CheckBox checkbox = (CheckBox) input.getChildAt(i);
                         if (checkbox.isChecked()) {
                             submittedValues.put(values.getJSONObject(i).getString(Open311.KEY));
@@ -184,8 +182,7 @@ public class AttributeEntryActivity extends BaseActivity {
                     }
                     result.putExtra(VALUE, submittedValues.toString());
                 }
-            }
-            catch (JSONException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
                 cancel(v);
                 return;
@@ -196,16 +193,15 @@ public class AttributeEntryActivity extends BaseActivity {
             cancel(v);
             return;
         }
-        
+
         setResult(RESULT_OK, result);
         finish();
     }
-    
+
     /**
      * OnClick handler for the cancel button
      * 
-     * @param v
-     * void
+     * @param v void
      */
     public void cancel(View v) {
         setResult(RESULT_CANCELED);

@@ -3,6 +3,7 @@
  * @license http://www.gnu.org/licenses/gpl.txt GNU/GPL, see LICENSE.txt
  * @author Cliff Ingham <inghamn@bloomington.in.gov>
  */
+
 package gov.in.bloomington.georeporter.fragments;
 
 import java.io.IOException;
@@ -31,10 +32,10 @@ import com.actionbarsherlock.app.SherlockFragment;
 
 public class SavedReportViewFragment extends SherlockFragment {
     private static final String POSITION = "position";
-    private JSONArray      mServiceRequests;
+    private JSONArray mServiceRequests;
     private ServiceRequest mServiceRequest;
-    private int            mPosition;
-    
+    private int mPosition;
+
     public static SavedReportViewFragment newInstance(int position) {
         SavedReportViewFragment fragment = new SavedReportViewFragment();
         Bundle args = new Bundle();
@@ -42,12 +43,12 @@ public class SavedReportViewFragment extends SherlockFragment {
         fragment.setArguments(args);
         return fragment;
     }
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPosition = getArguments().getInt(POSITION);
-        
+
         mServiceRequests = Open311.loadServiceRequests(getActivity());
         try {
             String json = mServiceRequests.getJSONObject(mPosition).toString();
@@ -57,29 +58,29 @@ public class SavedReportViewFragment extends SherlockFragment {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_report_saved, container, false);
     }
-    
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         refreshViewData();
         new RefreshFromServerTask().execute();
         super.onActivityCreated(savedInstanceState);
     }
-    
+
     private void refreshViewData() {
         View v = getView();
         TextView textView;
-        
+
         textView = (TextView) v.findViewById(R.id.service_name);
         textView.setText(mServiceRequest.service.optString(Open311.SERVICE_NAME));
-        
+
         ImageView media = (ImageView) v.findViewById(R.id.media);
         media.setImageBitmap(mServiceRequest.getMediaBitmap(100, 100, getActivity()));
-        
+
         textView = (TextView) v.findViewById(R.id.address);
         if (mServiceRequest.service_request.has(Open311.ADDRESS)) {
             textView.setText(mServiceRequest.service_request.optString(Open311.ADDRESS));
@@ -87,7 +88,7 @@ public class SavedReportViewFragment extends SherlockFragment {
         else if (mServiceRequest.post_data.has(Open311.ADDRESS_STRING)) {
             textView.setText(mServiceRequest.post_data.optString(Open311.ADDRESS_STRING));
         }
-        
+
         textView = (TextView) v.findViewById(R.id.description);
         if (mServiceRequest.service_request.has(Open311.DESCRIPTION)) {
             textView.setText(mServiceRequest.service_request.optString(Open311.DESCRIPTION));
@@ -95,20 +96,20 @@ public class SavedReportViewFragment extends SherlockFragment {
         else if (mServiceRequest.post_data.has(Open311.DESCRIPTION)) {
             textView.setText(mServiceRequest.post_data.optString(Open311.DESCRIPTION));
         }
-        
+
         textView = (TextView) v.findViewById(R.id.status);
         if (mServiceRequest.service_request.has(ServiceRequest.STATUS)) {
             textView.setText(mServiceRequest.service_request.optString(ServiceRequest.STATUS));
         }
     }
-    
+
     private class RefreshFromServerTask extends AsyncTask<Void, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Void... params) {
-            Boolean tokenUpdated          = false;
+            Boolean tokenUpdated = false;
             Boolean serviceRequestUpdated = false;
             JSONObject sr = mServiceRequest.service_request;
-            
+
             if (!sr.has(Open311.SERVICE_REQUEST_ID)) {
                 String id;
                 try {
@@ -124,23 +125,24 @@ public class SavedReportViewFragment extends SherlockFragment {
                             serviceRequestUpdated = true;
                         }
                     }
-                }
-                catch (JSONException e) {
+                } catch (JSONException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
-            
+
             if (sr.has(Open311.SERVICE_REQUEST_ID)) {
-                serviceRequestUpdated  = fetchServiceRequest();
+                serviceRequestUpdated = fetchServiceRequest();
             }
             return tokenUpdated || serviceRequestUpdated;
         }
-        
+
         private Boolean fetchServiceRequest() {
             try {
-                String request_id = mServiceRequest.service_request.getString(Open311.SERVICE_REQUEST_ID);
-                return updateServiceRequest(Open311.loadStringFromUrl(mServiceRequest.getServiceRequestUrl(request_id), getActivity()));
+                String request_id = mServiceRequest.service_request
+                        .getString(Open311.SERVICE_REQUEST_ID);
+                return updateServiceRequest(Open311.loadStringFromUrl(
+                        mServiceRequest.getServiceRequestUrl(request_id), getActivity()));
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -156,14 +158,14 @@ public class SavedReportViewFragment extends SherlockFragment {
             }
             return false;
         }
-        
+
         private String getServiceRequestId(String token) {
             HttpGet request;
             try {
                 request = new HttpGet(mServiceRequest.getServiceRequestIdFromTokenUrl(token));
                 HttpResponse r = Open311.getClient(getActivity()).execute(request);
                 String responseString = EntityUtils.toString(r.getEntity());
-                
+
                 int status = r.getStatusLine().getStatusCode();
                 if (status == HttpStatus.SC_OK) {
                     JSONArray result = new JSONArray(responseString);
@@ -172,22 +174,19 @@ public class SavedReportViewFragment extends SherlockFragment {
                         return o.getString(Open311.SERVICE_REQUEST_ID);
                     }
                 }
-            }
-            catch (JSONException e) {
+            } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
-            catch (ClientProtocolException e) {
+            } catch (ClientProtocolException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             return null;
         }
-        
+
         private Boolean updateServiceRequest(String result) {
             if (result != null && result != "") {
                 JSONArray response;
@@ -202,7 +201,7 @@ public class SavedReportViewFragment extends SherlockFragment {
             }
             return false;
         }
-        
+
         @Override
         protected void onPostExecute(Boolean dataUpdated) {
             super.onPostExecute(dataUpdated);

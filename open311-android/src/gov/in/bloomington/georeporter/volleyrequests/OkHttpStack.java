@@ -1,3 +1,4 @@
+
 package gov.in.bloomington.georeporter.volleyrequests;
 
 import com.android.volley.toolbox.HurlStack;
@@ -11,21 +12,21 @@ import java.net.URL;
  * which uses OkHttp as its transport.
  */
 public class OkHttpStack extends HurlStack {
-	private final OkHttpClient client;
+    private final OkHttpClient client;
 
-	public OkHttpStack() {
-		this(new OkHttpClient());
-	}
+    public OkHttpStack() {
+        this(new OkHttpClient());
+    }
 
-	public OkHttpStack(OkHttpClient client) {
-		if (client == null) {
-			throw new NullPointerException("Client must not be null.");
-		}
-		this.client = client;
-	}
+    public OkHttpStack(OkHttpClient client) {
+        if (client == null) {
+            throw new NullPointerException("Client must not be null.");
+        }
+        this.client = client;
+    }
 
-	@Override
-	protected HttpURLConnection createConnection(URL url) throws IOException {
-		return client.open(url);
-	}
+    @Override
+    protected HttpURLConnection createConnection(URL url) throws IOException {
+        return client.open(url);
+    }
 }
