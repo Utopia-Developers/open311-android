@@ -1,4 +1,4 @@
-package gov.in.bloomington.georeporter.vollleyrequests;
+package gov.in.bloomington.georeporter.volleyrequests;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;

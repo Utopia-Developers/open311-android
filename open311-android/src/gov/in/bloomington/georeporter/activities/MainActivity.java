@@ -64,8 +64,7 @@ public class MainActivity extends BaseActivity {
 	/**
 	 * OnClick handler for activity_main layout
 	 * 
-	 * @param v
-	 *            void
+	 * @param View v
 	 */
 	public void onTouchImage(View v) {
 		Intent intent = new Intent(this, ReportActivity.class);
@@ -92,14 +91,12 @@ public class MainActivity extends BaseActivity {
 		@Override
 		protected Boolean doInBackground(ServerAttributeJson... server) {
 			boolean result = Open311.setEndpoint(server[0], MainActivity.this);
-			Log.d("Result1", result+"");
 			return result;
 		}
 
 		@Override
 		protected void onPostExecute(Boolean result) {
 			dialog.dismiss();
-			Log.d("Result2", result.toString());
 			if (!result) {
 				Util.displayCrashDialog(MainActivity.this,
 						getString(R.string.failure_loading_services));

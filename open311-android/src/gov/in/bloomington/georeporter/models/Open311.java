@@ -261,7 +261,6 @@ public class Open311 {
 		}
 		sEndpoint = current_server;
 		sReady = true;
-		Log.d("Ready", sReady.toString());
 		return sReady;
 	}
 
