@@ -7,6 +7,12 @@
 package gov.in.bloomington.georeporter.activities;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
+import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -14,20 +20,27 @@ import com.google.android.gms.maps.model.LatLng;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.models.Open311;
+import gov.in.bloomington.georeporter.util.LocationUtils;
+import gov.in.bloomington.georeporter.util.Util;
+
 import android.content.Intent;
+import android.content.IntentSender;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
-public class ChooseLocationActivity extends SherlockFragmentActivity {
+public class ChooseLocationActivity extends SherlockFragmentActivity implements LocationListener,ConnectionCallbacks,OnConnectionFailedListener {
     private GoogleMap mMap;
-    private LocationManager mLocationManager;
-    private MapListener mLocationListener;
     private RadioGroup mapRadio;
+    
+    // Define an object that holds accuracy and frequency parameters
+    LocationRequest mLocationRequest;
+    LocationClient mLocationClient;
+
+
 
     public static final int UPDATE_GOOGLE_MAPS_REQUEST = 0;
 
@@ -37,6 +50,8 @@ public class ChooseLocationActivity extends SherlockFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_chooser);
+        
+        mLocationClient = new LocationClient(this, this, this);
         setUpMapIfNeeded();
     }
 
@@ -77,6 +92,8 @@ public class ChooseLocationActivity extends SherlockFragmentActivity {
             }
         }
     }
+    
+    
 
     /**
      * This is where we can add markers or lines, add listeners or move the
@@ -89,6 +106,7 @@ public class ChooseLocationActivity extends SherlockFragmentActivity {
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setMyLocationEnabled(false);
         mMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));
+        
         mapRadio = (RadioGroup) findViewById(R.id.map_radio);
 
         mapRadio.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -111,114 +129,29 @@ public class ChooseLocationActivity extends SherlockFragmentActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        mLocationListener = new MapListener();
-
-        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,
-                    mLocationListener);
-        }
-        if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0,
-                    mLocationListener);
-        }
+        mLocationClient.connect();
     }
-
-    private class MapListener implements LocationListener {
-        private static final int TWO_MINUTES = 1000 * 60 * 2;
-        private Location mCurrentBestLocation;
-
-        @Override
-        public void onLocationChanged(Location location) {
-            if (isBetterLocation(location, mCurrentBestLocation)) {
-                mLocationManager.removeUpdates(this);
-            }
-
-            LatLng p = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(p));
+    
+    @Override
+    protected void onStop() {
+     // If the client is connected
+        if (mLocationClient.isConnected()) {
+            /*
+             * Remove location updates for a listener.
+             * The current Activity is the listener, so
+             * the argument is "this".
+             */
+            mLocationClient.removeLocationUpdates(this);
         }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-            // TODO Auto-generated method stub
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            // TODO Auto-generated method stub
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            // TODO Auto-generated method stub
-        }
-
-        /**
-         * Determines whether one Location reading is better than the current
-         * Location fix
-         * 
-         * @param location The new Location that you want to evaluate
-         * @param currentBestLocation The current Location fix, to which you
-         *            want to compare the new one
+        /*
+         * After disconnect() is called, the client is
+         * considered "dead".
          */
-        protected boolean isBetterLocation(Location location, Location currentBestLocation) {
-            if (currentBestLocation == null) {
-                // A new location is always better than no location
-                return true;
-            }
+        mLocationClient.disconnect();
 
-            // Check whether the new location fix is newer or older
-            long timeDelta = location.getTime() - currentBestLocation.getTime();
-            boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-            boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
-            boolean isNewer = timeDelta > 0;
-
-            // If it's been more than two minutes since the current location,
-            // use the new location
-            // because the user has likely moved
-            if (isSignificantlyNewer) {
-                return true;
-                // If the new location is more than two minutes older, it must
-                // be worse
-            } else if (isSignificantlyOlder) {
-                return false;
-            }
-
-            // Check whether the new location fix is more or less accurate
-            int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-            boolean isLessAccurate = accuracyDelta > 0;
-            boolean isMoreAccurate = accuracyDelta < 0;
-            boolean isSignificantlyLessAccurate = accuracyDelta > 200;
-
-            // Check if the old and new location are from the same provider
-            boolean isFromSameProvider = isSameProvider(location.getProvider(),
-                    currentBestLocation.getProvider());
-
-            // Determine location quality using a combination of timeliness and
-            // accuracy
-            if (isMoreAccurate) {
-                return true;
-            } else if (isNewer && !isLessAccurate) {
-                return true;
-            } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Checks whether two providers are the same
-         */
-        private boolean isSameProvider(String provider1, String provider2) {
-            if (provider1 == null) {
-                return provider2 == null;
-            }
-            return provider1.equals(provider2);
-        }
+        super.onStop();        
     }
-
+    
     /**
      * OnClick handler for the submit button Reads the lat/long at the center of
      * the map and returns them to the activity that opened the map lat/long
@@ -240,5 +173,77 @@ public class ChooseLocationActivity extends SherlockFragmentActivity {
     public void cancel(View v) {
         setResult(RESULT_CANCELED);
         finish();
+    }
+    
+    
+    //Location Methods
+    
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d("New Loc", location.getLatitude() + " " + location.getLongitude());
+        LatLng p = new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(p));
+    }   
+
+    
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        /*
+         * Google Play services can resolve some errors it detects.
+         * If the error has a resolution, try sending an Intent to
+         * start a Google Play services activity that can resolve
+         * error.
+         */
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(ChooseLocationActivity.this,LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                /*
+                * Thrown if Google Play services canceled the original
+                * PendingIntent
+                */
+            } catch (IntentSender.SendIntentException e) {
+                // Log the error
+                e.printStackTrace();
+            }
+        } else {
+            /*
+             * If no resolution is available, display a dialog to the
+             * user with the error.
+             */
+            Util.displayCrashDialog(ChooseLocationActivity.this,"Sorry an error "+connectionResult.getErrorCode()+" occured.");
+        }
+
+    }
+
+    @Override
+    public void onConnected(Bundle arg0) {
+        // Create the LocationRequest object
+        mLocationRequest = LocationRequest.create();
+        // Use high accuracy
+        mLocationRequest.setPriority(
+                LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        // Set the update interval to 5 seconds
+        mLocationRequest.setInterval(LocationUtils.UPDATE_INTERVAL);
+        // Set the fastest update interval to 1 second
+        mLocationRequest.setFastestInterval(LocationUtils.FASTEST_INTERVAL);
+        mLocationClient.requestLocationUpdates(mLocationRequest,this);
+        
+        //Now that the client has connected set the map to the last known location to start off with
+        Location location = mLocationClient.getLastLocation();
+        
+        if(location !=null)
+        {
+            Log.d("Orignal Loc", location.getLatitude() + " " + location.getLongitude());
+            LatLng latlong = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latlong));
+        }
+        
+    }
+
+    @Override
+    public void onDisconnected() {
+        
     }
 }
