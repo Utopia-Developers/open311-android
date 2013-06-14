@@ -1,19 +1,14 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff"
-    tools:ignore="Overdraw" >
+     >
 
-    <ImageView
-        android:id="@+id/splash"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:scaleType="centerInside"
-        android:onClick="onTouchImage"
-        android:src="@drawable/open311"
-        android:contentDescription="@string/app_name"/>
+    <fragment
+			android:id="@+id/map"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			class="gov.in.bloomington.georeporter.fragments.MainFragment"/>
 
-</RelativeLayout>
+</LinearLayout>
