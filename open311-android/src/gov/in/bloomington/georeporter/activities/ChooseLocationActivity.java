@@ -180,7 +180,12 @@ public class ChooseLocationActivity extends SherlockFragmentActivity implements 
     
     @Override
     public void onLocationChanged(Location location) {
-        Log.d("New Loc", location.getLatitude() + " " + location.getLongitude());
+        Log.d("New Loc", location.getLatitude() + " " + location.getLongitude()+" Accuracy "+location.getAccuracy());
+        if(isLocationGoodEnough(location))
+        {
+            mLocationClient.removeLocationUpdates(this);
+        }
+            
         LatLng p = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(p));
     }   
@@ -216,6 +221,14 @@ public class ChooseLocationActivity extends SherlockFragmentActivity implements 
         }
 
     }
+    
+    public boolean isLocationGoodEnough(Location location)
+    {
+        if(location.getAccuracy() < LocationUtils.locationAccuraceThreshold)
+            return true;
+        else
+            return false;
+    }
 
     @Override
     public void onConnected(Bundle arg0) {
@@ -223,7 +236,7 @@ public class ChooseLocationActivity extends SherlockFragmentActivity implements 
         mLocationRequest = LocationRequest.create();
         // Use high accuracy
         mLocationRequest.setPriority(
-                LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+                LocationRequest.PRIORITY_HIGH_ACCURACY);
         // Set the update interval to 5 seconds
         mLocationRequest.setInterval(LocationUtils.UPDATE_INTERVAL);
         // Set the fastest update interval to 1 second

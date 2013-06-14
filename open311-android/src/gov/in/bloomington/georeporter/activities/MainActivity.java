@@ -84,9 +84,8 @@ public class MainActivity extends BaseActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            dialog = new ProgressDialog(MainActivity.this);
-            dialog.setTitle(getString(R.string.dialog_loading_services));
-            dialog.show();
+            super.onPreExecute();
+            dialog = ProgressDialog.show(MainActivity.this, getString(R.string.dialog_loading_services), "", true);
         }
 
         @Override
