@@ -74,15 +74,9 @@ public class Open311Parser {
                 return new JSONArray(xml);
             } else {
                 Open311XmlParser mParser = new Open311XmlParser();
-                return mParser.parseRequests(xml);
+                //return mParser.parseRequests(xml);
             }
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
