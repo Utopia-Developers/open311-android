@@ -7,6 +7,8 @@
 package gov.in.bloomington.georeporter.models;
 
 import gov.in.bloomington.georeporter.json.ServerAttributeJson;
+import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
+import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 import gov.in.bloomington.georeporter.util.EasySSLSocketFactory;
 import gov.in.bloomington.georeporter.util.Open311Parser;
 import gov.in.bloomington.georeporter.R;
@@ -47,6 +49,7 @@ import ch.boye.httpclientandroidlib.util.EntityUtils;
 import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.util.json.JSONObject;
+import gov.in.bloomington.georeporter.volleyrequests.GsonGetRequest;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -55,6 +58,15 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.os.Build;
 import android.util.Log;
+
+import com.android.volley.Request.Method;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.reflect.TypeToken;
 
 public class Open311 {
     /**
@@ -125,9 +137,13 @@ public class Open311 {
 
     public static ServerAttributeJson sEndpoint;
     public static Boolean sReady = false;
-    public static JSONArray sServiceList = null;
-    public static HashMap<String, JSONObject> sServiceDefinitions;
+    public static HashMap<String, ServiceDefinationJson> sServiceDefinitions;
     public static ArrayList<String> sGroups;
+
+    public static RequestQueue requestQueue = null;
+    public static GsonGetRequest<ArrayList<ServiceEntityJson>> sServiceRequest = null;
+
+    public static ArrayList<ServiceEntityJson> sServiceList = null;
 
     private static String mBaseUrl;
     private static String mJurisdiction;
@@ -190,6 +206,15 @@ public class Open311 {
         return mClient;
     }
 
+    // TODO Doc
+    public static void setCurrentServerDetails(ServerAttributeJson cuurentServer)
+    {
+        mBaseUrl = cuurentServer.url;
+        mJurisdiction = cuurentServer.jurisdiction_id;
+        mApiKey = cuurentServer.api_key;
+        mFormat = cuurentServer.format;
+    }
+
     /**
      * Loads all the service information from the endpoint Endpoints will have a
      * service_list, plus, for each service, there may be a service_definition.
@@ -200,112 +225,69 @@ public class Open311 {
      * @param current_server A single entry from /raw/available_servers
      * @return Boolean
      */
-    public static Boolean setEndpoint(ServerAttributeJson current_server,
-            Context context) {
-        sReady = false;
-        mBaseUrl = null;
-        mJurisdiction = null;
-        mApiKey = null;
-        mFormat = null;
-        sGroups = new ArrayList<String>();
-        sServiceList = null;
-        sServiceDefinitions = new HashMap<String, JSONObject>();
-
-        mBaseUrl = current_server.url;
-        mJurisdiction = current_server.jurisdiction_id;
-        mApiKey = current_server.api_key;
-        mFormat = current_server.format;
-
-        try {
-            Open311Parser mParser = new Open311Parser(mFormat);
-            // TODO
-            sServiceList = mParser.parseServices(loadStringFromUrl(
-                    getServiceListUrl(), context));
-            if (sServiceList == null) {
-                return false;
-            }
-
-            // Go through all the services and pull out the seperate groups
-            // Also, while we're running through, load any service_definitions
-            String group = "";
-            int len = sServiceList.length();
-            for (int i = 0; i < len; i++) {
-                JSONObject s = sServiceList.getJSONObject(i);
-                // services may have an empty string for the group parameter
-                group = s.optString(GROUP);
-                if (group.equals("")) {
-                    group = context.getString(R.string.uncategorized);
-                }
-                if (!sGroups.contains(group)) {
-                    sGroups.add(group);
-                }
-
-                // Add Service Definitions to mServiceDefinitions
-                if (s.optString(METADATA) == TRUE) {
-                    String code = s.optString(SERVICE_CODE);
-                    JSONObject definition = getServiceDefinition(code, context);
-                    if (definition != null) {
-                        sServiceDefinitions.put(code, definition);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.d("Ready", sReady.toString());
-            e.printStackTrace();
-
-            return false;
-        }
-        sEndpoint = current_server;
-        sReady = true;
-        return sReady;
-    }
+    /*
+     * public static Boolean setEndpoint(ServerAttributeJson current_server,
+     * Context context) { sReady = false; mBaseUrl = null; mJurisdiction = null;
+     * mApiKey = null; mFormat = null; sGroups = new ArrayList<String>();
+     * sServiceList = null; sServiceDefinitions = new HashMap<String,
+     * ServiceDefinationJson>(); try { //Open311Parser mParser = new
+     * Open311Parser(mFormat); // TODO if(mFormat.contentEquals(Open311.JSON)) {
+     * ArrayList<ServiceDefinationJson> a = null; sServiceRequest = new
+     * GsonGetRequest<ArrayList<ServiceEntityJson>>(getServiceListUrl(), new
+     * TypeToken<ArrayList<ServiceEntityJson>>() { }.getType(), null, new
+     * Listener<ArrayList<ServiceEntityJson>>() {
+     * @Override public void onResponse(ArrayList<ServiceEntityJson> response) {
+     * sServiceList = response; } }, new ErrorListener() {
+     * @Override public void onErrorResponse(VolleyError error) { } }); } // Go
+     * through all the services and pull out the seperate groups // Also, while
+     * we're running through, load any service_definitions String group = "";
+     * int len = sServiceList.size(); for (int i = 0; i < len; i++) {
+     * ServiceEntityJson s = sServiceList.get(i); // services may have an empty
+     * string for the group parameter group = s.getGroup(); if
+     * (group.equals("")) { group = context.getString(R.string.uncategorized); }
+     * if (!sGroups.contains(group)) { sGroups.add(group); } // Add Service
+     * Definitions to mServiceDefinitions if (s.getMetadata() == true) { String
+     * code = s.getService_code(); //TODO ServiceDefinationJson definition =
+     * getServiceDefinition(code, context); if (definition != null) {
+     * sServiceDefinitions.put(code, definition); } } } } catch (Exception e) {
+     * Log.d("Ready", sReady.toString()); e.printStackTrace(); return false; }
+     * sEndpoint = current_server; sReady = true; return sReady; }
+     */
 
     /**
      * Returns the services for a given group
      * 
      * @param group
-     * @return ArrayList<JSONObject>
+     * @return ArrayList<ServiceEntityJson>
      */
-    public static ArrayList<JSONObject> getServices(String group,
+    public static ArrayList<ServiceEntityJson> getServices(String group,
             Context context) {
-        ArrayList<JSONObject> services = new ArrayList<JSONObject>();
-        int len = sServiceList.length();
+        ArrayList<ServiceEntityJson> services = new ArrayList<ServiceEntityJson>();
+        int len = sServiceList.size();
         for (int i = 0; i < len; i++) {
-            try {
-                JSONObject s = sServiceList.getJSONObject(i);
-                if (group.equals(context.getString(R.string.uncategorized))) {
-                    group = "";
-                }
-                if (s.optString(Open311.GROUP).equals(group)) {
-                    services.add(s);
-                }
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+
+            ServiceEntityJson s = sServiceList.get(i);
+            if (group.equals(context.getString(R.string.uncategorized))) {
+                group = "";
             }
+            if (s.getGroup().equals(group)) {
+                services.add(s);
+            }
+
         }
         return services;
     }
 
     /**
      * @param service_code
-     * @return JSONObject
+     * @return ServiceDefinationJson
      */
-    public static JSONObject getServiceDefinition(String service_code,
-            Context context) {
+    public static ServiceDefinationJson getServiceDefinition(String service_code, Context context) {
 
         if (sServiceDefinitions.containsKey(service_code)) {
             return sServiceDefinitions.get(service_code);
-        } else {
-            try {
-                Open311Parser mParser = new Open311Parser(mFormat);
-                return mParser.parseServiceDefinition(loadStringFromUrl(
-                        getServiceDefinitionUrl(service_code), context));
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
         }
+        //TODO
         return null;
     }
 
@@ -393,7 +375,7 @@ public class Open311 {
         // stack
         // If we don't have a service_code, we don't have a valid POST
         pairs.add(new BasicNameValuePair(SERVICE_CODE, sr.service
-                .getString(SERVICE_CODE)));
+                .getService_code()));
 
         if (mJurisdiction.length() > 0) {
             pairs.add(new BasicNameValuePair(JURISDICTION, mJurisdiction));
@@ -458,7 +440,7 @@ public class Open311 {
         // stack
         // If we don't have a service_code, we don't have a valid POST
         post.addPart(SERVICE_CODE,
-                new StringBody(sr.service.getString(SERVICE_CODE)));
+                new StringBody(sr.service.getService_code()));
 
         if (mJurisdiction != null) {
             post.addPart(JURISDICTION, new StringBody(mJurisdiction));
@@ -640,7 +622,7 @@ public class Open311 {
      * 
      * @return String
      */
-    private static String getServiceListUrl() {
+    public static String getServiceListUrl() {
         String url = mBaseUrl + "/services." + mFormat;
         if (mJurisdiction.length() > 0) {
             url = url + "?" + JURISDICTION + "=" + mJurisdiction;
@@ -654,7 +636,7 @@ public class Open311 {
      * @param service_code
      * @return String
      */
-    private static String getServiceDefinitionUrl(String service_code) {
+    public static String getServiceDefinitionUrl(String service_code) {
         String url = mBaseUrl + "/services/" + service_code + "." + mFormat;
         if (mJurisdiction.length() > 0) {
             url = url + "?" + JURISDICTION + "=" + mJurisdiction;

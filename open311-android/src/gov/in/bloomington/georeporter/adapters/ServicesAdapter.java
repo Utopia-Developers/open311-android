@@ -6,6 +6,7 @@
 
 package gov.in.bloomington.georeporter.adapters;
 
+import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 import gov.in.bloomington.georeporter.models.Open311;
 
 import java.util.ArrayList;
@@ -21,9 +22,9 @@ import android.widget.TextView;
 
 public class ServicesAdapter extends BaseAdapter {
     private static LayoutInflater mInflater;
-    private static ArrayList<JSONObject> mServices;
+    private static ArrayList<ServiceEntityJson> mServices;
 
-    public ServicesAdapter(ArrayList<JSONObject> services, Context c) {
+    public ServicesAdapter(ArrayList<ServiceEntityJson> services, Context c) {
         mServices = services;
         mInflater = LayoutInflater.from(c);
     }
@@ -34,7 +35,7 @@ public class ServicesAdapter extends BaseAdapter {
     }
 
     @Override
-    public JSONObject getItem(int position) {
+    public ServiceEntityJson getItem(int position) {
         return mServices.get(position);
     }
 
@@ -50,7 +51,7 @@ public class ServicesAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        JSONObject service = getItem(position);
+        ServiceEntityJson service = getItem(position);
 
         if (convertView == null) {
             convertView = mInflater.inflate(android.R.layout.simple_list_item_2, null);
@@ -62,8 +63,8 @@ public class ServicesAdapter extends BaseAdapter {
         else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.name.setText(service.optString(Open311.SERVICE_NAME));
-        holder.description.setText(service.optString(Open311.DESCRIPTION));
+        holder.name.setText(service.getService_name());
+        holder.description.setText(service.getDescription());
         return convertView;
     }
 

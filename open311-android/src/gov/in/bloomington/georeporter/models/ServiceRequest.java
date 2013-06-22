@@ -16,6 +16,7 @@
 
 package gov.in.bloomington.georeporter.models;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.google.gson.Gson;
@@ -23,8 +24,15 @@ import com.google.gson.Gson;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.AutoCompleteTextView.Validator;
+
+import gov.in.bloomington.georeporter.json.AttributesJson;
 import gov.in.bloomington.georeporter.json.ServerAttributeJson;
+import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
+import gov.in.bloomington.georeporter.json.ValuesJson;
 import gov.in.bloomington.georeporter.util.Media;
 import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
@@ -49,13 +57,13 @@ public class ServiceRequest {
      */
     public ServerAttributeJson endpoint;
     /**
-     * The JSON for a single service from GET Service List
+     * The java object for a single service from GET Service List
      */
-    public JSONObject service;
+    public ServiceEntityJson service;
     /**
-     * The JSON response from GET Service Definition
+     * The java object response from GET Service Definition
      */
-    public JSONObject service_definition;
+    public ServiceDefinationJson service_definition;
     /**
      * The JSON response from GET Service Request
      */
@@ -76,18 +84,15 @@ public class ServiceRequest {
      * 
      * @param s A single service from GET Service List
      */
-    public ServiceRequest(JSONObject s, Context c) {
+    public ServiceRequest(ServiceEntityJson s, Context c) {
         service = s;
         post_data = new JSONObject();
 
-        if (service.optBoolean(Open311.METADATA)) {
-            try {
-                service_definition = Open311.getServiceDefinition(
-                        service.getString(Open311.SERVICE_CODE), c);
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        if (service.getMetadata()) {
+
+            service_definition = Open311.getServiceDefinition(
+                    service.getService_code(), c);
+
         }
 
         // Read in the personal info fields from Preferences
@@ -114,24 +119,26 @@ public class ServiceRequest {
      * createView() methods should use this constructor, since they might be
      * restoring from saveInstanceState()
      * 
-     * @param json
+     * @param serviceData
      */
-    public ServiceRequest(String json) {
+    //TODO
+    public ServiceRequest(Bundle serviceData) {
         gson = new Gson();
         try {
-            JSONObject sr = new JSONObject(json);
-            // TODO
-            if (sr.has(ENDPOINT))
-                endpoint = gson.fromJson(sr.getJSONObject(ENDPOINT).toString(),
+            
+            if (serviceData.containsKey(ENDPOINT))
+                endpoint = gson.fromJson(serviceData.getString(ENDPOINT),
                         ServerAttributeJson.class);
-            if (sr.has(SERVICE))
-                service = sr.getJSONObject(SERVICE);
-            if (sr.has(SERVICE_DEFINITION))
-                service_definition = sr.getJSONObject(SERVICE_DEFINITION);
-            if (sr.has(POST_DATA))
-                post_data = sr.getJSONObject(POST_DATA);
-            if (sr.has(SERVICE_REQUEST))
-                service_request = sr.getJSONObject(SERVICE_REQUEST);
+            if (serviceData.containsKey(SERVICE))
+                service = gson.fromJson(serviceData.getString(SERVICE),
+                        ServiceEntityJson.class);
+            if (serviceData.containsKey(SERVICE_DEFINITION))
+                service_definition = gson.fromJson(serviceData.getString(SERVICE_DEFINITION),
+                        ServiceDefinationJson.class);
+            if (serviceData.containsKey(POST_DATA))
+                post_data = new JSONObject(serviceData.getString(POST_DATA));
+            if (serviceData.containsKey(SERVICE_REQUEST))
+                service_request = new JSONObject(serviceData.getString(SERVICE_REQUEST));
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -165,22 +172,22 @@ public class ServiceRequest {
      * @return boolean
      */
     public boolean hasAttributes() {
-        return service.optBoolean(Open311.METADATA);
+        return service.getMetadata();
     }
 
     /**
      * @param code
-     * @throws JSONException
-     * @return JSONObject
+     * @return AttributesJson
      */
-    public JSONObject getAttribute(String code) throws JSONException {
-        JSONObject attribute = null;
+    public AttributesJson getAttribute(String code) {
+        AttributesJson attribute = null;
 
-        JSONArray attributes = service_definition.optJSONArray(Open311.ATTRIBUTES);
-        int len = attributes.length();
+        ArrayList<AttributesJson> attributes =  service_definition
+                .getAttributes();
+        int len = attributes.size();
         for (int i = 0; i < len; i++) {
-            JSONObject a = attributes.getJSONObject(i);
-            if (a.optString(Open311.CODE).equals(code)) {
+            AttributesJson a = attributes.get(i);
+            if (a.getCode().equals(code)) {
                 attribute = a;
                 break;
             }
@@ -197,13 +204,9 @@ public class ServiceRequest {
      */
     public String getAttributeDescription(String code) {
         String description = "";
-        try {
-            JSONObject a = getAttribute(code);
-            description = a.optString(Open311.DESCRIPTION);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
+        AttributesJson a = getAttribute(code);
+        description = a.getDescription();
 
         return description;
     }
@@ -217,13 +220,8 @@ public class ServiceRequest {
      */
     public String getAttributeDatatype(String code) {
         String type = Open311.STRING;
-        try {
-            JSONObject a = getAttribute(code);
-            type = a.optString(Open311.DATATYPE, Open311.STRING);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        AttributesJson a = getAttribute(code);
+        type = a.getDatatype();
         return type;
     }
 
@@ -232,17 +230,12 @@ public class ServiceRequest {
      * it returns an empty JSONArray
      * 
      * @param code
-     * @return JSONArray
+     * @return ArrayList<ValuesJson>
      */
-    public JSONArray getAttributeValues(String code) {
-        JSONArray values = new JSONArray();
-        try {
-            JSONObject a = getAttribute(code);
-            values = a.getJSONArray(Open311.VALUES);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    public ArrayList<ValuesJson> getAttributeValues(String code) {
+        ArrayList<ValuesJson> values;
+        AttributesJson a = getAttribute(code);
+        values =  a.getValues();
 
         return values;
     }
@@ -255,19 +248,14 @@ public class ServiceRequest {
      * @return String
      */
     public String getAttributeValueName(String code, String key) {
-        JSONArray values = getAttributeValues(code);
-        int len = values.length();
-        try {
-            for (int i = 0; i < len; i++) {
-                JSONObject v = values.getJSONObject(i);
-                String k = v.getString(Open311.KEY);
-                if (k.equals(key)) {
-                    return v.getString(Open311.NAME);
-                }
+        ArrayList<ValuesJson> values = getAttributeValues(code);
+        int len = values.size();
+        for (int i = 0; i < len; i++) {
+            ValuesJson v = values.get(i);
+            String k = v.getKey();
+            if (k.equals(key)) {
+                return v.getName();
             }
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
         return null;
     }
@@ -277,14 +265,9 @@ public class ServiceRequest {
      * @return boolean
      */
     public boolean isAttributeRequired(String code) {
-        try {
-            JSONObject a = getAttribute(code);
-            if (a.opt(Open311.REQUIRED).equals(Open311.TRUE)) {
-                return true;
-            }
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        AttributesJson a = getAttribute(code);
+        if (a.getRequired()) {
+            return true;
         }
         return false;
     }

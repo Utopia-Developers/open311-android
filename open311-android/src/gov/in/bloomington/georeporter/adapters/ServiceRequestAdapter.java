@@ -10,6 +10,8 @@ package gov.in.bloomington.georeporter.adapters;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.activities.AttributeEntryActivity;
+import gov.in.bloomington.georeporter.json.AttributesJson;
+import gov.in.bloomington.georeporter.json.ValuesJson;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.Preferences;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
@@ -84,28 +86,26 @@ public class ServiceRequestAdapter extends BaseAdapter {
         }
 
         if (sr.hasAttributes()) {
-            try {
-                // Add a section header for the attributes
-                JSONArray attributes = sr.service_definition.getJSONArray(Open311.ATTRIBUTES);
-                addHeader(Open311.ATTRIBUTES);
 
-                // Loop over all the attributes and add each attribute code
-                // to the labels list
-                int len = attributes.length();
-                for (int i = 0; i < len; i++) {
-                    JSONObject a = attributes.getJSONObject(i);
-                    String code = a.getString(Open311.CODE);
-                    if (a.getBoolean(Open311.VARIABLE)) {
-                        labels.add(code);
-                    }
-                    else {
-                        addHeader(code);
-                    }
+            // Add a section header for the attributes
+            ArrayList<AttributesJson> attributes = (ArrayList<AttributesJson>) sr.service_definition
+                    .getAttributes();
+            addHeader(Open311.ATTRIBUTES);
+
+            // Loop over all the attributes and add each attribute code
+            // to the labels list
+            int len = attributes.size();
+            for (int i = 0; i < len; i++) {
+                AttributesJson a = attributes.get(i);
+                String code = a.getCode();
+                if (a.getVariable()) {
+                    labels.add(code);
                 }
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                else {
+                    addHeader(code);
+                }
             }
+
         }
     }
 
@@ -180,7 +180,7 @@ public class ServiceRequestAdapter extends BaseAdapter {
                 }
 
                 if (labelKey.equals(Open311.SERVICE_NAME)) {
-                    header.title.setText(mServiceRequest.service.optString(Open311.DESCRIPTION));
+                    header.title.setText(mServiceRequest.service.getDescription());
                 }
                 else if (labelKey.equals(Open311.ATTRIBUTES)) {
                     header.title.setText(convertView.getResources().getString(
@@ -270,9 +270,9 @@ public class ServiceRequestAdapter extends BaseAdapter {
                         if (type.equals(Open311.SINGLEVALUELIST)
                                 || type.equals(Open311.MULTIVALUELIST)) {
                             try {
-                                JSONArray attributeValues = mServiceRequest
+                                ArrayList<ValuesJson> attributeValues = mServiceRequest
                                         .getAttributeValues(labelKey);
-                                int len = attributeValues.length();
+                                int len = attributeValues.size();
 
                                 if (type.equals(Open311.SINGLEVALUELIST)) {
                                     // chosenValue will contain the

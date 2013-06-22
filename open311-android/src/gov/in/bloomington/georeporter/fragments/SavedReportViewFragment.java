@@ -52,7 +52,7 @@ public class SavedReportViewFragment extends SherlockFragment {
         mServiceRequests = Open311.loadServiceRequests(getActivity());
         try {
             String json = mServiceRequests.getJSONObject(mPosition).toString();
-            mServiceRequest = new ServiceRequest(json);
+            //mServiceRequest = new ServiceRequest(json);
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -76,7 +76,7 @@ public class SavedReportViewFragment extends SherlockFragment {
         TextView textView;
 
         textView = (TextView) v.findViewById(R.id.service_name);
-        textView.setText(mServiceRequest.service.optString(Open311.SERVICE_NAME));
+        textView.setText(mServiceRequest.service.getService_name());
 
         ImageView media = (ImageView) v.findViewById(R.id.media);
         media.setImageBitmap(mServiceRequest.getMediaBitmap(100, 100, getActivity()));

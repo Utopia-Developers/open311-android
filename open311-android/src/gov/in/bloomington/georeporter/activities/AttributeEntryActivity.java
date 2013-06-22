@@ -12,11 +12,15 @@
 package gov.in.bloomington.georeporter.activities;
 
 import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.json.AttributesJson;
+import gov.in.bloomington.georeporter.json.ValuesJson;
 import gov.in.bloomington.georeporter.models.Open311;
 
 import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.util.json.JSONObject;
+
+import java.util.ArrayList;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,11 +35,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
 public class AttributeEntryActivity extends BaseActivity {
     public static final String ATTRIBUTE = "attribute";
     public static final String VALUE = "value";
 
-    private JSONObject mAttribute;
+    private AttributesJson mAttribute;
     private String mCode;
     private String mDatatype;
     private LinearLayout mLayout;
@@ -49,21 +55,16 @@ public class AttributeEntryActivity extends BaseActivity {
         TextView prompt = (TextView) findViewById(R.id.prompt);
 
         Intent i = getIntent();
-        try {
-            mAttribute = new JSONObject(i.getStringExtra(ATTRIBUTE));
-            mCode = mAttribute.getString(Open311.CODE);
-            mDatatype = mAttribute.optString(Open311.DATATYPE, Open311.STRING);
+        mAttribute = new Gson().fromJson(i.getStringExtra(ATTRIBUTE),AttributesJson.class);
+        mCode = mAttribute.getCode();
+        mDatatype = mAttribute.getDatatype();
 
-            prompt.setText(mAttribute.getString(Open311.DESCRIPTION));
-            mLayout.addView(loadAttributeEntryView());
+        prompt.setText(mAttribute.getDescription());
+        mLayout.addView(loadAttributeEntryView());
 
-            if (mDatatype.equals(Open311.STRING) || mDatatype.equals(Open311.NUMBER)
-                    || mDatatype.equals(Open311.TEXT)) {
-                this.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-            }
-        } catch (JSONException e) {
-            setResult(RESULT_CANCELED);
-            finish();
+        if (mDatatype.equals(Open311.STRING) || mDatatype.equals(Open311.NUMBER)
+                || mDatatype.equals(Open311.TEXT)) {
+            this.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         }
     }
 
@@ -101,16 +102,16 @@ public class AttributeEntryActivity extends BaseActivity {
              * endpoint. We rely on the order to keep track of which value is
              * which
              */
-            JSONArray values = mAttribute.optJSONArray(Open311.VALUES);
-            int len = values.length();
+            ArrayList<ValuesJson> values = mAttribute.getValues();
+            int len = values.size();
 
             if (mDatatype.equals(Open311.SINGLEVALUELIST)) {
                 View v = inflater.inflate(R.layout.attribute_entry_singlevaluelist, null);
                 RadioGroup input = (RadioGroup) v.findViewById(R.id.input);
                 for (int i = 0; i < len; i++) {
-                    JSONObject value = values.optJSONObject(i);
+                    ValuesJson value = values.get(i);
                     RadioButton button = (RadioButton) inflater.inflate(R.layout.radiobutton, null);
-                    button.setText(value.optString(Open311.NAME));
+                    button.setText(value.getName());
                     input.addView(button);
                 }
                 return v;
@@ -119,9 +120,9 @@ public class AttributeEntryActivity extends BaseActivity {
                 View v = inflater.inflate(R.layout.attribute_entry_multivaluelist, null);
                 LinearLayout input = (LinearLayout) v.findViewById(R.id.input);
                 for (int i = 0; i < len; i++) {
-                    JSONObject value = values.optJSONObject(i);
+                    ValuesJson value = values.get(i);
                     CheckBox checkbox = (CheckBox) inflater.inflate(R.layout.checkbox, null);
-                    checkbox.setText(value.optString(Open311.NAME));
+                    checkbox.setText(value.getName());
                     input.addView(checkbox);
                 }
                 return v;
@@ -155,37 +156,31 @@ public class AttributeEntryActivity extends BaseActivity {
              * the endpoint. We rely on the order to keep track of which value
              * is which
              */
-            JSONArray values = mAttribute.optJSONArray(Open311.VALUES);
+            ArrayList<ValuesJson> values = mAttribute.getValues();
 
-            try {
-                if (mDatatype.equals(Open311.SINGLEVALUELIST)) {
-                    RadioGroup input = (RadioGroup) mLayout.findViewById(R.id.input);
+            if (mDatatype.equals(Open311.SINGLEVALUELIST)) {
+                RadioGroup input = (RadioGroup) mLayout.findViewById(R.id.input);
 
-                    int count = input.getChildCount();
-                    for (int i = 0; i < count; i++) {
-                        RadioButton b = (RadioButton) input.getChildAt(i);
-                        if (b.isChecked()) {
-                            result.putExtra(VALUE, values.getJSONObject(i).getString(Open311.KEY));
-                        }
+                int count = input.getChildCount();
+                for (int i = 0; i < count; i++) {
+                    RadioButton b = (RadioButton) input.getChildAt(i);
+                    if (b.isChecked()) {
+                        result.putExtra(VALUE, values.get(i).getKey());
                     }
                 }
-                else if (mDatatype.equals(Open311.MULTIVALUELIST)) {
-                    JSONArray submittedValues = new JSONArray();
+            }
+            else if (mDatatype.equals(Open311.MULTIVALUELIST)) {
+                JSONArray submittedValues = new JSONArray();
 
-                    LinearLayout input = (LinearLayout) mLayout.findViewById(R.id.input);
-                    int count = input.getChildCount();
-                    for (int i = 0; i < count; i++) {
-                        CheckBox checkbox = (CheckBox) input.getChildAt(i);
-                        if (checkbox.isChecked()) {
-                            submittedValues.put(values.getJSONObject(i).getString(Open311.KEY));
-                        }
+                LinearLayout input = (LinearLayout) mLayout.findViewById(R.id.input);
+                int count = input.getChildCount();
+                for (int i = 0; i < count; i++) {
+                    CheckBox checkbox = (CheckBox) input.getChildAt(i);
+                    if (checkbox.isChecked()) {
+                        submittedValues.put(values.get(i).getKey());
                     }
-                    result.putExtra(VALUE, submittedValues.toString());
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                cancel(v);
-                return;
+                result.putExtra(VALUE, submittedValues.toString());
             }
         }
         else {

@@ -20,6 +20,7 @@ import gov.in.bloomington.georeporter.util.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,10 @@ public class SavedReportsAdapter extends BaseAdapter {
     @Override
     public ServiceRequest getItem(int position) {
         JSONObject o = mServiceRequests.optJSONObject(position);
-        return new ServiceRequest(o.toString());
+        
+        //TODO this is just test
+        Log.d("Service Request", o.toString());
+        return null;
     }
 
     @Override
@@ -83,16 +87,13 @@ public class SavedReportsAdapter extends BaseAdapter {
 
         ServiceRequest sr = getItem(position);
         try {
-            holder.serviceName.setText(sr.service.getString(Open311.SERVICE_NAME));
+            holder.serviceName.setText(sr.service.getService_name());
             holder.endpoint.setText(sr.endpoint.name);
             holder.address.setText(sr.post_data.optString(Open311.ADDRESS_STRING));
             holder.status.setText(sr.service_request.optString(ServiceRequest.STATUS));
             holder.date.setText(mDateFormat.format(mISODate.parse(sr.post_data
                     .optString(ServiceRequest.REQUESTED_DATETIME))));
             holder.media.setImageBitmap(sr.getMediaBitmap(80, 80, mInflater.getContext()));
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

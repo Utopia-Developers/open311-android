@@ -1,6 +1,7 @@
 
 package gov.in.bloomington.georeporter.json;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AttributesJson {
@@ -10,7 +11,7 @@ public class AttributesJson {
     private String description;
     private Number order;
     private boolean required;
-    private List values;
+    private ArrayList<ValuesJson> values;
     private boolean variable;
 
     public String getCode() {
@@ -61,11 +62,11 @@ public class AttributesJson {
         this.required = required;
     }
 
-    public List getValues() {
+    public ArrayList<ValuesJson> getValues() {
         return this.values;
     }
 
-    public void setValues(List values) {
+    public void setValues(ArrayList<ValuesJson> values) {
         this.values = values;
     }
 

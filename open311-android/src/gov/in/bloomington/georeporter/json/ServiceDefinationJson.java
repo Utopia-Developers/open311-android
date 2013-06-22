@@ -1,17 +1,17 @@
 
 package gov.in.bloomington.georeporter.json;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class ServiceDefinationJson {
-    private List attributes;
+    private ArrayList<AttributesJson> attributes;
     private String service_code;
 
-    public List getAttributes() {
+    public ArrayList<AttributesJson> getAttributes() {
         return this.attributes;
     }
 
-    public void setAttributes(List attributes) {
+    public void setAttributes(ArrayList<AttributesJson> attributes) {
         this.attributes = attributes;
     }
 

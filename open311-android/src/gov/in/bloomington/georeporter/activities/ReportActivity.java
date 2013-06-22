@@ -12,6 +12,7 @@ import gov.in.bloomington.georeporter.fragments.ChooseGroupFragment.OnGroupSelec
 import gov.in.bloomington.georeporter.fragments.ChooseServiceFragment;
 import gov.in.bloomington.georeporter.fragments.ChooseServiceFragment.OnServiceSelectedListener;
 import gov.in.bloomington.georeporter.fragments.ReportFragment;
+import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
 
@@ -38,23 +39,17 @@ public class ReportActivity extends BaseFragmentActivity
         mActionBar = getSupportActionBar();
         mActionBar.setTitle(R.string.menu_report);
 
-        if (Open311.sReady) {
-            if (Open311.sGroups.size() > 1) {
-                ChooseGroupFragment chooseGroup = new ChooseGroupFragment();
-                getSupportFragmentManager().beginTransaction()
-                        .add(android.R.id.content, chooseGroup)
-                        .addToBackStack(null)
-                        .commit();
-            }
-            else {
-                onGroupSelected(Open311.sGroups.get(0));
-            }
+        if (Open311.sGroups.size() > 1) {
+            ChooseGroupFragment chooseGroup = new ChooseGroupFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(android.R.id.content, chooseGroup)
+                    .addToBackStack(null)
+                    .commit();
         }
         else {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
+            onGroupSelected(Open311.sGroups.get(0));
         }
+
     }
 
     @Override
@@ -68,8 +63,8 @@ public class ReportActivity extends BaseFragmentActivity
     }
 
     @Override
-    public void onServiceSelected(JSONObject service) {
-        mActionBar.setTitle(service.optString(Open311.SERVICE_NAME));
+    public void onServiceSelected(ServiceEntityJson service) {
+        mActionBar.setTitle(service.getService_name());
 
         ServiceRequest sr = new ServiceRequest(service, this);
         mReportFragment = ReportFragment.newInstance(sr);

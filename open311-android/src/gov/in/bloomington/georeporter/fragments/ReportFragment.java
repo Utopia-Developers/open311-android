@@ -13,6 +13,7 @@ import gov.in.bloomington.georeporter.activities.DataEntryActivity;
 import gov.in.bloomington.georeporter.activities.MainActivity;
 import gov.in.bloomington.georeporter.activities.SavedReportsActivity;
 import gov.in.bloomington.georeporter.adapters.ServiceRequestAdapter;
+import gov.in.bloomington.georeporter.json.AttributesJson;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.Open311Exception;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
@@ -60,6 +61,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
 
 public class ReportFragment extends SherlockFragment implements OnItemClickListener {
     /**
@@ -96,7 +98,13 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     public static ReportFragment newInstance(ServiceRequest sr) {
         ReportFragment fragment = new ReportFragment();
         Bundle args = new Bundle();
-        args.putString(ServiceRequest.SERVICE_REQUEST, sr.toString());
+        args.putString(ServiceRequest.ENDPOINT, new Gson().toJson(sr.endpoint));
+        args.putString(ServiceRequest.SERVICE, new Gson().toJson(sr.service));
+        args.putString(ServiceRequest.SERVICE_DEFINITION, new Gson().toJson(sr.service_definition));
+        if (sr.post_data != null)
+            args.putString(ServiceRequest.POST_DATA, sr.post_data.toString());
+        if (sr.service_request != null)
+            args.putString(ServiceRequest.SERVICE_REQUEST, sr.service_request.toString());
         fragment.setArguments(args);
         return fragment;
     }
@@ -105,8 +113,8 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mServiceRequest = new ServiceRequest(getArguments().getString(
-                ServiceRequest.SERVICE_REQUEST));
+        // TODO
+        mServiceRequest = new ServiceRequest(getArguments());
     }
 
     @Override
@@ -206,27 +214,20 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                 startActivityForResult(i, DATA_ENTRY_REQUEST);
             }
             else {
-                // Create a chooser activity that can handle all attributes
-                // We'll need to send in the attribute definition
-                try {
-                    JSONObject attribute = mServiceRequest.getAttribute(labelKey);
+                AttributesJson attribute = mServiceRequest.getAttribute(labelKey);
 
-                    // For datetime attributes, we'll just pop open a date
-                    // picker dialog
-                    String datatype = attribute.optString(Open311.DATATYPE, Open311.STRING);
-                    if (datatype.equals(Open311.DATETIME)) {
-                        DatePickerDialogFragment datePicker = new DatePickerDialogFragment(labelKey);
-                        datePicker.show(getActivity().getSupportFragmentManager(), "datePicker");
-                    }
-                    // all other attribute types get a full seperate Activity
-                    else {
-                        Intent i = new Intent(getActivity(), AttributeEntryActivity.class);
-                        i.putExtra(AttributeEntryActivity.ATTRIBUTE, attribute.toString());
-                        startActivityForResult(i, ATTRIBUTE_REQUEST);
-                    }
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                // For datetime attributes, we'll just pop open a date
+                // picker dialog
+                String datatype = attribute.getDatatype();
+                if (datatype.equals(Open311.DATETIME)) {
+                    DatePickerDialogFragment datePicker = new DatePickerDialogFragment(labelKey);
+                    datePicker.show(getActivity().getSupportFragmentManager(), "datePicker");
+                }
+                // all other attribute types get a full seperate Activity
+                else {
+                    Intent i = new Intent(getActivity(), AttributeEntryActivity.class);
+                    i.putExtra(AttributeEntryActivity.ATTRIBUTE, new Gson().toJson(attribute));
+                    startActivityForResult(i, ATTRIBUTE_REQUEST);
                 }
             }
         }

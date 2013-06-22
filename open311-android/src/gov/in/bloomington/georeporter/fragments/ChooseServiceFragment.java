@@ -7,6 +7,7 @@
 package gov.in.bloomington.georeporter.fragments;
 
 import gov.in.bloomington.georeporter.adapters.ServicesAdapter;
+import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 
 import java.util.ArrayList;
 
@@ -20,13 +21,13 @@ import com.actionbarsherlock.app.SherlockListFragment;
 
 public class ChooseServiceFragment extends SherlockListFragment {
     private static OnServiceSelectedListener mListener;
-    private static ArrayList<JSONObject> mServices;
+    private static ArrayList<ServiceEntityJson> mServices;
 
     public interface OnServiceSelectedListener {
-        public void onServiceSelected(JSONObject service);
+        public void onServiceSelected(ServiceEntityJson service);
     }
 
-    public void setServices(ArrayList<JSONObject> services) {
+    public void setServices(ArrayList<ServiceEntityJson> services) {
         mServices = services;
     }
 
