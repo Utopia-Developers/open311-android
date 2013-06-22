@@ -2,6 +2,7 @@
 package gov.in.bloomington.georeporter.volleyrequests;
 
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
+import gov.in.bloomington.georeporter.util.Open311XmlParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -27,26 +28,16 @@ public class Open311XmlRequest<T> extends Request<T> {
     private final Listener<T> listener;
     private final String requestType;
 
-    // XML tags
-    private final String SERVICES = "services";
-    private final String SERVICE = "service";
-    private final String REQUEST = "request";
-    public final String ATTRIBUTE = "attribute";
-    private final String SERVICE_REQUESTS = "service_requests";
-    private final String SERVICE_DEFINITION = "service_definition";
-    private final String ERRORS = "errors";
-    private final String ERROR = "error";
+    
     private String CHARSET = "UTF-8";
 
-    private final String ns = null;
-    private XmlPullParser parser;
 
     public Open311XmlRequest(String url, Listener<T> listener,
             String requestType, ErrorListener errorListener) {
         super(Method.GET, url, errorListener);
         this.listener = listener;
         this.requestType = requestType;
-        this.parser = Xml.newPullParser();
+       
     }
 
     @Override
@@ -54,12 +45,20 @@ public class Open311XmlRequest<T> extends Request<T> {
         try {
             String xml = new String(response.data,
                     HttpHeaderParser.parseCharset(response.headers));
-            InputStream is;
-            is = new ByteArrayInputStream(xml.getBytes(CHARSET));
-            parser.setInput(is, null);
-            parser.nextTag();
-            return Response.success(parseServices(parser),
-                    HttpHeaderParser.parseCacheHeaders(response));
+            
+            Open311XmlParser xmlParser = new Open311XmlParser();
+            if(requestType.contentEquals(Open311XmlParser.SERVICE_REQUESTS))
+            {
+                return (Response<T>) Response.success(xmlParser.parseServices(xml),
+                        HttpHeaderParser.parseCacheHeaders(response));
+            }
+            else if(requestType.contentEquals(Open311XmlParser.SERVICE_DEFINITION))
+            {
+                return  (Response<T>) Response.success(xmlParser.parseServiceDefinition(xml),
+                        HttpHeaderParser.parseCacheHeaders(response));
+            }
+            
+            
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (XmlPullParserException e) {
@@ -68,7 +67,7 @@ public class Open311XmlRequest<T> extends Request<T> {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
+        } 
         return null;
     }
 

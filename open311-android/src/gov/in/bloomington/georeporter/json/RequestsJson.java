@@ -19,6 +19,32 @@ public class RequestsJson {
     private String status;
     private String token;
     private String updated_datetime;
+    private String account_id;
+    private String service_notice;
+    
+    public String status_notes;
+    public String expected_datetime;
+    public String agency_responsible;
+    
+    public void setServiceNotice(String serviceNotice)
+    {
+        this.service_notice = serviceNotice;
+    }
+    
+    public String getServiceNotice()
+    {
+        return this.service_notice;
+    }
+    
+    public void setAccountId(String accountId)
+    {
+        this.account_id = accountId;
+    }
+    
+    public String getAccountId()
+    {
+        return this.account_id;
+    }
 
     public String getAddress() {
         return this.address;

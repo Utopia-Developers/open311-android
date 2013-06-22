@@ -50,6 +50,7 @@ import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.util.json.JSONObject;
 import gov.in.bloomington.georeporter.volleyrequests.GsonGetRequest;
+import gov.in.bloomington.georeporter.volleyrequests.Open311XmlRequest;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -141,7 +142,8 @@ public class Open311 {
     public static ArrayList<String> sGroups;
 
     public static RequestQueue requestQueue = null;
-    public static GsonGetRequest<ArrayList<ServiceEntityJson>> sServiceRequest = null;
+    public static GsonGetRequest<ArrayList<ServiceEntityJson>> sServiceRequestGson = null;
+    public static Open311XmlRequest<ArrayList<ServiceEntityJson>> sServiceRequestXML = null;
 
     public static ArrayList<ServiceEntityJson> sServiceList = null;
 

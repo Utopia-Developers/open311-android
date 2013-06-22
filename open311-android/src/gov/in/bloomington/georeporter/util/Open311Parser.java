@@ -36,15 +36,9 @@ public class Open311Parser {
             }
             else {
                 Open311XmlParser mParser = new Open311XmlParser();
-                return mParser.parseServices(response);
+                //return mParser.parseServices(response);
             }
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -61,15 +55,9 @@ public class Open311Parser {
                 return new JSONObject(xml);
             } else {
                 Open311XmlParser mParser = new Open311XmlParser();
-                return mParser.parseServiceDefinition(xml);
+                //return mParser.parseServiceDefinition(xml);
             }
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
