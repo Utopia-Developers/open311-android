@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -39,7 +40,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MainFragment extends SherlockFragment {
     private View layout;
     private static String SPLASH_IMAGE = "splash_image";
-    
+    private String serviceDefinationTag = "Defination";
+
+    private ImageView splashImage;
+
     private AtomicInteger pendingRequests;
     private ProgressDialog progressDialog;
 
@@ -48,6 +52,13 @@ public class MainFragment extends SherlockFragment {
             Bundle savedInstanceState) {
         layout = inflater.inflate(R.layout.fragment_main,
                 container, false);
+        splashImage = (ImageView) layout.findViewById(R.id.splash);
+        splashImage.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onTouchImage(v);
+            }
+        });
         setRetainInstance(true);
         return layout;
     }
@@ -81,16 +92,15 @@ public class MainFragment extends SherlockFragment {
                         @Override
                         public void onResponse(ArrayList<ServiceEntityJson> response) {
                             Open311.sServiceList = response;
-                            
-                            //If no metadata
-                            if(!loadServiceDefinations())
+
+                            // If no metadata
+                            if (!loadServiceDefinations())
                             {
                                 progressDialog.dismiss();
                                 Intent intent = new Intent(getActivity(), ReportActivity.class);
-                                startActivity(intent); 
+                                startActivity(intent);
                             }
-                                
-                            
+
                             getSherlockActivity().getSupportActionBar().setTitle(
                                     current_server.name);
 
@@ -108,12 +118,15 @@ public class MainFragment extends SherlockFragment {
                     }, new ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Util.displayCrashDialog(getActivity(),
-                                    getString(R.string.failure_loading_services)+error.getMessage());
+                            progressDialog.dismiss();
+                            Util.displayCrashDialog(
+                                    getActivity(),
+                                    getString(R.string.failure_loading_services)
+                                            + error.getMessage());
                         }
                     });
             Open311.requestQueue.add(Open311.sServiceRequest);
-            
+
         }
     }
 
@@ -142,7 +155,7 @@ public class MainFragment extends SherlockFragment {
             ServiceEntityJson s = Open311.sServiceList.get(i);
             // services may have an empty string for the group parameter
             group = s.getGroup();
-            if (group.equals("")) {
+            if (group == null) {
                 group = getString(R.string.uncategorized);
             }
             if (!Open311.sGroups.contains(group)) {
@@ -153,7 +166,7 @@ public class MainFragment extends SherlockFragment {
             if (s.getMetadata() == true) {
                 isServiceDefinationPresent = true;
                 final String code = s.getService_code();
-                
+
                 // TODO
                 serviceDefinationRequest = new GsonGetRequest<ServiceDefinationJson>(
                         Open311.getServiceDefinitionUrl(code),
@@ -163,22 +176,26 @@ public class MainFragment extends SherlockFragment {
                             @Override
                             public void onResponse(ServiceDefinationJson response) {
                                 Open311.sServiceDefinitions.put(code, response);
-                                if(pendingRequests.decrementAndGet() == 0)
+                                if (pendingRequests.decrementAndGet() == 0)
                                 {
                                     progressDialog.dismiss();
                                     Intent intent = new Intent(getActivity(), ReportActivity.class);
-                                    startActivity(intent);  
+                                    startActivity(intent);
                                 }
                             }
                         }, new ErrorListener() {
 
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Util.displayCrashDialog(getActivity(),
-                                        getString(R.string.failure_loading_services)+ error.getMessage());
-                                
+                                progressDialog.dismiss();
+                                Util.displayCrashDialog(
+                                        getActivity(),
+                                        getString(R.string.failure_loading_services)
+                                                + error.getMessage());
+                                Open311.requestQueue.cancelAll(serviceDefinationTag);
                             }
                         });
+                serviceDefinationRequest.setTag(serviceDefinationTag);
 
                 Open311.requestQueue.add(serviceDefinationRequest);
                 pendingRequests.incrementAndGet();
@@ -187,7 +204,5 @@ public class MainFragment extends SherlockFragment {
 
         return isServiceDefinationPresent;
     }
-
-    
 
 }

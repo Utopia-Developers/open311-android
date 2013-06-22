@@ -35,11 +35,13 @@ public class ReportActivity extends BaseFragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("Report Activity", "K");
         mActionBar = getSupportActionBar();
         mActionBar.setTitle(R.string.menu_report);
-
-        if (Open311.sGroups.size() > 1) {
+        if(Open311.sGroups == null)
+        {
+            
+        }
+        else if (Open311.sGroups.size() > 1) {
             ChooseGroupFragment chooseGroup = new ChooseGroupFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(android.R.id.content, chooseGroup)

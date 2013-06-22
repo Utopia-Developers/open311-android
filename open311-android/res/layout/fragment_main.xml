@@ -13,7 +13,6 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:scaleType="centerInside"
-        android:onClick="onTouchImage"
         android:src="@drawable/open311"
         android:contentDescription="@string/app_name"/>
 

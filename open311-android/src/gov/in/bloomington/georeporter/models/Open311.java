@@ -268,7 +268,8 @@ public class Open311 {
 
             ServiceEntityJson s = sServiceList.get(i);
             if (group.equals(context.getString(R.string.uncategorized))) {
-                group = "";
+                services.add(s);
+                continue;                
             }
             if (s.getGroup().equals(group)) {
                 services.add(s);
