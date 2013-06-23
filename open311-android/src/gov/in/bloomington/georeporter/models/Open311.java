@@ -6,6 +6,8 @@
 
 package gov.in.bloomington.georeporter.models;
 
+import gov.in.bloomington.georeporter.json.RequestResponseJson;
+import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
@@ -67,6 +69,7 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class Open311 {
@@ -271,7 +274,7 @@ public class Open311 {
             ServiceEntityJson s = sServiceList.get(i);
             if (group.equals(context.getString(R.string.uncategorized))) {
                 services.add(s);
-                continue;                
+                continue;
             }
             if (s.getGroup().equals(group)) {
                 services.add(s);
@@ -290,7 +293,7 @@ public class Open311 {
         if (sServiceDefinitions.containsKey(service_code)) {
             return sServiceDefinitions.get(service_code);
         }
-        //TODO
+        // TODO
         return null;
     }
 
@@ -312,11 +315,11 @@ public class Open311 {
      * @throws Open311Exception
      */
 
-    public static JSONArray postServiceRequest(ServiceRequest sr,
+    public static ArrayList<RequestsJson> postServiceRequest(ServiceRequest sr,
             Context context, String mediaPath) throws JSONException,
             ClientProtocolException, IOException, Open311Exception {
         HttpPost request = new HttpPost(mBaseUrl + "/requests." + mFormat);
-        JSONArray serviceRequests = null;
+        ArrayList<RequestsJson> serviceRequests = null;
         if (mediaPath != null) {
             request.setEntity(prepareMultipartEntity(sr, context, mediaPath));
         } else {
@@ -332,7 +335,11 @@ public class Open311 {
         if (status == HttpStatus.SC_OK || status == HttpStatus.SC_CREATED
                 || status == HttpStatus.SC_ACCEPTED) {
             Open311Parser mParser = new Open311Parser(mFormat);
-            serviceRequests = mParser.parseRequests(responseString);
+
+            // TODO
+            serviceRequests = new Gson().fromJson(responseString,
+                    new TypeToken<ArrayList<RequestsJson>>() {
+                    }.getType());
         } else {
             // The server indicated some error. See if they returned the
             // error description as JSON
@@ -510,8 +517,8 @@ public class Open311 {
      * 
      * @return JSONArray
      */
-    public static JSONArray loadServiceRequests(Context c) {
-        JSONArray service_requests = new JSONArray();
+    public static ArrayList<ServiceRequest> loadServiceRequests(Context c) {
+        ArrayList<ServiceRequest> service_requests = null;
 
         FileInputStream in = null;
         StringBuffer buffer = new StringBuffer("");
@@ -524,14 +531,14 @@ public class Open311 {
             while ((length = in.read(bytes)) != -1) {
                 buffer.append(new String(bytes));
             }
-            service_requests = new JSONArray(new String(buffer));
+            Log.d("Service Request Loading", buffer.toString());
+            service_requests = new Gson().fromJson(buffer.toString(),
+                    new TypeToken<ArrayList<ServiceRequest>>() {
+                    }.getType());
         } catch (FileNotFoundException e) {
             Log.w("Open311.loadServiceRequests",
                     "Saved Reports File does not exist");
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
@@ -557,8 +564,8 @@ public class Open311 {
      * @param c
      * @param requests An array of JSON-serialized ServiceRequest objects void
      */
-    public static boolean saveServiceRequests(Context c, JSONArray requests) {
-        String json = requests.toString();
+    public static boolean saveServiceRequests(Context c, ArrayList<ServiceRequest> requests) {
+        String json = new Gson().toJson(requests);
         FileOutputStream out;
         try {
             out = c.openFileOutput(SAVED_REPORTS_FILE, Context.MODE_PRIVATE);
@@ -586,24 +593,12 @@ public class Open311 {
     public static boolean saveServiceRequest(Context c, ServiceRequest sr) {
         sr.endpoint = sEndpoint;
 
-        try {
-            JSONObject report = new JSONObject(sr.toString());
-            JSONArray saved_requests = loadServiceRequests(c);
-            JSONArray newSave = new JSONArray();
+        ArrayList<ServiceRequest> saved_requests = loadServiceRequests(c);
+        // Push the new report onto the start of the array
+        saved_requests.add(0, sr);
 
-            // Push the new report onto the start of the array
-            newSave.put(report);
-            int len = saved_requests.length();
-            for (int i = 0; i < len; i++) {
-                newSave.put(saved_requests.getJSONObject(i));
-            }
+        return saveServiceRequests(c, saved_requests);
 
-            return saveServiceRequests(c, newSave);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return false;
     }
 
     /**

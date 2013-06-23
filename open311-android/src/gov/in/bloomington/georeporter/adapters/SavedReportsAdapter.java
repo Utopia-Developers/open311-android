@@ -9,6 +9,7 @@ package gov.in.bloomington.georeporter.adapters;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.models.Open311;
@@ -29,14 +30,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class SavedReportsAdapter extends BaseAdapter {
-    private JSONArray mServiceRequests;
+    private ArrayList<ServiceRequest> mServiceRequests;
     private static LayoutInflater mInflater;
 
     private DateFormat mDateFormat;
     private SimpleDateFormat mISODate;
 
     @SuppressLint("SimpleDateFormat")
-    public SavedReportsAdapter(JSONArray serviceRequests, Context c) {
+    public SavedReportsAdapter(ArrayList<ServiceRequest> serviceRequests, Context c) {
         mServiceRequests = serviceRequests;
         mInflater = LayoutInflater.from(c);
         mDateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
@@ -45,15 +46,15 @@ public class SavedReportsAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return (mServiceRequests == null) ? 0 : mServiceRequests.length();
+        return (mServiceRequests == null) ? 0 : mServiceRequests.size();
     }
 
     @Override
     public ServiceRequest getItem(int position) {
-        JSONObject o = mServiceRequests.optJSONObject(position);
-        
-        //TODO this is just test
-        Log.d("Service Request", o.toString());
+        ServiceRequest request = mServiceRequests.get(position);
+
+        // TODO this is just test
+        Log.d("Service Request - position", request.toString());
         return null;
     }
 
@@ -90,7 +91,7 @@ public class SavedReportsAdapter extends BaseAdapter {
             holder.serviceName.setText(sr.service.getService_name());
             holder.endpoint.setText(sr.endpoint.name);
             holder.address.setText(sr.post_data.optString(Open311.ADDRESS_STRING));
-            holder.status.setText(sr.service_request.optString(ServiceRequest.STATUS));
+            holder.status.setText(sr.service_request.getStatus());
             holder.date.setText(mDateFormat.format(mISODate.parse(sr.post_data
                     .optString(ServiceRequest.REQUESTED_DATETIME))));
             holder.media.setImageBitmap(sr.getMediaBitmap(80, 80, mInflater.getContext()));
@@ -105,7 +106,7 @@ public class SavedReportsAdapter extends BaseAdapter {
     /**
      * @param serviceRequests void
      */
-    public void updateSavedReports(JSONArray serviceRequests) {
+    public void updateSavedReports(ArrayList<ServiceRequest> serviceRequests) {
         mServiceRequests = serviceRequests;
         super.notifyDataSetChanged();
     }

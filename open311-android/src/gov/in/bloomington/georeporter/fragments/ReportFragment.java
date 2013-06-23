@@ -14,6 +14,8 @@ import gov.in.bloomington.georeporter.activities.MainActivity;
 import gov.in.bloomington.georeporter.activities.SavedReportsActivity;
 import gov.in.bloomington.georeporter.adapters.ServiceRequestAdapter;
 import gov.in.bloomington.georeporter.json.AttributesJson;
+import gov.in.bloomington.georeporter.json.RequestResponseJson;
+import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.Open311Exception;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
@@ -22,6 +24,7 @@ import gov.in.bloomington.georeporter.util.Util;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -435,15 +438,15 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            JSONArray response;
+            ArrayList<RequestsJson> response;
             try {
                 response = Open311.postServiceRequest(mServiceRequest, getActivity(), mMediaPath);
-                if (response.length() > 0) {
+                if (response.size() > 0) {
                     SimpleDateFormat isoDate = new SimpleDateFormat(Open311.DATETIME_FORMAT);
                     String requested_datetime = isoDate.format(new Date());
                     try {
                         mServiceRequest.endpoint = Open311.sEndpoint;
-                        mServiceRequest.service_request = response.getJSONObject(0);
+                        mServiceRequest.service_request = response.get(0);
                         mServiceRequest.post_data.put(ServiceRequest.REQUESTED_DATETIME,
                                 requested_datetime);
                         return Open311.saveServiceRequest(getActivity(), mServiceRequest);

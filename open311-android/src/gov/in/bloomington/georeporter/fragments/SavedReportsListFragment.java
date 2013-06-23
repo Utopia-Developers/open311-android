@@ -9,7 +9,11 @@ package gov.in.bloomington.georeporter.fragments;
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.adapters.SavedReportsAdapter;
 import gov.in.bloomington.georeporter.models.Open311;
+import gov.in.bloomington.georeporter.models.ServiceRequest;
 import gov.in.bloomington.georeporter.util.json.JSONArray;
+
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -22,7 +26,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.actionbarsherlock.app.SherlockListFragment;
 
 public class SavedReportsListFragment extends SherlockListFragment {
-    private JSONArray mServiceRequests;
+    private ArrayList<ServiceRequest> mServiceRequests;
     private boolean mDataChanged = false;
 
     @Override

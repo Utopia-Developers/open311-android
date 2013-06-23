@@ -29,6 +29,8 @@ import android.util.Log;
 import android.widget.AutoCompleteTextView.Validator;
 
 import gov.in.bloomington.georeporter.json.AttributesJson;
+import gov.in.bloomington.georeporter.json.RequestResponseJson;
+import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
@@ -67,7 +69,7 @@ public class ServiceRequest {
     /**
      * The JSON response from GET Service Request
      */
-    public JSONObject service_request;
+    public RequestsJson service_request;
     /**
      * The data that gets sent to POST Service Request JSON property names will
      * be the code from service_definition. Most JSON properties will just
@@ -121,11 +123,11 @@ public class ServiceRequest {
      * 
      * @param serviceData
      */
-    //TODO
+    // TODO
     public ServiceRequest(Bundle serviceData) {
         gson = new Gson();
         try {
-            
+
             if (serviceData.containsKey(ENDPOINT))
                 endpoint = gson.fromJson(serviceData.getString(ENDPOINT),
                         ServerAttributeJson.class);
@@ -138,7 +140,8 @@ public class ServiceRequest {
             if (serviceData.containsKey(POST_DATA))
                 post_data = new JSONObject(serviceData.getString(POST_DATA));
             if (serviceData.containsKey(SERVICE_REQUEST))
-                service_request = new JSONObject(serviceData.getString(SERVICE_REQUEST));
+                service_request = gson.fromJson(serviceData.getString(SERVICE_REQUEST),
+                        RequestsJson.class);
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -182,7 +185,7 @@ public class ServiceRequest {
     public AttributesJson getAttribute(String code) {
         AttributesJson attribute = null;
 
-        ArrayList<AttributesJson> attributes =  service_definition
+        ArrayList<AttributesJson> attributes = service_definition
                 .getAttributes();
         int len = attributes.size();
         for (int i = 0; i < len; i++) {
@@ -235,7 +238,7 @@ public class ServiceRequest {
     public ArrayList<ValuesJson> getAttributeValues(String code) {
         ArrayList<ValuesJson> values;
         AttributesJson a = getAttribute(code);
-        values =  a.getValues();
+        values = a.getValues();
 
         return values;
     }
@@ -277,9 +280,8 @@ public class ServiceRequest {
      * 
      * @param request_id
      * @return String
-     * @throws JSONException
      */
-    public String getServiceRequestUrl(String request_id) throws JSONException {
+    public String getServiceRequestUrl(String request_id) {
         String baseUrl = endpoint.url;
         String jurisdiction = endpoint.jurisdiction_id;
         return String.format("%s/requests/%s.json?%s=%s", baseUrl, request_id,
