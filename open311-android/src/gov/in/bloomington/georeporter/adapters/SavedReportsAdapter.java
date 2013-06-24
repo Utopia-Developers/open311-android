@@ -6,19 +6,6 @@
 
 package gov.in.bloomington.georeporter.adapters;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-
-import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.models.Open311;
-import gov.in.bloomington.georeporter.models.ServiceRequest;
-
-import gov.in.bloomington.georeporter.util.json.JSONArray;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
@@ -28,6 +15,17 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
+
+import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.models.Open311;
+import gov.in.bloomington.georeporter.models.ServiceRequest;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 public class SavedReportsAdapter extends BaseAdapter {
     private ArrayList<ServiceRequest> mServiceRequests;
@@ -54,8 +52,8 @@ public class SavedReportsAdapter extends BaseAdapter {
         ServiceRequest request = mServiceRequests.get(position);
 
         // TODO this is just test
-        Log.d("Service Request - position", request.toString());
-        return null;
+        Log.d("Service Request - position", new Gson().toJson(request));
+        return request;
     }
 
     @Override

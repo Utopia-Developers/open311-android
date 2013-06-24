@@ -1,9 +1,6 @@
 
 package gov.in.bloomington.georeporter.volleyrequests;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
@@ -12,12 +9,11 @@ import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
-
-import gov.in.bloomington.georeporter.json.ServiceEntityJson;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Map;
 
 /**

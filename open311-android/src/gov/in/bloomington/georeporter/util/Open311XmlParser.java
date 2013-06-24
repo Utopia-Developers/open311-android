@@ -6,24 +6,25 @@
 
 package gov.in.bloomington.georeporter.util;
 
+import android.util.Xml;
+
 import gov.in.bloomington.georeporter.json.AttributesJson;
 import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 import gov.in.bloomington.georeporter.json.ValuesJson;
 import gov.in.bloomington.georeporter.models.Open311;
+import gov.in.bloomington.georeporter.util.json.JSONArray;
+import gov.in.bloomington.georeporter.util.json.JSONException;
+import gov.in.bloomington.georeporter.util.json.JSONObject;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-
-import gov.in.bloomington.georeporter.util.json.JSONArray;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import android.util.Xml;
 
 public class Open311XmlParser {
 

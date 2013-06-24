@@ -11,17 +11,6 @@
 
 package gov.in.bloomington.georeporter.activities;
 
-import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.json.AttributesJson;
-import gov.in.bloomington.georeporter.json.ValuesJson;
-import gov.in.bloomington.georeporter.models.Open311;
-
-import gov.in.bloomington.georeporter.util.json.JSONArray;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
-
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
@@ -36,6 +25,14 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+
+import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.json.AttributesJson;
+import gov.in.bloomington.georeporter.json.ValuesJson;
+import gov.in.bloomington.georeporter.models.Open311;
+import gov.in.bloomington.georeporter.util.json.JSONArray;
+
+import java.util.ArrayList;
 
 public class AttributeEntryActivity extends BaseActivity {
     public static final String ATTRIBUTE = "attribute";

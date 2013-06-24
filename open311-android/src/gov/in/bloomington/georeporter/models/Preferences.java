@@ -10,7 +10,9 @@
 
 package gov.in.bloomington.georeporter.models;
 
-import java.util.ArrayList;
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -20,8 +22,7 @@ import gov.in.bloomington.georeporter.util.Util;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.util.json.JSONObject;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import java.util.ArrayList;
 
 public class Preferences {
     private static final String SETTINGS = "settings";

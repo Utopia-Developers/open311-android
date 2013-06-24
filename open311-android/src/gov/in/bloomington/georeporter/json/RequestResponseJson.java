@@ -6,7 +6,7 @@ public class RequestResponseJson {
     private String token;
     private String service_notice;
     private String account_id;
-    public String status;
+    
 
     public void setToken(String token)
     {

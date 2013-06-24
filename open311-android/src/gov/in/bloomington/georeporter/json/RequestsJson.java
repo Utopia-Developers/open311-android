@@ -1,8 +1,6 @@
 
 package gov.in.bloomington.georeporter.json;
 
-import java.util.List;
-
 import com.google.gson.annotations.SerializedName;
 
 public class RequestsJson {

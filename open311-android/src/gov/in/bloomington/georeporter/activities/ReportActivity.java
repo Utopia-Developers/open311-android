@@ -6,6 +6,10 @@
 
 package gov.in.bloomington.georeporter.activities;
 
+import android.os.Bundle;
+
+import com.actionbarsherlock.app.ActionBar;
+
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.fragments.ChooseGroupFragment;
 import gov.in.bloomington.georeporter.fragments.ChooseGroupFragment.OnGroupSelectedListener;
@@ -15,14 +19,6 @@ import gov.in.bloomington.georeporter.fragments.ReportFragment;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
-
-import gov.in.bloomington.georeporter.util.json.JSONObject;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-
-import com.actionbarsherlock.app.ActionBar;
 
 public class ReportActivity extends BaseFragmentActivity
         implements OnGroupSelectedListener,

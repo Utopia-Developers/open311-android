@@ -6,8 +6,6 @@
 
 package gov.in.bloomington.georeporter.adapters;
 
-import gov.in.bloomington.georeporter.util.json.JSONObject;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -15,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import gov.in.bloomington.georeporter.util.json.JSONObject;
 
 public class PersonalInfoAdapter extends BaseAdapter {
     private Resources mResources;

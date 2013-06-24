@@ -6,16 +6,6 @@
 
 package gov.in.bloomington.georeporter.adapters;
 
-import java.util.ArrayList;
-
-import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.json.ServerAttributeJson;
-import gov.in.bloomington.georeporter.models.Open311;
-import gov.in.bloomington.georeporter.models.Preferences;
-
-import gov.in.bloomington.georeporter.util.json.JSONArray;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +13,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.RadioButton;
 import android.widget.TextView;
+
+import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.json.ServerAttributeJson;
+import gov.in.bloomington.georeporter.models.Preferences;
+
+import java.util.ArrayList;
 
 public class ServersAdapter extends BaseAdapter {
     private ArrayList<ServerAttributeJson> mServers;

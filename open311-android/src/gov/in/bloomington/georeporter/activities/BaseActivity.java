@@ -6,13 +6,14 @@
 
 package gov.in.bloomington.georeporter.activities;
 
-import gov.in.bloomington.georeporter.R;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+
+import gov.in.bloomington.georeporter.R;
 
 public abstract class BaseActivity extends SherlockActivity {
     @Override

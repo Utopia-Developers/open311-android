@@ -6,8 +6,6 @@
 
 package gov.in.bloomington.georeporter.activities;
 
-import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.models.Open311;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
@@ -17,6 +15,9 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.models.Open311;
 
 public class DataEntryActivity extends BaseActivity {
     public static final String KEY = "key";

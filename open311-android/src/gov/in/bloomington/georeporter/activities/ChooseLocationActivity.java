@@ -6,6 +6,15 @@
 
 package gov.in.bloomington.georeporter.activities;
 
+import android.content.Intent;
+import android.content.IntentSender;
+import android.location.Location;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
@@ -22,15 +31,6 @@ import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.util.LocationUtils;
 import gov.in.bloomington.georeporter.util.Util;
-
-import android.content.Intent;
-import android.content.IntentSender;
-import android.location.Location;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.RadioGroup;
-import android.widget.RadioGroup.OnCheckedChangeListener;
 
 public class ChooseLocationActivity extends SherlockFragmentActivity implements LocationListener,ConnectionCallbacks,OnConnectionFailedListener {
     private GoogleMap mMap;

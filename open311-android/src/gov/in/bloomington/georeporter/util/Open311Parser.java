@@ -6,15 +6,14 @@
 
 package gov.in.bloomington.georeporter.util;
 
-import java.io.IOException;
-
-import org.xmlpull.v1.XmlPullParserException;
-
 import gov.in.bloomington.georeporter.models.Open311;
-
 import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.util.json.JSONObject;
+
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 public class Open311Parser {
     private String mFormat = Open311.JSON;

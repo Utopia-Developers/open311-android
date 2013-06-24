@@ -6,37 +6,6 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
-import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.activities.AttributeEntryActivity;
-import gov.in.bloomington.georeporter.activities.ChooseLocationActivity;
-import gov.in.bloomington.georeporter.activities.DataEntryActivity;
-import gov.in.bloomington.georeporter.activities.MainActivity;
-import gov.in.bloomington.georeporter.activities.SavedReportsActivity;
-import gov.in.bloomington.georeporter.adapters.ServiceRequestAdapter;
-import gov.in.bloomington.georeporter.json.AttributesJson;
-import gov.in.bloomington.georeporter.json.RequestResponseJson;
-import gov.in.bloomington.georeporter.json.RequestsJson;
-import gov.in.bloomington.georeporter.models.Open311;
-import gov.in.bloomington.georeporter.models.Open311Exception;
-import gov.in.bloomington.georeporter.models.ServiceRequest;
-import gov.in.bloomington.georeporter.util.Media;
-import gov.in.bloomington.georeporter.util.Util;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import ch.boye.httpclientandroidlib.client.ClientProtocolException;
-
-import gov.in.bloomington.georeporter.util.json.JSONArray;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -53,6 +22,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,10 +31,39 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import ch.boye.httpclientandroidlib.client.ClientProtocolException;
+
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+
+import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.activities.AttributeEntryActivity;
+import gov.in.bloomington.georeporter.activities.ChooseLocationActivity;
+import gov.in.bloomington.georeporter.activities.DataEntryActivity;
+import gov.in.bloomington.georeporter.activities.MainActivity;
+import gov.in.bloomington.georeporter.activities.SavedReportsActivity;
+import gov.in.bloomington.georeporter.adapters.ServiceRequestAdapter;
+import gov.in.bloomington.georeporter.json.AttributesJson;
+import gov.in.bloomington.georeporter.json.RequestResponseJson;
+import gov.in.bloomington.georeporter.json.RequestsJson;
+import gov.in.bloomington.georeporter.models.Open311;
+import gov.in.bloomington.georeporter.models.Open311Exception;
+import gov.in.bloomington.georeporter.models.ServiceRequest;
+import gov.in.bloomington.georeporter.util.Media;
+import gov.in.bloomington.georeporter.util.Util;
+import gov.in.bloomington.georeporter.util.json.JSONArray;
+import gov.in.bloomington.georeporter.util.json.JSONException;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class ReportFragment extends SherlockFragment implements OnItemClickListener {
     /**
@@ -85,6 +84,8 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
      */
     public static final int DATA_ENTRY_REQUEST = 3;
 
+    static Gson gson;
+
     private static final List<String> DATA_ENTRY_FIELDS = Arrays.asList(
             Open311.DESCRIPTION, Open311.FIRST_NAME, Open311.LAST_NAME, Open311.EMAIL,
             Open311.PHONE
@@ -101,13 +102,13 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     public static ReportFragment newInstance(ServiceRequest sr) {
         ReportFragment fragment = new ReportFragment();
         Bundle args = new Bundle();
-        args.putString(ServiceRequest.ENDPOINT, new Gson().toJson(sr.endpoint));
-        args.putString(ServiceRequest.SERVICE, new Gson().toJson(sr.service));
-        args.putString(ServiceRequest.SERVICE_DEFINITION, new Gson().toJson(sr.service_definition));
+        gson = new Gson();
+        args.putString(ServiceRequest.ENDPOINT, gson.toJson(sr.endpoint));
+        args.putString(ServiceRequest.SERVICE, gson.toJson(sr.service));
+        args.putString(ServiceRequest.SERVICE_DEFINITION, gson.toJson(sr.service_definition));
         if (sr.post_data != null)
             args.putString(ServiceRequest.POST_DATA, sr.post_data.toString());
-        if (sr.service_request != null)
-            args.putString(ServiceRequest.SERVICE_REQUEST, sr.service_request.toString());
+        args.putString(ServiceRequest.SERVICE_REQUEST, gson.toJson(sr.service_request));
         fragment.setArguments(args);
         return fragment;
     }
@@ -438,22 +439,28 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            ArrayList<RequestsJson> response;
+            ArrayList<RequestResponseJson> responses;
+
             try {
-                response = Open311.postServiceRequest(mServiceRequest, getActivity(), mMediaPath);
-                if (response.size() > 0) {
+                responses = Open311.postServiceRequest(mServiceRequest, getActivity(), mMediaPath);
+
+                RequestResponseJson response = responses.get(0);
+                if (responses.size() > 0) {
                     SimpleDateFormat isoDate = new SimpleDateFormat(Open311.DATETIME_FORMAT);
                     String requested_datetime = isoDate.format(new Date());
-                    try {
-                        mServiceRequest.endpoint = Open311.sEndpoint;
-                        mServiceRequest.service_request = response.get(0);
-                        mServiceRequest.post_data.put(ServiceRequest.REQUESTED_DATETIME,
-                                requested_datetime);
-                        return Open311.saveServiceRequest(getActivity(), mServiceRequest);
-                    } catch (JSONException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+
+                    mServiceRequest.endpoint = Open311.sEndpoint;
+                    mServiceRequest.service_request = new RequestsJson();
+                    mServiceRequest.service_request.setToken(response.getToken());
+                    mServiceRequest.service_request.setService_request_id(response
+                            .getServiceReuestId());
+                    mServiceRequest.service_request.setServiceNotice(response.getServiceNotice());
+                    mServiceRequest.service_request.setAccountId(response.getAccountId());
+
+                    mServiceRequest.post_data.put(ServiceRequest.REQUESTED_DATETIME,
+                            requested_datetime);
+                    return Open311.saveServiceRequest(getActivity(), mServiceRequest);
+
                 }
             } catch (ClientProtocolException e1) {
                 errorMessage = getResources().getString(R.string.failure_posting_service);

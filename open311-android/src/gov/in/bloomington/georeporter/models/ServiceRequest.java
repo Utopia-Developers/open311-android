@@ -16,31 +16,29 @@
 
 package gov.in.bloomington.georeporter.models;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import com.google.gson.Gson;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.AutoCompleteTextView.Validator;
+
+import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
 
 import gov.in.bloomington.georeporter.json.AttributesJson;
-import gov.in.bloomington.georeporter.json.RequestResponseJson;
 import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 import gov.in.bloomington.georeporter.json.ValuesJson;
 import gov.in.bloomington.georeporter.util.Media;
-import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.util.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 public class ServiceRequest {
+
     public static final String ENDPOINT = "endpoint";
     public static final String SERVICE = "service";
     public static final String SERVICE_DEFINITION = "service_definition";
@@ -51,7 +49,8 @@ public class ServiceRequest {
     public static final String REQUESTED_DATETIME = "requested_datetime";
     public static final String UPDATED_DATETIME = "updated_datetime";
 
-    private Gson gson;
+    
+    private transient Gson gson;
 
     /**
      * The {@link ServerAttributeJson} definition from
@@ -88,7 +87,10 @@ public class ServiceRequest {
      */
     public ServiceRequest(ServiceEntityJson s, Context c) {
         service = s;
+
         post_data = new JSONObject();
+        
+        endpoint = Open311.sEndpoint;
 
         if (service.getMetadata()) {
 
@@ -112,6 +114,7 @@ public class ServiceRequest {
                 e.printStackTrace();
             }
         }
+
     }
 
     /**
@@ -126,49 +129,24 @@ public class ServiceRequest {
     // TODO
     public ServiceRequest(Bundle serviceData) {
         gson = new Gson();
-        try {
-
-            if (serviceData.containsKey(ENDPOINT))
-                endpoint = gson.fromJson(serviceData.getString(ENDPOINT),
-                        ServerAttributeJson.class);
-            if (serviceData.containsKey(SERVICE))
-                service = gson.fromJson(serviceData.getString(SERVICE),
-                        ServiceEntityJson.class);
-            if (serviceData.containsKey(SERVICE_DEFINITION))
-                service_definition = gson.fromJson(serviceData.getString(SERVICE_DEFINITION),
-                        ServiceDefinationJson.class);
-            if (serviceData.containsKey(POST_DATA))
+        if (serviceData.containsKey(ENDPOINT))
+            endpoint = gson.fromJson(serviceData.getString(ENDPOINT),
+                    ServerAttributeJson.class);
+        if (serviceData.containsKey(SERVICE))
+            service = gson.fromJson(serviceData.getString(SERVICE),
+                    ServiceEntityJson.class);
+        if (serviceData.containsKey(SERVICE_DEFINITION))
+            service_definition = gson.fromJson(serviceData.getString(SERVICE_DEFINITION),
+                    ServiceDefinationJson.class);
+        if (serviceData.containsKey(POST_DATA))
+            try {
                 post_data = new JSONObject(serviceData.getString(POST_DATA));
-            if (serviceData.containsKey(SERVICE_REQUEST))
-                service_request = gson.fromJson(serviceData.getString(SERVICE_REQUEST),
-                        RequestsJson.class);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Serializes all the data as a single JSON string
-     */
-    @Override
-    public String toString() {
-        JSONObject sr = new JSONObject();
-        try {
-            sr.put(SERVICE, service);
-            if (endpoint != null)
-                sr.put(ENDPOINT, endpoint);
-            if (service_definition != null)
-                sr.put(SERVICE_DEFINITION, service_definition);
-            if (post_data != null)
-                sr.put(POST_DATA, post_data);
-            if (service_request != null)
-                sr.put(SERVICE_REQUEST, service_request);
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return sr.toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        if (serviceData.containsKey(SERVICE_REQUEST))
+            service_request = gson.fromJson(serviceData.getString(SERVICE_REQUEST),
+                    RequestsJson.class);
     }
 
     /**

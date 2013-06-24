@@ -6,18 +6,16 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
-import gov.in.bloomington.georeporter.adapters.ServicesAdapter;
-import gov.in.bloomington.georeporter.json.ServiceEntityJson;
-
-import java.util.ArrayList;
-
-import gov.in.bloomington.georeporter.util.json.JSONObject;
-
 import android.app.Activity;
 import android.view.View;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+
+import gov.in.bloomington.georeporter.adapters.ServicesAdapter;
+import gov.in.bloomington.georeporter.json.ServiceEntityJson;
+
+import java.util.ArrayList;
 
 public class ChooseServiceFragment extends SherlockListFragment {
     private static OnServiceSelectedListener mListener;

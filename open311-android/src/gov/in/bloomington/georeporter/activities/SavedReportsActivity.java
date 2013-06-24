@@ -8,13 +8,14 @@
 
 package gov.in.bloomington.georeporter.activities;
 
-import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.fragments.SavedReportViewFragment;
-import gov.in.bloomington.georeporter.fragments.SavedReportsListFragment;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+
+import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.fragments.SavedReportViewFragment;
+import gov.in.bloomington.georeporter.fragments.SavedReportsListFragment;
 
 public class SavedReportsActivity extends BaseFragmentActivity implements OnItemClickListener {
     @Override

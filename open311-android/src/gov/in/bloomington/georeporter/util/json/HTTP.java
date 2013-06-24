@@ -25,9 +25,9 @@ package gov.in.bloomington.georeporter.util.json;
  SOFTWARE.
  */
 
-import java.util.Iterator;
-
 import android.annotation.SuppressLint;
+
+import java.util.Iterator;
 
 /**
  * Convert an HTTP header to a JSONObject and back.

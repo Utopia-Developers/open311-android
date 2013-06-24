@@ -6,29 +6,13 @@
 
 package gov.in.bloomington.georeporter.models;
 
-import gov.in.bloomington.georeporter.json.RequestResponseJson;
-import gov.in.bloomington.georeporter.json.RequestsJson;
-import gov.in.bloomington.georeporter.json.ServerAttributeJson;
-import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
-import gov.in.bloomington.georeporter.json.ServiceEntityJson;
-import gov.in.bloomington.georeporter.util.EasySSLSocketFactory;
-import gov.in.bloomington.georeporter.util.Open311Parser;
-import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.util.Media;
-
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.os.Build;
+import android.util.Log;
 
 import ch.boye.httpclientandroidlib.HttpResponse;
 import ch.boye.httpclientandroidlib.HttpStatus;
@@ -48,29 +32,43 @@ import ch.boye.httpclientandroidlib.message.BasicNameValuePair;
 import ch.boye.httpclientandroidlib.params.CoreConnectionPNames;
 import ch.boye.httpclientandroidlib.params.CoreProtocolPNames;
 import ch.boye.httpclientandroidlib.util.EntityUtils;
+
+import com.android.volley.RequestQueue;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.json.RequestResponseJson;
+import gov.in.bloomington.georeporter.json.RequestsJson;
+import gov.in.bloomington.georeporter.json.ServerAttributeJson;
+import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
+import gov.in.bloomington.georeporter.json.ServiceEntityJson;
+import gov.in.bloomington.georeporter.util.EasySSLSocketFactory;
+import gov.in.bloomington.georeporter.util.Media;
+import gov.in.bloomington.georeporter.util.Open311Parser;
 import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.util.json.JSONObject;
 import gov.in.bloomington.georeporter.volleyrequests.GsonGetRequest;
 import gov.in.bloomington.georeporter.volleyrequests.Open311XmlRequest;
 
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.os.Build;
-import android.util.Log;
-
-import com.android.volley.Request.Method;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response.ErrorListener;
-import com.android.volley.Response.Listener;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 public class Open311 {
     /**
@@ -315,11 +313,11 @@ public class Open311 {
      * @throws Open311Exception
      */
 
-    public static ArrayList<RequestsJson> postServiceRequest(ServiceRequest sr,
+    public static ArrayList<RequestResponseJson> postServiceRequest(ServiceRequest sr,
             Context context, String mediaPath) throws JSONException,
             ClientProtocolException, IOException, Open311Exception {
         HttpPost request = new HttpPost(mBaseUrl + "/requests." + mFormat);
-        ArrayList<RequestsJson> serviceRequests = null;
+        ArrayList<RequestResponseJson> serviceRequests = null;
         if (mediaPath != null) {
             request.setEntity(prepareMultipartEntity(sr, context, mediaPath));
         } else {
@@ -327,6 +325,8 @@ public class Open311 {
         }
         HttpResponse r = getClient(context).execute(request);
         String responseString = EntityUtils.toString(r.getEntity());
+        
+        Log.d("Server Response", responseString);
 
         int status = r.getStatusLine().getStatusCode();
         // The spec does not declare what exact status codes to use
@@ -338,8 +338,10 @@ public class Open311 {
 
             // TODO
             serviceRequests = new Gson().fromJson(responseString,
-                    new TypeToken<ArrayList<RequestsJson>>() {
+                    new TypeToken<ArrayList<RequestResponseJson>>() {
                     }.getType());
+            
+            Log.d("Server Response Parsed","Yes");
         } else {
             // The server indicated some error. See if they returned the
             // error description as JSON
@@ -519,22 +521,32 @@ public class Open311 {
      */
     public static ArrayList<ServiceRequest> loadServiceRequests(Context c) {
         ArrayList<ServiceRequest> service_requests = null;
-
-        FileInputStream in = null;
-        StringBuffer buffer = new StringBuffer("");
+        
+        GsonBuilder builder = new GsonBuilder();
+        builder.excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT);
+        Gson gson = builder.create();
+        
+       
         byte[] bytes = new byte[1024];
+        Log.d("Service Request Trying Loading", "Lets See");
         @SuppressWarnings("unused")
         int length;
         try {
-            File file = new File(c.getFilesDir(), SAVED_REPORTS_FILE);
-            in = new FileInputStream(file);
-            while ((length = in.read(bytes)) != -1) {
-                buffer.append(new String(bytes));
+            
+            FileInputStream in = c.openFileInput(SAVED_REPORTS_FILE);
+            InputStreamReader inputStreamReader = new InputStreamReader(in);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
             }
-            Log.d("Service Request Loading", buffer.toString());
-            service_requests = new Gson().fromJson(buffer.toString(),
+            
+            Log.d("Service Request Loading", sb.toString());
+            service_requests = gson.fromJson(sb.toString(),
                     new TypeToken<ArrayList<ServiceRequest>>() {
                     }.getType());
+            in.close();
         } catch (FileNotFoundException e) {
             Log.w("Open311.loadServiceRequests",
                     "Saved Reports File does not exist");
@@ -542,7 +554,7 @@ public class Open311 {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
-            closeQuietly(in);
+            
         }
         return service_requests;
     }
@@ -565,7 +577,12 @@ public class Open311 {
      * @param requests An array of JSON-serialized ServiceRequest objects void
      */
     public static boolean saveServiceRequests(Context c, ArrayList<ServiceRequest> requests) {
-        String json = new Gson().toJson(requests);
+        GsonBuilder builder = new GsonBuilder();
+        builder.excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT);
+        Gson gson = builder.create();
+        Log.d("Service Request Save trying", "Lets See");
+        String json = gson.toJson(requests);
+        Log.d("Service Request Save", json);
         FileOutputStream out;
         try {
             out = c.openFileOutput(SAVED_REPORTS_FILE, Context.MODE_PRIVATE);
@@ -594,6 +611,10 @@ public class Open311 {
         sr.endpoint = sEndpoint;
 
         ArrayList<ServiceRequest> saved_requests = loadServiceRequests(c);
+        
+        if(saved_requests == null)
+            saved_requests = new ArrayList<ServiceRequest>();
+        
         // Push the new report onto the start of the array
         saved_requests.add(0, sr);
 

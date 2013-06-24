@@ -8,21 +8,6 @@
 
 package gov.in.bloomington.georeporter.adapters;
 
-import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.activities.AttributeEntryActivity;
-import gov.in.bloomington.georeporter.json.AttributesJson;
-import gov.in.bloomington.georeporter.json.ValuesJson;
-import gov.in.bloomington.georeporter.models.Open311;
-import gov.in.bloomington.georeporter.models.Preferences;
-import gov.in.bloomington.georeporter.models.ServiceRequest;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import gov.in.bloomington.georeporter.util.json.JSONArray;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -33,6 +18,19 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.activities.AttributeEntryActivity;
+import gov.in.bloomington.georeporter.json.AttributesJson;
+import gov.in.bloomington.georeporter.json.ValuesJson;
+import gov.in.bloomington.georeporter.models.Open311;
+import gov.in.bloomington.georeporter.models.Preferences;
+import gov.in.bloomington.georeporter.models.ServiceRequest;
+import gov.in.bloomington.georeporter.util.json.JSONArray;
+import gov.in.bloomington.georeporter.util.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ServiceRequestAdapter extends BaseAdapter {
     private ServiceRequest mServiceRequest;
@@ -180,7 +178,7 @@ public class ServiceRequestAdapter extends BaseAdapter {
                 }
 
                 if (labelKey.equals(Open311.SERVICE_NAME)) {
-                    header.title.setText(mServiceRequest.service.getDescription());
+                    header.title.setText(mServiceRequest.service.getService_name());
                 }
                 else if (labelKey.equals(Open311.ATTRIBUTES)) {
                     header.title.setText(convertView.getResources().getString(
@@ -261,6 +259,7 @@ public class ServiceRequestAdapter extends BaseAdapter {
                     String code = String.format("%s[%s]", AttributeEntryActivity.ATTRIBUTE,
                             labelKey);
                     String chosenValue = mServiceRequest.post_data.optString(code);
+
 
                     if (mServiceRequest.isAttributeRequired(labelKey)) {
                         label = "* " + label;

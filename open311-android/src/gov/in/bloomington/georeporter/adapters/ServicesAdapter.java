@@ -6,19 +6,16 @@
 
 package gov.in.bloomington.georeporter.adapters;
 
-import gov.in.bloomington.georeporter.json.ServiceEntityJson;
-import gov.in.bloomington.georeporter.models.Open311;
-
-import java.util.ArrayList;
-
-import gov.in.bloomington.georeporter.util.json.JSONObject;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import gov.in.bloomington.georeporter.json.ServiceEntityJson;
+
+import java.util.ArrayList;
 
 public class ServicesAdapter extends BaseAdapter {
     private static LayoutInflater mInflater;

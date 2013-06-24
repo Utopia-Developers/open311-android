@@ -26,6 +26,7 @@ package gov.in.bloomington.georeporter.util.json;
  */
 
 import android.annotation.SuppressLint;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;

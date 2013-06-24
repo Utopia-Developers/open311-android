@@ -1,27 +1,22 @@
 
 package gov.in.bloomington.georeporter.volleyrequests;
 
-import gov.in.bloomington.georeporter.json.ServiceEntityJson;
-import gov.in.bloomington.georeporter.util.Open311XmlParser;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import android.util.Xml;
-
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
-import com.android.volley.Request.Method;
 import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
+
+import gov.in.bloomington.georeporter.json.ServiceEntityJson;
+import gov.in.bloomington.georeporter.util.Open311XmlParser;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 public class Open311XmlRequest<T> extends Request<T> {
 

@@ -20,10 +20,6 @@
 
 package gov.in.bloomington.georeporter.util;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
@@ -34,6 +30,10 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 import android.util.Log;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Media {
     public static final int MEDIA_TYPE_IMAGE = 1;

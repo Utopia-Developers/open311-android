@@ -6,15 +6,16 @@
 
 package gov.in.bloomington.georeporter.activities;
 
-import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.fragments.PersonalInfoFragment;
-import gov.in.bloomington.georeporter.fragments.ServersFragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
+
+import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.fragments.PersonalInfoFragment;
+import gov.in.bloomington.georeporter.fragments.ServersFragment;
 
 public class SettingsActivity extends BaseFragmentActivity {
     @Override

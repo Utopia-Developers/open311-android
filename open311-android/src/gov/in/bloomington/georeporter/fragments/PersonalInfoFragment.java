@@ -6,12 +6,6 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
-import gov.in.bloomington.georeporter.adapters.PersonalInfoAdapter;
-import gov.in.bloomington.georeporter.models.Preferences;
-
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -24,6 +18,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+
+import gov.in.bloomington.georeporter.adapters.PersonalInfoAdapter;
+import gov.in.bloomington.georeporter.models.Preferences;
+import gov.in.bloomington.georeporter.util.json.JSONException;
+import gov.in.bloomington.georeporter.util.json.JSONObject;
 
 public class PersonalInfoFragment extends SherlockListFragment {
     JSONObject mPersonalInfo = null;

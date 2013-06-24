@@ -2,7 +2,6 @@
 package gov.in.bloomington.georeporter.json;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class AttributesJson {
     private String code;

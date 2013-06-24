@@ -2,9 +2,7 @@
 package gov.in.bloomington.georeporter.fragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,10 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.android.volley.VolleyError;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
-import com.android.volley.toolbox.RequestFuture;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.reflect.TypeToken;
 
@@ -77,6 +74,7 @@ public class MainFragment extends SherlockFragment {
                 getString(R.string.dialog_loading_services), "", true);
 
         current_server = Preferences.getCurrentServer(getActivity());
+        Open311.sEndpoint = current_server;
 
         // TODO
         if (Open311.requestQueue == null)

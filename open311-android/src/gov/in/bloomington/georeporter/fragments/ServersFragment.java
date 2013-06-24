@@ -6,9 +6,32 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnCreateContextMenuListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.ToggleButton;
+
+import com.actionbarsherlock.app.SherlockFragment;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.activities.MainActivity;
@@ -18,36 +41,9 @@ import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.Preferences;
 import gov.in.bloomington.georeporter.util.Util;
 
-import gov.in.bloomington.georeporter.util.json.JSONArray;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.ContextMenu;
-import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.View.OnCreateContextMenuListener;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.ToggleButton;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-
-import com.actionbarsherlock.app.SherlockFragment;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ServersFragment extends SherlockFragment implements
         OnItemClickListener, OnCreateContextMenuListener {

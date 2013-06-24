@@ -1,7 +1,6 @@
 
 package gov.in.bloomington.georeporter.json;
 
-import java.util.List;
 
 public class ValuesJson {
     private String key;
