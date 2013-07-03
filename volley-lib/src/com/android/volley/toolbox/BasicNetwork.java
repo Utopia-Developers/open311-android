@@ -17,6 +17,7 @@
 package com.android.volley.toolbox;
 
 import android.os.SystemClock;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
@@ -65,7 +66,8 @@ public class BasicNetwork implements Network {
      * @param httpStack HTTP stack to be used
      */
     public BasicNetwork(HttpStack httpStack) {
-        // If a pool isn't passed in, then build a small default pool that will give us a lot of
+        // If a pool isn't passed in, then build a small default pool that will
+        // give us a lot of
         // benefit and not use too much memory.
         this(httpStack, new ByteArrayPool(DEFAULT_POOL_SIZE));
     }
@@ -106,9 +108,16 @@ public class BasicNetwork implements Network {
                 long requestLifetime = SystemClock.elapsedRealtime() - requestStart;
                 logSlowRequests(requestLifetime, request, responseContents, statusLine);
 
+                // For Chicago 201
                 if (statusCode != HttpStatus.SC_OK && statusCode != HttpStatus.SC_NO_CONTENT) {
-                    throw new IOException();
+                    if (statusCode != HttpStatus.SC_ACCEPTED && statusCode != HttpStatus.SC_CREATED )
+                    {
+                        Log.d("Status Code", statusCode + "");
+                        throw new IOException();
+                    }
+                        
                 }
+
                 return new NetworkResponse(statusCode, responseContents, responseHeaders, false);
             } catch (SocketTimeoutException e) {
                 attemptRetryOnException("socket", request, new TimeoutError());
@@ -157,8 +166,10 @@ public class BasicNetwork implements Network {
     }
 
     /**
-     * Attempts to prepare the request for a retry. If there are no more attempts remaining in the
-     * request's retry policy, a timeout exception is thrown.
+     * Attempts to prepare the request for a retry. If there are no more
+     * attempts remaining in the request's retry policy, a timeout exception is
+     * thrown.
+     * 
      * @param request The request to use.
      */
     private static void attemptRetryOnException(String logPrefix, Request<?> request,
@@ -215,10 +226,12 @@ public class BasicNetwork implements Network {
             return bytes.toByteArray();
         } finally {
             try {
-                // Close the InputStream and release the resources by "consuming the content".
+                // Close the InputStream and release the resources by
+                // "consuming the content".
                 entity.consumeContent();
             } catch (IOException e) {
-                // This can happen if there was an exception above that left the entity in
+                // This can happen if there was an exception above that left the
+                // entity in
                 // an invalid state.
                 VolleyLog.v("Error occured when calling consumingContent");
             }

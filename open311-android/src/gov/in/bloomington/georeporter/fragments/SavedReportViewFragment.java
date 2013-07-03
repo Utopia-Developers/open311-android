@@ -21,6 +21,10 @@ import ch.boye.httpclientandroidlib.client.methods.HttpGet;
 import ch.boye.httpclientandroidlib.util.EntityUtils;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.android.volley.Response.Listener;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -56,7 +60,7 @@ public class SavedReportViewFragment extends SherlockFragment {
 
         mServiceRequests = Open311.loadServiceRequests(getActivity());
         mServiceRequest = mServiceRequests.get(mPosition);
-        
+
     }
 
     @Override
@@ -67,7 +71,7 @@ public class SavedReportViewFragment extends SherlockFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         refreshViewData();
-        new RefreshFromServerTask().execute();
+        refreshFromServer();
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -98,109 +102,87 @@ public class SavedReportViewFragment extends SherlockFragment {
         }
 
         textView = (TextView) v.findViewById(R.id.status);
-        if (mServiceRequest.service_request.getStatus()!=null) {
+        if (mServiceRequest.service_request.getStatus() != null) {
             textView.setText(mServiceRequest.service_request.getStatus());
         }
     }
 
-    private class RefreshFromServerTask extends AsyncTask<Void, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            Boolean tokenUpdated = false;
-            Boolean serviceRequestUpdated = false;
-            RequestsJson sr = mServiceRequest.service_request;
+    public void refreshFromServer()
+    {
 
-            if (sr.getService_request_id() == null) {
-                String id;
-                id = getServiceRequestId(sr.getToken());
-                if (id != null) {
-                    sr.setService_request_id(id);
-                    tokenUpdated = true;
-                }
-                else {
-                    String pending = getResources().getString(R.string.pending);
-                    if (!sr.getStatus().equals(pending)) {
-                        sr.setStatus(pending);
-                        serviceRequestUpdated = true;
-                    }
-                }
-            }
+        final RequestsJson sr = mServiceRequest.service_request;
 
-            if (sr.getService_request_id()!=null) {
-                serviceRequestUpdated = fetchServiceRequest();
-            }
-            return tokenUpdated || serviceRequestUpdated;
-        }
+        if (sr.getService_request_id() == null) {
 
-        private Boolean fetchServiceRequest() {
+            StringRequest getRequestId = null;
             try {
-                String request_id = mServiceRequest.service_request
-                        .getService_request_id();
-                return updateServiceRequest(Open311.loadStringFromUrl(
-                        mServiceRequest.getServiceRequestUrl(request_id), getActivity()));
-            } catch (ClientProtocolException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IllegalStateException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return false;
-        }
+                getRequestId = new StringRequest(mServiceRequest.getServiceRequestIdFromTokenUrl(sr
+                        .getToken()), new Listener<String>() {
 
-        private String getServiceRequestId(String token) {
-            HttpGet request;
-            try {
-                request = new HttpGet(mServiceRequest.getServiceRequestIdFromTokenUrl(token));
-                HttpResponse r = Open311.getClient(getActivity()).execute(request);
-                String responseString = EntityUtils.toString(r.getEntity());
+                    @Override
+                    public void onResponse(String response) {
+                        String id;
+                        id = response;
+                        if (id != null) {
+                            sr.setService_request_id(id);
+                        }
+                        else {
+                            String pending = getResources().getString(R.string.pending);
+                            if (!sr.getStatus().equals(pending)) {
+                                sr.setStatus(pending);
+                            }
+                        }
+                        if (sr.getService_request_id() != null) {
+                            String request_id = mServiceRequest.service_request
+                                    .getService_request_id();
+                            StringRequest updateServiceRequest = new StringRequest(
+                                    mServiceRequest.getServiceRequestUrl(request_id),
+                                    new Listener<String>() {
 
-                int status = r.getStatusLine().getStatusCode();
-                if (status == HttpStatus.SC_OK) {
-                    JSONArray result = new JSONArray(responseString);
-                    JSONObject o = result.getJSONObject(0);
-                    if (o.has(Open311.SERVICE_REQUEST_ID)) {
-                        return o.getString(Open311.SERVICE_REQUEST_ID);
+                                        @Override
+                                        public void onResponse(String response) {
+                                            if (response != null && response != "")
+                                            {
+                                                ArrayList<RequestsJson> results = new Gson()
+                                                        .fromJson(
+                                                                response,
+                                                                new TypeToken<ArrayList<RequestsJson>>() {
+                                                                }.getType());
+                                                mServiceRequest.service_request = results.get(0);
+                                                mServiceRequests.add(mServiceRequest);
+                                                Open311.saveServiceRequests(getActivity(),
+                                                        mServiceRequests);
+                                                refreshViewData();
+                                            }
+
+                                        }
+                                    }, new ErrorListener() {
+
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+
+                                        }
+                                    });
+
+                            Open311.requestQueue.add(updateServiceRequest);
+
+                        }
                     }
-                }
+                }, new ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (ClientProtocolException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
+
                 e.printStackTrace();
             }
-            return null;
+
+            Open311.requestQueue.add(getRequestId);
+
         }
 
-        private Boolean updateServiceRequest(String result) {
-            if (result != null && result != "") {
-                
-                ArrayList<RequestsJson> results = new Gson().fromJson(result, new TypeToken<ArrayList<RequestsJson>>(){}.getType());
-                mServiceRequest.service_request = results.get(0);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean dataUpdated) {
-            super.onPostExecute(dataUpdated);
-            if (dataUpdated) {
-                try {
-                    mServiceRequests.add(mServiceRequest);
-                    Open311.saveServiceRequests(getActivity(), mServiceRequests);
-                    refreshViewData();
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
+
 }

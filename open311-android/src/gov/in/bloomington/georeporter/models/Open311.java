@@ -51,6 +51,7 @@ import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.util.json.JSONObject;
 import gov.in.bloomington.georeporter.volleyrequests.GsonGetRequest;
+import gov.in.bloomington.georeporter.volleyrequests.GsonPostServiceRequest;
 import gov.in.bloomington.georeporter.volleyrequests.Open311XmlRequest;
 
 import java.io.BufferedReader;
@@ -145,13 +146,14 @@ public class Open311 {
     public static RequestQueue requestQueue = null;
     public static GsonGetRequest<ArrayList<ServiceEntityJson>> sServiceRequestGson = null;
     public static Open311XmlRequest<ArrayList<ServiceEntityJson>> sServiceRequestXML = null;
+    public static GsonPostServiceRequest sPostServiceRequest = null;
 
     public static ArrayList<ServiceEntityJson> sServiceList = null;
 
-    private static String mBaseUrl;
-    private static String mJurisdiction;
-    private static String mApiKey;
-    private static String mFormat = "json";
+    public static String mBaseUrl;
+    public static String mJurisdiction;
+    public static String mApiKey;
+    public static String mFormat = "json";
 
     private static DefaultHttpClient mClient = null;
     private static final int TIMEOUT = 3000;

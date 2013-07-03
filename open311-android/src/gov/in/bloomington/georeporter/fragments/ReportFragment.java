@@ -35,6 +35,9 @@ import ch.boye.httpclientandroidlib.client.ClientProtocolException;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragment;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
@@ -55,6 +58,7 @@ import gov.in.bloomington.georeporter.util.Media;
 import gov.in.bloomington.georeporter.util.Util;
 import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
+import gov.in.bloomington.georeporter.volleyrequests.GsonPostServiceRequest;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -96,6 +100,15 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     private Uri mImageUri;
 
     /**
+     * For Request Post
+     */
+    ProgressDialog mDialog;
+    String mMediaPath = null;
+    String errorMessage;
+    String url = Open311.mBaseUrl + "/requests." + Open311.mFormat;
+    boolean result = false;
+
+    /**
      * @param sr
      * @return ReportFragment
      */
@@ -130,7 +143,86 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
 
         v.findViewById(R.id.submit_button).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                new PostServiceRequestTask().execute();
+
+                mDialog = ProgressDialog.show(getActivity(),
+                        getString(R.string.dialog_posting_service), "", true);
+
+                // Converting from a Uri to a real file path requires a database
+                // cursor. Media.getRealPathFromUri must be done on the main UI
+                // thread, since it makes its own loadInBackground call.
+                if (mServiceRequest.post_data.has(Open311.MEDIA)) {
+                    try {
+                        mMediaPath = Media.getRealPathFromUri(
+                                Uri.parse(mServiceRequest.post_data.getString(Open311.MEDIA)),
+                                getActivity());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Open311.sPostServiceRequest = new GsonPostServiceRequest(getActivity(), url,
+                        new ErrorListener() {
+
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                mDialog.dismiss();
+                                switch (error.networkResponse.statusCode)
+                                {
+                                    case 403:
+                                        errorMessage = getString(
+                                                R.string.error_403);
+                                        break;
+                                    default:
+                                        errorMessage = getString(
+                                                R.string.failure_posting_service);
+                                }
+                                Util.displayCrashDialog(getActivity(), errorMessage);
+                            }
+                        }, new Listener<ArrayList<RequestResponseJson>>() {
+                            @Override
+                            public void onResponse(ArrayList<RequestResponseJson> responses) {
+                                // TODO It needs to be in a background thread
+                                RequestResponseJson response = responses.get(0);
+                                if (responses.size() > 0) {
+                                    SimpleDateFormat isoDate = new SimpleDateFormat(
+                                            Open311.DATETIME_FORMAT);
+                                    String requested_datetime = isoDate.format(new Date());
+
+                                    mServiceRequest.endpoint = Open311.sEndpoint;
+                                    mServiceRequest.service_request = new RequestsJson();
+                                    mServiceRequest.service_request.setToken(response.getToken());
+                                    mServiceRequest.service_request.setService_request_id(response
+                                            .getServiceReuestId());
+                                    mServiceRequest.service_request.setServiceNotice(response
+                                            .getServiceNotice());
+                                    mServiceRequest.service_request.setAccountId(response
+                                            .getAccountId());
+
+                                    try {
+                                        mServiceRequest.post_data.put(
+                                                ServiceRequest.REQUESTED_DATETIME,
+                                                requested_datetime);
+                                    } catch (JSONException e) {
+                                        errorMessage = getResources().getString(
+                                                R.string.failure_posting_service);
+                                    }
+                                    result = Open311.saveServiceRequest(getActivity(),
+                                            mServiceRequest);
+                                }
+                                mDialog.dismiss();
+                                if (!result) {
+                                    if (errorMessage == null) {
+                                        errorMessage = getString(R.string.failure_posting_service);
+                                    }
+                                    Util.displayCrashDialog(getActivity(), errorMessage);
+                                }
+                                else {
+                                    Intent intent = new Intent(getActivity(),
+                                            SavedReportsActivity.class);
+                                    startActivity(intent);
+                                }
+                            }
+                        }, mServiceRequest, mMediaPath);
+                Open311.requestQueue.add(Open311.sPostServiceRequest);
             }
         });
         v.findViewById(R.id.cancel_button).setOnClickListener(new View.OnClickListener() {
@@ -404,90 +496,6 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                 }
             }
             super.onPostExecute(address);
-        }
-    }
-
-    /**
-     * AsyncTask for sending the ServiceRequest to the endpoint When finished
-     * the user will be sent to the Saved Reports screen
-     */
-    private class PostServiceRequestTask extends AsyncTask<Void, Void, Boolean> {
-        private ProgressDialog mDialog;
-        private String mMediaPath;
-        private String errorMessage;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mDialog = ProgressDialog.show(getActivity(),
-                    getString(R.string.dialog_posting_service), "", true);
-
-            // Converting from a Uri to a real file path requires a database
-            // cursor. Media.getRealPathFromUri must be done on the main UI
-            // thread, since it makes its own loadInBackground call.
-            if (mServiceRequest.post_data.has(Open311.MEDIA)) {
-                try {
-                    mMediaPath = Media.getRealPathFromUri(
-                            Uri.parse(mServiceRequest.post_data.getString(Open311.MEDIA)),
-                            getActivity());
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            ArrayList<RequestResponseJson> responses;
-
-            try {
-                responses = Open311.postServiceRequest(mServiceRequest, getActivity(), mMediaPath);
-
-                RequestResponseJson response = responses.get(0);
-                if (responses.size() > 0) {
-                    SimpleDateFormat isoDate = new SimpleDateFormat(Open311.DATETIME_FORMAT);
-                    String requested_datetime = isoDate.format(new Date());
-
-                    mServiceRequest.endpoint = Open311.sEndpoint;
-                    mServiceRequest.service_request = new RequestsJson();
-                    mServiceRequest.service_request.setToken(response.getToken());
-                    mServiceRequest.service_request.setService_request_id(response
-                            .getServiceReuestId());
-                    mServiceRequest.service_request.setServiceNotice(response.getServiceNotice());
-                    mServiceRequest.service_request.setAccountId(response.getAccountId());
-
-                    mServiceRequest.post_data.put(ServiceRequest.REQUESTED_DATETIME,
-                            requested_datetime);
-                    return Open311.saveServiceRequest(getActivity(), mServiceRequest);
-
-                }
-            } catch (ClientProtocolException e1) {
-                errorMessage = getResources().getString(R.string.failure_posting_service);
-            } catch (JSONException e1) {
-                errorMessage = getResources().getString(R.string.failure_posting_service);
-            } catch (IOException e1) {
-                errorMessage = getResources().getString(R.string.failure_posting_service);
-            } catch (Open311Exception e1) {
-                errorMessage = e1.getDialogMessage();
-            }
-            return false;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-            mDialog.dismiss();
-            if (!result) {
-                if (errorMessage == null) {
-                    errorMessage = getString(R.string.failure_posting_service);
-                }
-                Util.displayCrashDialog(getActivity(), errorMessage);
-            }
-            else {
-                Intent intent = new Intent(getActivity(), SavedReportsActivity.class);
-                startActivity(intent);
-            }
         }
     }
 
