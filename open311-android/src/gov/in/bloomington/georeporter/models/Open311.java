@@ -139,7 +139,8 @@ public class Open311 {
     public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     public static ServerAttributeJson sEndpoint;
-    public static Boolean sReady = false;
+    public static Boolean isLatestServiceListLoaded = false;
+    public static String prevEndpoint;
     public static HashMap<String, ServiceDefinationJson> sServiceDefinitions;
     public static ArrayList<String> sGroups;
 

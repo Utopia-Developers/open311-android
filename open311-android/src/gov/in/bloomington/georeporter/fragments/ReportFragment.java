@@ -165,7 +165,12 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                             @Override
                             public void onErrorResponse(VolleyError error) {
                                 mDialog.dismiss();
-                                switch (error.networkResponse.statusCode)
+                                int statusCode = 0;
+                                if(error.networkResponse != null)
+                                {
+                                    statusCode = error.networkResponse.statusCode;
+                                }
+                                switch (statusCode)
                                 {
                                     case 403:
                                         errorMessage = getString(
