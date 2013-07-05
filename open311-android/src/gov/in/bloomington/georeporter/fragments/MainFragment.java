@@ -53,6 +53,7 @@ public class MainFragment extends SherlockFragment {
             Bundle savedInstanceState) {
         layout = inflater.inflate(R.layout.fragment_main,
                 container, false);
+
         splashImage = (ImageView) layout.findViewById(R.id.splash);
         splashImage.setOnClickListener(new OnClickListener() {
             @Override
@@ -70,14 +71,15 @@ public class MainFragment extends SherlockFragment {
         // created.
         super.onResume();
         current_server = Preferences.getCurrentServer(getActivity());
-        if(Open311.prevEndpoint ==null || ! Open311.prevEndpoint.contentEquals(current_server.name) || Open311.isLatestServiceListLoaded == false)
+        if (Open311.prevEndpoint == null
+                || !Open311.prevEndpoint.contentEquals(current_server.url)
+                || Open311.isLatestServiceListLoaded == false)
         {
-            
+
             pendingRequests = new AtomicInteger(0);
             progressDialog = ProgressDialog.show(getActivity(),
                     getString(R.string.dialog_loading_services), "", true);
 
-            
             Open311.sEndpoint = current_server;
 
             // TODO
@@ -94,8 +96,13 @@ public class MainFragment extends SherlockFragment {
 
                 if (current_server.format.contentEquals(Open311.JSON))
                 {
+                    String url = Open311.getServiceListUrl();
+                    // Else we get a exception from volley
+                    if(url.startsWith("www."))
+                        url+="http://";
                     Open311.sServiceRequestGson = new GsonGetRequest<ArrayList<ServiceEntityJson>>(
-                            Open311.getServiceListUrl(), new TypeToken<ArrayList<ServiceEntityJson>>() {
+                            url,
+                            new TypeToken<ArrayList<ServiceEntityJson>>() {
                             }.getType(), null, new Listener<ArrayList<ServiceEntityJson>>() {
 
                                 @Override
@@ -113,7 +120,8 @@ public class MainFragment extends SherlockFragment {
                 else
                 {
                     Open311.sServiceRequestXML = new Open311XmlRequest<ArrayList<ServiceEntityJson>>(
-                            Open311.getServiceListUrl(), new Listener<ArrayList<ServiceEntityJson>>() {
+                            Open311.getServiceListUrl(),
+                            new Listener<ArrayList<ServiceEntityJson>>() {
 
                                 @Override
                                 public void onResponse(ArrayList<ServiceEntityJson> response) {
@@ -135,7 +143,7 @@ public class MainFragment extends SherlockFragment {
         {
             setupFragment();
         }
-       
+
     }
 
     /**
@@ -165,7 +173,7 @@ public class MainFragment extends SherlockFragment {
         if (!loadServiceDefinations())
         {
             progressDialog.dismiss();
-            Open311.prevEndpoint = Open311.sEndpoint.name;
+            Open311.prevEndpoint = Open311.sEndpoint.url;
             Open311.isLatestServiceListLoaded = true;
             Intent intent = new Intent(getActivity(), ReportActivity.class);
             startActivity(intent);
@@ -173,7 +181,7 @@ public class MainFragment extends SherlockFragment {
 
         setupFragment();
     }
-    
+
     public void setupFragment()
     {
         getSherlockActivity().getSupportActionBar().setTitle(
@@ -231,7 +239,7 @@ public class MainFragment extends SherlockFragment {
                                     Open311.sServiceDefinitions.put(code, response);
                                     if (pendingRequests.decrementAndGet() == 0)
                                     {
-                                        Open311.prevEndpoint = Open311.sEndpoint.name;
+                                        Open311.prevEndpoint = Open311.sEndpoint.url;
                                         Open311.isLatestServiceListLoaded = true;
                                         progressDialog.dismiss();
                                         Intent intent = new Intent(getActivity(),

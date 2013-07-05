@@ -646,7 +646,7 @@ public class Open311 {
      */
     public static String getServiceListUrl() {
         String url = mBaseUrl + "/services." + mFormat;
-        if (mJurisdiction.length() > 0) {
+        if (mJurisdiction != null && mJurisdiction.length() > 0) {
             url = url + "?" + JURISDICTION + "=" + mJurisdiction;
         }
         return url;

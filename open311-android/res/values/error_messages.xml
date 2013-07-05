@@ -3,4 +3,7 @@
     <string name="failure_loading_services">Failed to load service information</string>
     <string name="failure_posting_service">Posting report failed</string>
     <string name="error_403">This app does not have permission</string>
+    
+    <string name="invalid_server_url">The Server URL is not a valid URL.</string>
+    <string name="invalid_server_name">Please enter a Server name.</string>
 </resources>

@@ -6,11 +6,13 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
+import android.R.string;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -93,6 +95,7 @@ public class ServersFragment extends SherlockFragment implements
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(
                                 getActivity());
+
                         builder.setView(dialogLayout)
                                 .setTitle(R.string.button_add_server)
                                 .setPositiveButton(R.string.save,
@@ -107,6 +110,7 @@ public class ServersFragment extends SherlockFragment implements
                                                                              // data
                                                 refresh(); // Redraw the screen
                                                            // from Preferences
+
                                                 dialog.dismiss(); // Close the
                                                                   // dialog
                                             }
@@ -146,6 +150,8 @@ public class ServersFragment extends SherlockFragment implements
 
         ServerAttributeJson server = new ServerAttributeJson();
 
+        boolean flagValid = true;
+
         server.name = name.getText().toString();
         server.url = url.getText().toString();
         server.jurisdiction_id = jurisdiction.getText().toString();
@@ -154,8 +160,43 @@ public class ServersFragment extends SherlockFragment implements
         Log.d("Selected Item", format.getSelectedItem().toString());
         server.format = format.getSelectedItem().toString();
 
-        mCustomServers.add(server);
-        Preferences.setCustomServers(mCustomServers, getActivity());
+        String error = "";
+
+        if (!(server.url.startsWith("http://")||server.url.startsWith("https://")||server.url.startsWith("www.")))
+        {
+            flagValid = false;
+            error = getString(R.string.invalid_server_url);
+        }
+        
+        if (!(server.name.length() > 0))
+        {
+            flagValid = false;
+            if(error.length() == 0)
+                error = getString(R.string.invalid_server_name);
+            else
+                error += "\n\n" + getString(R.string.invalid_server_name);
+        }
+
+        if (flagValid)
+        {
+            mCustomServers.add(server);
+            Preferences.setCustomServers(mCustomServers, getActivity());
+        }
+        else
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Invalid Server Parameters");
+            builder.setMessage(error);
+            builder.setNegativeButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    
+                }
+            });
+            
+            builder.show();
+        }
 
     }
 
@@ -193,7 +234,7 @@ public class ServersFragment extends SherlockFragment implements
         current_server = mServers.get(position);
 
         Preferences.setCurrentServer(current_server, getActivity());
-
+        Log.d("current server ser","yes");
         Intent i = new Intent(getActivity(), MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);

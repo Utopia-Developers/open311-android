@@ -128,9 +128,9 @@ public class Preferences {
      */
     public static ServerAttributeJson getCurrentServer(Context context) {
         Preferences.loadState(context);
-        String serverName = mState.getString(CURRENT_SERVER, "");
+        String serverUrl = mState.getString(CURRENT_SERVER, "");
         ServerAttributeJson currentServer;
-        if (serverName != null) {
+        if (serverUrl != null) {
             ServerAttributeJson s = null;
 
             // TODO
@@ -141,10 +141,10 @@ public class Preferences {
                     Util.file_get_contents(context, R.raw.available_servers),
                     new TypeToken<ArrayList<ServerAttributeJson>>() {
                     }.getType());
-            s = findServerByName(available_servers, serverName);
+            s = findServerByUrl(available_servers, serverUrl);
             if (s != null)
                 return s;
-            s = findServerByName(getCustomServers(context), serverName);
+            s = findServerByUrl(getCustomServers(context), serverUrl);
             if (s != null)
                 return s;
         }
@@ -155,17 +155,17 @@ public class Preferences {
      * Loops through a JSONArray and returns the match, based on the name
      * 
      * @param servers
-     * @param name
+     * @param URL
      * @return JSONObject
      */
-    private static ServerAttributeJson findServerByName(
-            ArrayList<ServerAttributeJson> servers, String name) {
+    private static ServerAttributeJson findServerByUrl(
+            ArrayList<ServerAttributeJson> servers, String url) {
         int len = servers.size();
         ServerAttributeJson s;
         for (int i = 0; i < len; i++) {
 
             s = servers.get(i);
-            if (s.name.contentEquals(name)) {
+            if (s.url.contentEquals(url)) {
                 return s;
             }
 
@@ -189,7 +189,7 @@ public class Preferences {
         SharedPreferences.Editor editor = mState.edit();
         if (server != null) {
 
-            editor.putString(CURRENT_SERVER, server.name);
+            editor.putString(CURRENT_SERVER, server.url);
 
         } else {
             editor.remove(CURRENT_SERVER);

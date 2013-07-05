@@ -34,6 +34,7 @@
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="save">Save</string>
+    <string name="ok">Ok</string>
     <string name="pending">Pending</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -42,4 +43,6 @@
     <string name="radio_button_hybrid">Hybrid</string>
     <string name="radio_button_satellite">Satellite</string>
     
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
 </resources>

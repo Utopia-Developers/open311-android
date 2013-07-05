@@ -23,14 +23,14 @@ import java.util.ArrayList;
 public class ServersAdapter extends BaseAdapter {
     private ArrayList<ServerAttributeJson> mServers;
     private static LayoutInflater mInflater;
-    private String mCurrentServerName;
+    private String mCurrentServerURL;
 
     public ServersAdapter(ArrayList<ServerAttributeJson> d, Context c) {
         mServers = d;
         mInflater = LayoutInflater.from(c);
 
         ServerAttributeJson currentServer = Preferences.getCurrentServer(c);
-        mCurrentServerName = currentServer == null ? "" : currentServer.name;
+        mCurrentServerURL = currentServer == null ? "" : currentServer.url;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ServersAdapter extends BaseAdapter {
 
         String name = mServers.get(position).name;
         String url = mServers.get(position).url;
-        if (name.equals(mCurrentServerName)) {
+        if (url.equals(mCurrentServerURL)) {
             holder.radio.setChecked(true);
         }
         else {

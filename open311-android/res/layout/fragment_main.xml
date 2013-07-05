@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
-    tools:ignore="Overdraw" >
+    android:background="#ffffff" >
 
     <ImageView
         android:id="@+id/splash"
@@ -12,9 +11,8 @@
         android:layout_height="fill_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:contentDescription="@string/app_name"
         android:scaleType="centerInside"
-        android:src="@drawable/open311"
-        android:contentDescription="@string/app_name"/>
+        android:src="@drawable/open311" />
 
 </RelativeLayout>
-
