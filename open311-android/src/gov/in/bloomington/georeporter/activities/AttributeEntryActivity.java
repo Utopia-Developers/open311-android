@@ -34,7 +34,7 @@ import gov.in.bloomington.georeporter.util.json.JSONArray;
 
 import java.util.ArrayList;
 
-public class AttributeEntryActivity extends BaseActivity {
+public class AttributeEntryActivity extends BaseFragmentActivity {
     public static final String ATTRIBUTE = "attribute";
     public static final String VALUE = "value";
 

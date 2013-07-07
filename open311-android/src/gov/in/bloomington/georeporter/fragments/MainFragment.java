@@ -47,6 +47,13 @@ public class MainFragment extends SherlockFragment {
     private ProgressDialog progressDialog;
 
     private ServerAttributeJson current_server;
+    
+    private OnSetActionBarTitleListener titleSetCallback;
+    
+    public interface OnSetActionBarTitleListener
+    {
+        public void setActionBarTitle(String title);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,8 +84,9 @@ public class MainFragment extends SherlockFragment {
         {
 
             pendingRequests = new AtomicInteger(0);
+            
             progressDialog = ProgressDialog.show(getActivity(),
-                    getString(R.string.dialog_loading_services), "", true);
+                    getString(R.string.dialog_loading_services), "Please Wait", true);
 
             Open311.sEndpoint = current_server;
 
@@ -98,8 +106,8 @@ public class MainFragment extends SherlockFragment {
                 {
                     String url = Open311.getServiceListUrl();
                     // Else we get a exception from volley
-                    if(url.startsWith("www."))
-                        url+="http://";
+                    if (url.startsWith("www."))
+                        url += "http://";
                     Open311.sServiceRequestGson = new GsonGetRequest<ArrayList<ServiceEntityJson>>(
                             url,
                             new TypeToken<ArrayList<ServiceEntityJson>>() {
@@ -184,8 +192,8 @@ public class MainFragment extends SherlockFragment {
 
     public void setupFragment()
     {
-        getSherlockActivity().getSupportActionBar().setTitle(
-                current_server.name);
+        titleSetCallback = (OnSetActionBarTitleListener) getActivity();
+        titleSetCallback.setActionBarTitle(current_server.name);
 
         String imageName = current_server.splash_image;
         Log.d("Image Name", imageName + "");

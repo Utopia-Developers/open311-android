@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.actionbarsherlock.view.MenuItem;
+
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.fragments.SavedReportViewFragment;
 import gov.in.bloomington.georeporter.fragments.SavedReportsListFragment;
@@ -21,11 +23,13 @@ public class SavedReportsActivity extends BaseFragmentActivity implements OnItem
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getSupportActionBar().setTitle(R.string.menu_archive);
+        setContentView(R.layout.activity_saved_report);
+        super.setupNavigationDrawer();
+        title = getString(R.string.menu_archive);
+        getSupportActionBar().setTitle(title);
         SavedReportsListFragment listFragment = new SavedReportsListFragment();
         getSupportFragmentManager().beginTransaction()
-                .add(android.R.id.content, listFragment)
+                .add(R.id.content_frame, listFragment)
                 .addToBackStack(null)
                 .commit();
 
@@ -38,5 +42,21 @@ public class SavedReportsActivity extends BaseFragmentActivity implements OnItem
                 .replace(android.R.id.content, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        if (mDrawerToggle.onOptionsItemSelected(item))
+        {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
     }
 }

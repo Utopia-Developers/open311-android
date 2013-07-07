@@ -31,8 +31,11 @@ public class ReportActivity extends BaseFragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_report);
+        super.setupNavigationDrawer();
+        title = getString(R.string.menu_report);
         mActionBar = getSupportActionBar();
-        mActionBar.setTitle(R.string.menu_report);
+        mActionBar.setTitle(title);
         if(Open311.sGroups == null)
         {
             
@@ -40,7 +43,7 @@ public class ReportActivity extends BaseFragmentActivity
         else if (Open311.sGroups.size() > 1) {
             ChooseGroupFragment chooseGroup = new ChooseGroupFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(android.R.id.content, chooseGroup)
+                    .add(R.id.content_frame, chooseGroup)
                     .addToBackStack(null)
                     .commit();
         }
@@ -62,7 +65,8 @@ public class ReportActivity extends BaseFragmentActivity
 
     @Override
     public void onServiceSelected(ServiceEntityJson service) {
-        mActionBar.setTitle(service.getService_name());
+        title = service.getService_name();
+        mActionBar.setTitle(title);
 
         ServiceRequest sr = new ServiceRequest(service, this);
         mReportFragment = ReportFragment.newInstance(sr);

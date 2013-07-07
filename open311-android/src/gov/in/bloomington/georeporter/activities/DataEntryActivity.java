@@ -19,7 +19,7 @@ import android.widget.TextView;
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.models.Open311;
 
-public class DataEntryActivity extends BaseActivity {
+public class DataEntryActivity extends BaseFragmentActivity {
     public static final String KEY = "key";
     public static final String VALUE = "value";
     public static final String PROMPT = "prompt";

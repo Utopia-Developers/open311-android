@@ -11,18 +11,26 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.webkit.WebView;
 
-public class AboutActivity extends BaseActivity {
+import com.actionbarsherlock.view.MenuItem;
+
+import gov.in.bloomington.georeporter.R;
+
+public class AboutActivity extends BaseFragmentActivity {
     WebView webview;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        webview = new WebView(this);
+        setContentView(R.layout.activity_about);
+        super.setupNavigationDrawer();
+        title = getString(R.string.menu_about);
+        getSupportActionBar().setTitle(title);
+        webview = (WebView) findViewById(R.id.webview);
         webview.getSettings().setJavaScriptEnabled(true);
         webview.addJavascriptInterface(new WebAppInterface(), "Android");
         webview.loadUrl("file:///android_asset/about.html");
-        setContentView(webview);
+        
     }
 
     private class WebAppInterface {
@@ -36,5 +44,21 @@ public class AboutActivity extends BaseActivity {
             }
             return "";
         }
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        if (mDrawerToggle.onOptionsItemSelected(item))
+        {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
     }
 }
