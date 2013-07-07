@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textViewServerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_toLeftOf="@+id/radioButtonServerSelect"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/navdrawer_text_colour" />
+
+    <TextView
+        android:id="@+id/textViewServerUrl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textViewServerName"
+        android:layout_below="@+id/textViewServerName"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/navdrawer_text_colour" />
+
+    <RadioButton
+        android:id="@+id/radioButtonServerSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textViewServerName"
+        android:layout_alignBottom="@+id/textViewServerName"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:clickable="false"
+        android:focusable="false" />
+
+</RelativeLayout>

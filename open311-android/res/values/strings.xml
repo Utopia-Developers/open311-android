@@ -44,5 +44,14 @@
     <string name="radio_button_satellite">Satellite</string>
     
     <string name="drawer_open">Open</string>
-    <string name="drawer_close">Close</string>
+    <string name="drawer_close">Close</string>    
+    <string-array name="navigation_list">
+        <item>Select Server</item>
+        <item>Add Server</item>
+        <item>Actions</item>
+        <item>Reports</item>
+        <item>Personal Info</item>
+        <item>My Reports</item>
+        <item>About</item>
+    </string-array>
 </resources>
