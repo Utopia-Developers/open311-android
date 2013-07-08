@@ -54,7 +54,7 @@ public class ServersFragment extends SherlockFragment implements
     private ListView mListView;
     private Gson gson;
 
-    private static final List<String> FORMAT_CHOICES = Arrays.asList(
+    private final List<String> FORMAT_CHOICES = Arrays.asList(
             Open311.JSON, Open311.XML);
 
     /**
@@ -104,15 +104,10 @@ public class ServersFragment extends SherlockFragment implements
                                             public void onClick(
                                                     DialogInterface dialog,
                                                     int which) {
-                                                saveNewServer(dialogLayout); // Update
-                                                                             // the
-                                                                             // Preferences
-                                                                             // data
-                                                refresh(); // Redraw the screen
-                                                           // from Preferences
-
-                                                dialog.dismiss(); // Close the
-                                                                  // dialog
+                                                // Update the Preferences data
+                                                saveNewServer(dialogLayout);
+                                                // Close the dialog
+                                                dialog.dismiss();
                                             }
                                         })
                                 .setNegativeButton(R.string.cancel,
@@ -162,16 +157,17 @@ public class ServersFragment extends SherlockFragment implements
 
         String error = "";
 
-        if (!(server.url.startsWith("http://")||server.url.startsWith("https://")||server.url.startsWith("www.")))
+        if (!(server.url.startsWith("http://") || server.url.startsWith("https://") || server.url
+                .startsWith("www.")))
         {
             flagValid = false;
             error = getString(R.string.invalid_server_url);
         }
-        
+
         if (!(server.name.length() > 0))
         {
             flagValid = false;
-            if(error.length() == 0)
+            if (error.length() == 0)
                 error = getString(R.string.invalid_server_name);
             else
                 error += "\n\n" + getString(R.string.invalid_server_name);
@@ -187,14 +183,15 @@ public class ServersFragment extends SherlockFragment implements
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Invalid Server Parameters");
             builder.setMessage(error);
-            builder.setNegativeButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-                
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    
-                }
-            });
-            
+            builder.setNegativeButton(getString(android.R.string.ok),
+                    new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+
             builder.show();
         }
 
@@ -230,11 +227,10 @@ public class ServersFragment extends SherlockFragment implements
     @Override
     public void onItemClick(AdapterView<?> l, View v, int position, long id) {
         ServerAttributeJson current_server = null;
-
         current_server = mServers.get(position);
-
         Preferences.setCurrentServer(current_server, getActivity());
-        Log.d("current server ser","yes");
+        
+        Log.d("current server ser", "yes");
         Intent i = new Intent(getActivity(), MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
