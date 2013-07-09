@@ -43,8 +43,7 @@ public class ReportActivity extends BaseFragmentActivity
         else if (Open311.sGroups.size() > 1) {
             ChooseGroupFragment chooseGroup = new ChooseGroupFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_frame, chooseGroup)
-                    .addToBackStack(null)
+                    .add(R.id.content_frame, chooseGroup)                    
                     .commit();
         }
         else {
@@ -58,7 +57,7 @@ public class ReportActivity extends BaseFragmentActivity
         ChooseServiceFragment chooseService = new ChooseServiceFragment();
         chooseService.setServices(Open311.getServices(group, this));
         getSupportFragmentManager().beginTransaction()
-                .replace(android.R.id.content, chooseService)
+                .replace(R.id.content_frame, chooseService)
                 .addToBackStack(null)
                 .commit();
     }
@@ -72,7 +71,7 @@ public class ReportActivity extends BaseFragmentActivity
         mReportFragment = ReportFragment.newInstance(sr);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(android.R.id.content, mReportFragment)
+                .replace(R.id.content_frame, mReportFragment)
                 .addToBackStack(null)
                 .commit();
     }

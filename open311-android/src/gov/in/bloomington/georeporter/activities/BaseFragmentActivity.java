@@ -258,7 +258,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
 
             builder.show();
         }
-
+        
     }
 
     @Override

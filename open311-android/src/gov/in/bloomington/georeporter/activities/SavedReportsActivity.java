@@ -29,8 +29,7 @@ public class SavedReportsActivity extends BaseFragmentActivity implements OnItem
         getSupportActionBar().setTitle(title);
         SavedReportsListFragment listFragment = new SavedReportsListFragment();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.content_frame, listFragment)
-                .addToBackStack(null)
+                .add(R.id.content_frame, listFragment)                
                 .commit();
 
     }
