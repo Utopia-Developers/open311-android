@@ -120,7 +120,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
                 Util.file_get_contents(this, R.raw.available_servers),
                 new TypeToken<ArrayList<ServerAttributeJson>>() {
                 }.getType());
-        
+
         mOrignallyAvailableServers = mServers.size();
 
         mCustomServers = Preferences.getCustomServers(this);
@@ -150,8 +150,8 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
         Intent intent;
         switch (item.getItemId()) {
             case R.id.menu_delete:
-                int position = (info.position - mOrignallyAvailableServers)-1;
-                Log.d("Delete Pos",info.position+" "+position);               
+                int position = (info.position - mOrignallyAvailableServers) - 1;
+                Log.d("Delete Pos", info.position + " " + position);
                 mCustomServers.remove(position);
                 Preferences.setCustomServers(mCustomServers, BaseFragmentActivity.this);
                 mListAdapter.removeServer(info.position, info.position - 1);
@@ -258,7 +258,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
 
             builder.show();
         }
-        
+
     }
 
     @Override
@@ -268,9 +268,9 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
         // Servers from available_servers cannot be deleted.
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
         int reqPos = 0;
-        if(mCustomServers == null)
+        if (mCustomServers == null)
             reqPos = (mServers.size());
-        else 
+        else
             reqPos = (mServers.size() - mCustomServers.size());
         if (info.position > reqPos
                 && info.position <= mServers.size() + 2) {
@@ -278,8 +278,6 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
             inflater.inflate(R.menu.context_listitem, menu);
         }
     }
-
-   
 
     private class NavigationDrawerOnLongItemClickListener implements OnItemLongClickListener
     {
@@ -297,6 +295,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
 
         @Override
         public void onItemClick(AdapterView<?> arg0, View view, int pos, long arg3) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             int position = -1;
             returnNow = false;
             Log.d("Position", pos + "  " + mServers.size());
@@ -362,12 +361,15 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
                 mListAdapter.selectedServerPosition = pos;
                 mListAdapter.mCurrentServerURL = current_server.url;
 
-                // Only Req if Parent Activity is MainActivity
-                ((RadioButton) mListAdapter.selectedView.findViewById(R.id.radioButtonServerSelect))
-                        .setChecked(false);
+                //First Occurrence
+                if (mListAdapter.selectedView != null)
+                    ((RadioButton) mListAdapter.selectedView
+                            .findViewById(R.id.radioButtonServerSelect))
+                            .setChecked(false);
                 mListAdapter.selectedView = view;
                 ((RadioButton) view.findViewById(R.id.radioButtonServerSelect)).setChecked(true);
             }
+            mDrawerLayout.closeDrawers();
             if (returnNow)
                 return;
             Intent intent;

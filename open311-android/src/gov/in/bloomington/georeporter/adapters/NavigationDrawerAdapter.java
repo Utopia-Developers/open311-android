@@ -35,7 +35,7 @@ public class NavigationDrawerAdapter extends BaseAdapter {
     private final int TYPE_LIST_ACTION = 2;
 
     private ServerAttributeJson currentServer;
-    boolean isServerSelected;
+    public boolean isServerSelected;
 
     public NavigationDrawerAdapter(ArrayList<ServerAttributeJson> d, Context c) {
         mServers = d;
@@ -113,6 +113,7 @@ public class NavigationDrawerAdapter extends BaseAdapter {
             return false;
         else if (isServerSelected)
             return true;
+        //You should be able to add servers at all times.
         else if (tempItem.layoutId == TYPE_LIST_SERVER || position == mServers.size() + 1)
             return true;
         else
@@ -121,16 +122,7 @@ public class NavigationDrawerAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0)
-            return TYPE_LIST_HEADER;
-        else if (position <= (mServers.size()))
-            return TYPE_LIST_SERVER;
-        else if (position == (mServers.size() + 1))
-            return TYPE_LIST_ACTION;
-        else if (position == (mServers.size() + 2))
-            return TYPE_LIST_HEADER;
-        else
-            return TYPE_LIST_ACTION;
+        return mList.get(position).layoutId;
     }
 
     public void addServer(ServerAttributeJson server)
@@ -138,11 +130,23 @@ public class NavigationDrawerAdapter extends BaseAdapter {
         tempItem = new AdapterList();
         tempItem.name = server.name;
         tempItem.url = server.url;
-        tempItem.layoutId = TYPE_LIST_SERVER;
-        Log.d("Position Stored", mServers.size()+1 +" "+mServers.size());
-        mList.add(mServers.size()+1, tempItem);
-        mServers.add(server);
+        tempItem.layoutId = TYPE_LIST_SERVER;        
+        //Log.d("Position Stored", mServers.size() +" "+mServers.size());        
+        mList.add(mServers.size(), tempItem);        
+        //logMlistEntirely();
         notifyDataSetChanged();
+        mServers.add(server);
+    }
+    
+    public void logMlistEntirely()
+    {
+        AdapterList temp;
+        for(int i=0;i<mList.size();i++)
+        {
+            temp = mList.get(i);
+            Log.d("MList",temp.name + " " + temp.layoutId+" "+i+"  "+mServers.size());
+        }
+            
     }
     
     public void removeServer(int listPosition,int serverPosition)
@@ -221,7 +225,8 @@ public class NavigationDrawerAdapter extends BaseAdapter {
             case TYPE_LIST_SERVER:
                 String name = mList.get(position).name;
                 String url = mList.get(position).url;
-                Log.d("Position Retrieved", position+" ");
+                //Log.d("Position Retrieved", position+" ");
+                //Log.d("type", type + "  "+ mList.get(position).layoutId);
                 if (url.equals(mCurrentServerURL)) {
                     holder.radio.setChecked(true);
                     selectedServerPosition = position;
