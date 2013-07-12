@@ -347,7 +347,16 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
                 mListAdapter.selectedView = view;
                 ((RadioButton) view.findViewById(R.id.radioButtonServerSelect)).setChecked(true);
                 
-                if(!Open311.sEndpoint.url.contentEquals(Open311.prevEndpoint))
+                //Check for when no server is selected
+                if(Open311.prevEndpoint == null)
+                {
+                    Intent i = new Intent(BaseFragmentActivity.this, MainActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(i);
+                    //To prevent the jarring effect of activity transition.
+                    overridePendingTransition(0, 0);
+                }
+                else if(!Open311.sEndpoint.url.contentEquals(Open311.prevEndpoint))
                 {
                     Intent i = new Intent(BaseFragmentActivity.this, MainActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
