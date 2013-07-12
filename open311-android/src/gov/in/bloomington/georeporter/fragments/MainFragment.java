@@ -21,12 +21,9 @@ import com.google.gson.reflect.TypeToken;
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.activities.MainActivity.OnDataRefreshListener;
 import gov.in.bloomington.georeporter.activities.ReportActivity;
-import gov.in.bloomington.georeporter.activities.PersonalInfoActivity;
-import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 import gov.in.bloomington.georeporter.models.Open311;
-import gov.in.bloomington.georeporter.models.Preferences;
 import gov.in.bloomington.georeporter.util.Open311XmlParser;
 import gov.in.bloomington.georeporter.util.Util;
 import gov.in.bloomington.georeporter.volleyrequests.GsonGetRequest;
@@ -39,7 +36,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainFragment extends SherlockFragment implements OnDataRefreshListener {
     private View layout;
-    private static String SPLASH_IMAGE = "splash_image";
     private String serviceDefinationTag = "Defination";
 
     private ImageView splashImage;
