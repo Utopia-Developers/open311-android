@@ -63,7 +63,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
     private LayoutInflater inflater;
     private boolean returnNow;
     private int mOrignallyAvailableServers;
-
+    
     protected Gson gson;
     // Servers
     protected ArrayList<ServerAttributeJson> mCustomServers = null;
@@ -137,11 +137,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
         registerForContextMenu(mDrawerList);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+    
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -161,28 +157,9 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
                 intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                return true; 
+            case R.id.menu_refresh:
                 return true;
-
-            case R.id.menu_settings:
-                intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
-
-            case R.id.menu_report:
-                intent = new Intent(this, ReportActivity.class);
-                startActivity(intent);
-                return true;
-
-            case R.id.menu_archive:
-                intent = new Intent(this, SavedReportsActivity.class);
-                startActivity(intent);
-                return true;
-
-            case R.id.menu_about:
-                intent = new Intent(this, AboutActivity.class);
-                startActivity(intent);
-                return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -357,6 +334,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
                 ServerAttributeJson current_server = null;
                 current_server = mServers.get(position);
                 Preferences.setCurrentServer(current_server, BaseFragmentActivity.this);
+                Open311.sEndpoint = current_server;
                 returnNow = true;
                 mListAdapter.selectedServerPosition = pos;
                 mListAdapter.mCurrentServerURL = current_server.url;
@@ -368,6 +346,16 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
                             .setChecked(false);
                 mListAdapter.selectedView = view;
                 ((RadioButton) view.findViewById(R.id.radioButtonServerSelect)).setChecked(true);
+                
+                if(!Open311.sEndpoint.url.contentEquals(Open311.prevEndpoint))
+                {
+                    Intent i = new Intent(BaseFragmentActivity.this, MainActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(i);
+                    //To prevent the jarring effect of activity transition.
+                    overridePendingTransition(0, 0);
+                }
+                
             }
             mDrawerLayout.closeDrawers();
             if (returnNow)
@@ -379,7 +367,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
                     startActivity(intent);
                     break;
                 case 1:
-                    intent = new Intent(BaseFragmentActivity.this, SettingsActivity.class);
+                    intent = new Intent(BaseFragmentActivity.this, PersonalInfoActivity.class);
                     startActivity(intent);
                     break;
                 case 2:

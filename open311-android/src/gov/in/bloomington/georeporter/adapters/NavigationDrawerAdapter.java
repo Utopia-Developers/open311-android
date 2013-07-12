@@ -69,23 +69,23 @@ public class NavigationDrawerAdapter extends BaseAdapter {
             switch (i)
             {
                 case 1:
-                    tempItem.itemResource = R.drawable.ic_menu_start_conversation;
+                    tempItem.itemResource = R.drawable.ic_action_add_server;
                     tempItem.layoutId = TYPE_LIST_ACTION;
                     break;
                 case 3:
-                    tempItem.itemResource = R.drawable.ic_menu_start_conversation;
+                    tempItem.itemResource = R.drawable.ic_action_view_report;
                     tempItem.layoutId = TYPE_LIST_ACTION;
                     break;
                 case 4:
-                    tempItem.itemResource = R.drawable.ic_menu_start_conversation;
+                    tempItem.itemResource = R.drawable.ic_action_personal_info;
                     tempItem.layoutId = TYPE_LIST_ACTION;
                     break;
                 case 5:
-                    tempItem.itemResource = R.drawable.ic_menu_archive;
+                    tempItem.itemResource = R.drawable.ic_action_report;
                     tempItem.layoutId = TYPE_LIST_ACTION;
                     break;
                 case 6:
-                    tempItem.itemResource = R.drawable.ic_menu_start_conversation;
+                    tempItem.itemResource = R.drawable.ic_action_about;
                     tempItem.layoutId = TYPE_LIST_ACTION;
                     break;
             }

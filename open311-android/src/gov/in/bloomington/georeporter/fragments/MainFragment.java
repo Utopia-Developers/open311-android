@@ -19,8 +19,9 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.reflect.TypeToken;
 
 import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.activities.MainActivity.OnDataRefreshListener;
 import gov.in.bloomington.georeporter.activities.ReportActivity;
-import gov.in.bloomington.georeporter.activities.SettingsActivity;
+import gov.in.bloomington.georeporter.activities.PersonalInfoActivity;
 import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
@@ -36,7 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MainFragment extends SherlockFragment {
+public class MainFragment extends SherlockFragment implements OnDataRefreshListener {
     private View layout;
     private static String SPLASH_IMAGE = "splash_image";
     private String serviceDefinationTag = "Defination";
@@ -80,59 +81,7 @@ public class MainFragment extends SherlockFragment {
                 || !Open311.prevEndpoint.contentEquals(Open311.sEndpoint.url)
                 || Open311.isLatestServiceListLoaded == false))
         {
-
-            pendingRequests = new AtomicInteger(0);
-
-            progressDialog = ProgressDialog.show(getActivity(),
-                    getString(R.string.dialog_loading_services), "Please Wait", true);
-
-            // TODO
-            if (Open311.requestQueue == null)
-                Open311.requestQueue = Volley.newRequestQueue(getActivity(), new OkHttpStack());
-
-            if (Open311.sEndpoint.format.contentEquals(Open311.JSON))
-            {
-                String url = Open311.getServiceListUrl();
-                // Else we get a exception from volley
-                if (url.startsWith("www."))
-                    url += "http://";
-                Open311.sServiceRequestGson = new GsonGetRequest<ArrayList<ServiceEntityJson>>(
-                        url,
-                        new TypeToken<ArrayList<ServiceEntityJson>>() {
-                        }.getType(), null, new Listener<ArrayList<ServiceEntityJson>>() {
-
-                            @Override
-                            public void onResponse(ArrayList<ServiceEntityJson> response) {
-                                postResponseSetup(response);
-                            }
-                        }, new ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                postResponseError(error);
-                            }
-                        });
-                Open311.requestQueue.add(Open311.sServiceRequestGson);
-            }
-            else
-            {
-                Open311.sServiceRequestXML = new Open311XmlRequest<ArrayList<ServiceEntityJson>>(
-                        Open311.getServiceListUrl(),
-                        new Listener<ArrayList<ServiceEntityJson>>() {
-
-                            @Override
-                            public void onResponse(ArrayList<ServiceEntityJson> response) {
-                                postResponseSetup(response);
-                            }
-                        }, Open311XmlParser.SERVICE_REQUESTS, new ErrorListener() {
-
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                postResponseError(error);
-                            }
-                        });
-                Open311.requestQueue.add(Open311.sServiceRequestXML);
-            }
-
+            refresh();
         }
         else
         {
@@ -194,6 +143,65 @@ public class MainFragment extends SherlockFragment {
             }
         }
 
+        
+    }
+    
+    public void refresh()
+    {
+        Open311.prevEndpoint = null;
+        Open311.isLatestServiceListLoaded = false;
+        
+        pendingRequests = new AtomicInteger(0);
+
+        progressDialog = ProgressDialog.show(getActivity(),
+                getString(R.string.dialog_loading_services), "Please Wait", true);
+
+        // TODO
+        if (Open311.requestQueue == null)
+            Open311.requestQueue = Volley.newRequestQueue(getActivity(), new OkHttpStack());
+
+        if (Open311.sEndpoint.format.contentEquals(Open311.JSON))
+        {
+            String url = Open311.getServiceListUrl();
+            // Else we get a exception from volley
+            if (url.startsWith("www."))
+                url += "http://";
+            Open311.sServiceRequestGson = new GsonGetRequest<ArrayList<ServiceEntityJson>>(
+                    url,
+                    new TypeToken<ArrayList<ServiceEntityJson>>() {
+                    }.getType(), null, new Listener<ArrayList<ServiceEntityJson>>() {
+
+                        @Override
+                        public void onResponse(ArrayList<ServiceEntityJson> response) {
+                            postResponseSetup(response);
+                        }
+                    }, new ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            postResponseError(error);
+                        }
+                    });
+            Open311.requestQueue.add(Open311.sServiceRequestGson);
+        }
+        else
+        {
+            Open311.sServiceRequestXML = new Open311XmlRequest<ArrayList<ServiceEntityJson>>(
+                    Open311.getServiceListUrl(),
+                    new Listener<ArrayList<ServiceEntityJson>>() {
+
+                        @Override
+                        public void onResponse(ArrayList<ServiceEntityJson> response) {
+                            postResponseSetup(response);
+                        }
+                    }, Open311XmlParser.SERVICE_REQUESTS, new ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            postResponseError(error);
+                        }
+                    });
+            Open311.requestQueue.add(Open311.sServiceRequestXML);
+        }
         
     }
 
@@ -303,6 +311,11 @@ public class MainFragment extends SherlockFragment {
         }
 
         return isServiceDefinationPresent;
+    }
+
+    @Override
+    public void onRefreshRequested() {
+        refresh();
     }
 
 }

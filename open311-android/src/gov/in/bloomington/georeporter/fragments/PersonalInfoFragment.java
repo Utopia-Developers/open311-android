@@ -27,13 +27,15 @@ import gov.in.bloomington.georeporter.util.json.JSONObject;
 public class PersonalInfoFragment extends SherlockListFragment {
     JSONObject mPersonalInfo = null;
     SharedPreferences mPreferences = null;
+    PersonalInfoAdapter listAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mPersonalInfo = Preferences.getPersonalInfo(getActivity());
-        setListAdapter(new PersonalInfoAdapter(mPersonalInfo, getActivity()));
+        listAdapter = new PersonalInfoAdapter(mPersonalInfo, getActivity());
+        setListAdapter(listAdapter);
     }
 
     @Override
@@ -72,6 +74,7 @@ public class PersonalInfoFragment extends SherlockListFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         try {
                             mPersonalInfo.put(fieldname, newValue.getText());
+                            listAdapter.notifyDataSetChanged();
                         } catch (JSONException e) {
                             // Just ignore any errors
                         }

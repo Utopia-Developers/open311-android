@@ -230,7 +230,6 @@ public class ServersFragment extends SherlockFragment implements
         current_server = mServers.get(position);
         Preferences.setCurrentServer(current_server, getActivity());
         
-        Log.d("current server ser", "yes");
         Intent i = new Intent(getActivity(), MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);

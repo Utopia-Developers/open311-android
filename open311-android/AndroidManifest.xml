@@ -43,7 +43,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="gov.in.bloomington.georeporter.activities.SettingsActivity"       android:screenOrientation="portrait"/>
+        <activity android:name="gov.in.bloomington.georeporter.activities.PersonalInfoActivity"       android:screenOrientation="portrait"/>
         <activity android:name="gov.in.bloomington.georeporter.activities.ReportActivity"         android:screenOrientation="portrait"/>
         <activity android:name="gov.in.bloomington.georeporter.activities.ChooseLocationActivity" android:screenOrientation="portrait"/>
         <activity android:name="gov.in.bloomington.georeporter.activities.DataEntryActivity"      android:screenOrientation="portrait"/>
