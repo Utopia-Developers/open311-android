@@ -38,7 +38,7 @@ public class SavedReportsActivity extends BaseFragmentActivity implements OnItem
     public void onItemClick(AdapterView<?> l, View v, int position, long id) {
         SavedReportViewFragment fragment = SavedReportViewFragment.newInstance(position);
         getSupportFragmentManager().beginTransaction()
-                .replace(android.R.id.content, fragment)
+                .replace(R.id.content_frame, fragment)
                 .addToBackStack(null)
                 .commit();
     }
