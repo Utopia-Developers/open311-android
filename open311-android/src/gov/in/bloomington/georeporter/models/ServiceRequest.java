@@ -22,7 +22,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.Expose;
 
 import gov.in.bloomington.georeporter.json.AttributesJson;
 import gov.in.bloomington.georeporter.json.RequestsJson;

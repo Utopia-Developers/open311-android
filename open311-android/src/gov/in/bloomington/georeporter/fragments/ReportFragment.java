@@ -22,7 +22,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +29,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import ch.boye.httpclientandroidlib.client.ClientProtocolException;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragment;
@@ -52,7 +49,6 @@ import gov.in.bloomington.georeporter.json.AttributesJson;
 import gov.in.bloomington.georeporter.json.RequestResponseJson;
 import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.models.Open311;
-import gov.in.bloomington.georeporter.models.Open311Exception;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
 import gov.in.bloomington.georeporter.util.Media;
 import gov.in.bloomington.georeporter.util.Util;

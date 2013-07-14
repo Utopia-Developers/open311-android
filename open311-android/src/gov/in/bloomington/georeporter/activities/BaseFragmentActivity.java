@@ -16,10 +16,10 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -27,13 +27,10 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.actionbarsherlock.app.ActionBarDrawerToggle;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

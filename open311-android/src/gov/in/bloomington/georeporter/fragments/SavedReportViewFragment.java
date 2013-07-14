@@ -6,7 +6,6 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,15 +13,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import ch.boye.httpclientandroidlib.HttpResponse;
-import ch.boye.httpclientandroidlib.HttpStatus;
-import ch.boye.httpclientandroidlib.client.ClientProtocolException;
-import ch.boye.httpclientandroidlib.client.methods.HttpGet;
-import ch.boye.httpclientandroidlib.util.EntityUtils;
-
 import com.actionbarsherlock.app.SherlockFragment;
-import com.android.volley.Response.Listener;
 import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
@@ -32,11 +25,8 @@ import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
-import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class SavedReportViewFragment extends SherlockFragment {

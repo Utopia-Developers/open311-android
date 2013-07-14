@@ -6,12 +6,17 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.telephony.TelephonyManager;
 import android.text.InputType;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -24,6 +29,8 @@ import gov.in.bloomington.georeporter.models.Preferences;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.util.json.JSONObject;
 
+import java.util.regex.Pattern;
+
 public class PersonalInfoFragment extends SherlockListFragment {
     JSONObject mPersonalInfo = null;
     SharedPreferences mPreferences = null;
@@ -34,6 +41,35 @@ public class PersonalInfoFragment extends SherlockListFragment {
         super.onCreate(savedInstanceState);
 
         mPersonalInfo = Preferences.getPersonalInfo(getActivity());
+        if(mPersonalInfo.toString().contentEquals("{}"))
+        {
+            
+            Pattern emailPattern = Patterns.EMAIL_ADDRESS; // API level 8+
+            Account[] accounts = AccountManager.get(getActivity()).getAccounts();
+            
+            for (Account account : accounts) {
+                if (emailPattern.matcher(account.name).matches()) {
+                    try {
+                        mPersonalInfo.put("email", account.name);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+            }
+            TelephonyManager telephonyManager = (TelephonyManager) getActivity()
+                    .getSystemService(Context.TELEPHONY_SERVICE);
+            String phoneNo = telephonyManager.getLine1Number();
+            //No Guarantee we will be able to get the no.
+            if(phoneNo != null)
+            {
+                try {
+                    mPersonalInfo.put("phone", phoneNo);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }            
+        }        
         listAdapter = new PersonalInfoAdapter(mPersonalInfo, getActivity());
         setListAdapter(listAdapter);
     }

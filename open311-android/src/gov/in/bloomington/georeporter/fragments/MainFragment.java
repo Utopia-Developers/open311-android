@@ -98,6 +98,8 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
 
     public void postResponseError(VolleyError error)
     {
+        if(error.networkResponse != null)
+            Log.d("Status GET",error.networkResponse.statusCode + "");
         progressDialog.dismiss();
         Open311.isLatestServiceListLoaded = false;
         Util.displayCrashDialog(
@@ -253,6 +255,8 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
 
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
+                                    if(error.networkResponse != null)
+                                        Log.d("Status GET",error.networkResponse.statusCode + "");
                                     progressDialog.dismiss();
                                     Open311.isLatestServiceListLoaded = false;
                                     Util.displayCrashDialog(
@@ -288,6 +292,8 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
 
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
+                                    if(error.networkResponse != null)
+                                        Log.d("Status GET",error.networkResponse.statusCode + "");
                                     progressDialog.dismiss();
                                     Util.displayCrashDialog(
                                             getActivity(),

@@ -40,7 +40,6 @@ import com.google.gson.reflect.TypeToken;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.json.RequestResponseJson;
-import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
@@ -57,7 +56,6 @@ import gov.in.bloomington.georeporter.volleyrequests.Open311XmlRequest;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

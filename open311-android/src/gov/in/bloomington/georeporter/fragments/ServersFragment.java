@@ -6,13 +6,11 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
-import android.R.string;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;

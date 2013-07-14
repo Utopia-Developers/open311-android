@@ -11,9 +11,8 @@ import android.support.v4.widget.DrawerLayout;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+
 import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.adapters.NavigationDrawerAdapter;
-import gov.in.bloomington.georeporter.fragments.ChooseGroupFragment.OnGroupSelectedListener;
 import gov.in.bloomington.georeporter.fragments.MainFragment.OnSetActionBarTitleListener;
 import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.models.Open311;

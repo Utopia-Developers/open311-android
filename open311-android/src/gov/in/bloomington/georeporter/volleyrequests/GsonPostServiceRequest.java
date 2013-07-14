@@ -23,14 +23,11 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.json.RequestResponseJson;
 import gov.in.bloomington.georeporter.models.Open311;
-import gov.in.bloomington.georeporter.models.Open311Exception;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
 import gov.in.bloomington.georeporter.util.Media;
 import gov.in.bloomington.georeporter.util.Open311Parser;
