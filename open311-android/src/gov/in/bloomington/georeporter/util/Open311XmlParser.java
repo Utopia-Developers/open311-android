@@ -397,10 +397,10 @@ public class Open311XmlParser {
                 request.setAccountId(readElement(parser, Open311.ACCOUNT_ID));
             }
             else if (name.equals(Open311.LATITUDE)) {
-                request.setLat(Float.parseFloat(readElement(parser, Open311.LATITUDE)));
+                request.setLat(readElement(parser, Open311.LATITUDE));
             }
             else if (name.equals(Open311.LONGITUDE)) {
-                request.setLong(Float.parseFloat(readElement(parser, Open311.LONGITUDE)));
+                request.setLong(readElement(parser, Open311.LONGITUDE));
             }
             else if (name.equals(Open311.DESCRIPTION)) {
                 request.setDescription(readElement(parser, Open311.DESCRIPTION));

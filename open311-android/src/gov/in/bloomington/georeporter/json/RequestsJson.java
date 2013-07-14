@@ -6,10 +6,10 @@ import com.google.gson.annotations.SerializedName;
 public class RequestsJson {
     private String address;
     private String description;
-    private Number lat;
+    private String lat;
     // As long is a java keyword.
     @SerializedName("long")
-    private Number longitude;
+    private String longitude;
     private String requested_datetime;
     private String service_code;
     private String service_name;
@@ -60,19 +60,19 @@ public class RequestsJson {
         this.description = description;
     }
 
-    public Number getLat() {
+    public String getLat() {
         return this.lat;
     }
 
-    public void setLat(Number lat) {
+    public void setLat(String lat) {
         this.lat = lat;
     }
 
-    public Number getLong() {
+    public String getLong() {
         return this.longitude;
     }
 
-    public void setLong(Number longitude) {
+    public void setLong(String longitude) {
         this.longitude = longitude;
     }
 

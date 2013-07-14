@@ -141,7 +141,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             public void onClick(View v) {
 
                 mDialog = ProgressDialog.show(getActivity(),
-                        getString(R.string.dialog_posting_service), "", true);
+                        getString(R.string.dialog_posting_service), "Please Wait", true);
 
                 // Converting from a Uri to a real file path requires a database
                 // cursor. Media.getRealPathFromUri must be done on the main UI
@@ -178,25 +178,18 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                                 }
                                 Util.displayCrashDialog(getActivity(), errorMessage);
                             }
-                        }, new Listener<ArrayList<RequestResponseJson>>() {
+                        }, new Listener<ArrayList<RequestsJson>>() {
                             @Override
-                            public void onResponse(ArrayList<RequestResponseJson> responses) {
+                            public void onResponse(ArrayList<RequestsJson> responses) {
                                 // TODO It needs to be in a background thread
-                                RequestResponseJson response = responses.get(0);
+                                RequestsJson response = responses.get(0);
                                 if (responses.size() > 0) {
                                     SimpleDateFormat isoDate = new SimpleDateFormat(
                                             Open311.DATETIME_FORMAT);
                                     String requested_datetime = isoDate.format(new Date());
-
+                                    
                                     mServiceRequest.endpoint = Open311.sEndpoint;
-                                    mServiceRequest.service_request = new RequestsJson();
-                                    mServiceRequest.service_request.setToken(response.getToken());
-                                    mServiceRequest.service_request.setService_request_id(response
-                                            .getServiceReuestId());
-                                    mServiceRequest.service_request.setServiceNotice(response
-                                            .getServiceNotice());
-                                    mServiceRequest.service_request.setAccountId(response
-                                            .getAccountId());
+                                    mServiceRequest.service_request = response;
 
                                     try {
                                         mServiceRequest.post_data.put(

@@ -27,13 +27,17 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import gov.in.bloomington.georeporter.json.RequestResponseJson;
+import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
 import gov.in.bloomington.georeporter.util.Media;
 import gov.in.bloomington.georeporter.util.Open311Parser;
+import gov.in.bloomington.georeporter.util.Open311XmlParser;
 import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.util.json.JSONObject;
+
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,16 +47,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class GsonPostServiceRequest extends Request<ArrayList<RequestResponseJson>> {
+public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
     private MultipartEntity post;
-    private final Listener<ArrayList<RequestResponseJson>> mListener;
+    private final Listener<ArrayList<RequestsJson>> mListener;
     private ServiceRequest serviceRequest;
     private String mediaPath;
     private Context context;
     private UrlEncodedFormEntity postUrl;
 
     public GsonPostServiceRequest(Context context, String url, ErrorListener errorListener,
-            Listener<ArrayList<RequestResponseJson>> listener, ServiceRequest serviceRequest,
+            Listener<ArrayList<RequestsJson>> listener, ServiceRequest serviceRequest,
             String mediaPath) {
         super(Method.POST, url, errorListener);
         post = new MultipartEntity();
@@ -215,8 +219,8 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestResponseJso
     }
 
     @Override
-    protected Response<ArrayList<RequestResponseJson>> parseNetworkResponse(NetworkResponse response) {
-        ArrayList<RequestResponseJson> serviceRequests = null;
+    protected Response<ArrayList<RequestsJson>> parseNetworkResponse(NetworkResponse response) {
+        ArrayList<RequestsJson> serviceRequests = null;
         String parsed;
         try {
             parsed = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
@@ -231,14 +235,31 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestResponseJso
         // Chicago uses 201 Created
         if (status == HttpStatus.SC_OK || status == HttpStatus.SC_CREATED
                 || status == HttpStatus.SC_ACCEPTED) {
-            Open311Parser mParser = new Open311Parser(parsed);
+            
+            if(Open311.mFormat.contentEquals(Open311.XML))
+            {
+                Open311XmlParser mParser = new Open311XmlParser();
+                try {
+                    serviceRequests = mParser.parseRequests(parsed);
+                    Log.d("Server Response Parsed", "Yes - XML");
+                } catch (XmlPullParserException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            else
+            {
+                serviceRequests = new Gson().fromJson(parsed,
+                        new TypeToken<ArrayList<RequestsJson>>() {
+                        }.getType());
+                Log.d("Server Response Parsed", "Yes - JSON");
+            }
+            
 
-            // TODO
-            serviceRequests = new Gson().fromJson(parsed,
-                    new TypeToken<ArrayList<RequestResponseJson>>() {
-                    }.getType());
-
-            Log.d("Server Response Parsed", "Yes");
+            
         } else {
             // The server indicated some error. See if they returned the
             // error description as JSON
@@ -259,7 +280,7 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestResponseJso
     }
 
     @Override
-    protected void deliverResponse(ArrayList<RequestResponseJson> response) {
+    protected void deliverResponse(ArrayList<RequestsJson> response) {
 
         mListener.onResponse(response);
     }
