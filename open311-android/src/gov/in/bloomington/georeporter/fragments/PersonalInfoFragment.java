@@ -17,36 +17,82 @@ import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockListFragment;
 
-import gov.in.bloomington.georeporter.adapters.PersonalInfoAdapter;
+import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.models.Preferences;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.util.json.JSONObject;
 
 import java.util.regex.Pattern;
 
-public class PersonalInfoFragment extends SherlockListFragment {
+public class PersonalInfoFragment extends SherlockFragment {
     JSONObject mPersonalInfo = null;
     SharedPreferences mPreferences = null;
-    PersonalInfoAdapter listAdapter;
+    
+    ViewGroup linearLayout;
+    EditText firstName, lastName, emaiId, phoneNo;
+    public static final String[] FIELDS = {
+            "first_name", "last_name", "email", "phone"
+    };
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_personal_info, container, false);
+        linearLayout = (ViewGroup) v.findViewById(R.id.linearLayoutContainer);
+
+        int count = 0;
+        for (int i = 0; i < linearLayout.getChildCount(); i++)
+        {
+            View view = linearLayout.getChildAt(i);
+            if (view instanceof EditText)
+            {
+                switch (count) {
+                    case 0:
+                        firstName = (EditText) view;
+                        break;
+                    case 1:
+                        lastName = (EditText) view;
+                        break;
+                    case 2:
+                        emaiId = (EditText) view;
+                        break;
+                    case 3:
+                        phoneNo = (EditText) view;
+                        phoneNo.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+                        break;
+                    default:
+                        break;
+                }
+                count++;
+            }
+        }
+        firstName.setText(mPersonalInfo.optString(FIELDS[0]));
+        lastName.setText(mPersonalInfo.optString(FIELDS[1]));
+        emaiId.setText(mPersonalInfo.optString(FIELDS[2]));
+        phoneNo.setText(mPersonalInfo.optString(FIELDS[3]));        
+        return v;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mPersonalInfo = Preferences.getPersonalInfo(getActivity());
-        if(mPersonalInfo.toString().contentEquals("{}"))
+        if (mPersonalInfo.toString().contentEquals("{}"))
         {
-            
+
             Pattern emailPattern = Patterns.EMAIL_ADDRESS; // API level 8+
             Account[] accounts = AccountManager.get(getActivity()).getAccounts();
-            
+
             for (Account account : accounts) {
                 if (emailPattern.matcher(account.name).matches()) {
                     try {
@@ -60,68 +106,33 @@ public class PersonalInfoFragment extends SherlockListFragment {
             TelephonyManager telephonyManager = (TelephonyManager) getActivity()
                     .getSystemService(Context.TELEPHONY_SERVICE);
             String phoneNo = telephonyManager.getLine1Number();
-            //No Guarantee we will be able to get the no.
-            if(phoneNo != null)
+            // No Guarantee we will be able to get the no.
+            if (phoneNo != null)
             {
                 try {
                     mPersonalInfo.put("phone", phoneNo);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            }            
-        }        
-        listAdapter = new PersonalInfoAdapter(mPersonalInfo, getActivity());
-        setListAdapter(listAdapter);
+            }
+        }
+
     }
 
     @Override
     public void onPause() {
+        try {
+            mPersonalInfo.put(FIELDS[0], firstName.getText().toString());
+            mPersonalInfo.put(FIELDS[1], lastName.getText().toString());
+            mPersonalInfo.put(FIELDS[2], emaiId.getText().toString());
+            mPersonalInfo.put(FIELDS[3], phoneNo.getText().toString());
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         Preferences.setPersonalInfo(mPersonalInfo, getActivity());
 
         super.onPause();
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        final String fieldname = PersonalInfoAdapter.FIELDS[position];
-        final TextView label = (TextView) v.findViewById(android.R.id.text1);
-        final TextView input = (TextView) v.findViewById(android.R.id.text2);
-
-        final EditText newValue = new EditText(getActivity());
-        newValue.setText(input.getText());
-
-        int type = InputType.TYPE_TEXT_FLAG_CAP_WORDS;
-        if (fieldname == "email") {
-            type = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-        }
-        if (fieldname == "phone") {
-            type = InputType.TYPE_CLASS_PHONE;
-            newValue.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
-        }
-        newValue.setInputType(type);
-
-        new AlertDialog.Builder(getActivity())
-                .setTitle(label.getText())
-                .setView(newValue)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            mPersonalInfo.put(fieldname, newValue.getText());
-                            listAdapter.notifyDataSetChanged();
-                        } catch (JSONException e) {
-                            // Just ignore any errors
-                        }
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Do Nothing
-                    }
-                })
-                .show();
-    }
+    }   
+        
 }
