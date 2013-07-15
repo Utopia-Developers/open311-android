@@ -8,25 +8,17 @@ package gov.in.bloomington.georeporter.fragments;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.telephony.TelephonyManager;
-import android.text.InputType;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockListFragment;
-
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.models.Preferences;
 import gov.in.bloomington.georeporter.util.json.JSONException;

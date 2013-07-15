@@ -7,6 +7,7 @@
 package gov.in.bloomington.georeporter.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,8 +85,8 @@ public class SavedReportViewFragment extends SherlockFragment {
         }
 
         textView = (TextView) v.findViewById(R.id.description);
-        if (mServiceRequest.service_request.getDescription() != null) {
-            textView.setText(mServiceRequest.service_request.getDescription());
+        if (mServiceRequest.service.getDescription() != null) {
+            textView.setText(mServiceRequest.service.getDescription());
         }
         else if (mServiceRequest.post_data.has(Open311.DESCRIPTION)) {
             textView.setText(mServiceRequest.post_data.optString(Open311.DESCRIPTION));
@@ -111,6 +112,7 @@ public class SavedReportViewFragment extends SherlockFragment {
 
                     @Override
                     public void onResponse(String response) {
+                        Log.d("Server Response",response);
                         String id;
                         id = response;
                         if (id != null) {
@@ -131,6 +133,7 @@ public class SavedReportViewFragment extends SherlockFragment {
 
                                         @Override
                                         public void onResponse(String response) {
+                                            Log.d("Server Response",response);
                                             if (response != null && response != "")
                                             {
                                                 ArrayList<RequestsJson> results = new Gson()
