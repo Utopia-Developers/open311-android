@@ -195,7 +195,7 @@ public class ServiceRequestAdapter extends BaseAdapter {
                 MediaViewHolder media;
 
                 if (convertView == null) {
-                    convertView = mLayoutInflater.inflate(R.layout.list_item_media, null);
+                    convertView = mLayoutInflater.inflate(R.layout.report_item_media, null);
                     media = new MediaViewHolder();
                     media.image = (ImageView) convertView.findViewById(R.id.media);
                     convertView.setTag(media);

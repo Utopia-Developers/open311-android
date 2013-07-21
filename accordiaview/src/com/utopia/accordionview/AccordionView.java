@@ -15,19 +15,24 @@ import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
 import com.utopia.accordianview.R;
 
-
 public class AccordionView extends LinearLayout implements OnTouchListener {
     private View handle, content;
-    private int handleId, contentId,backgroundOpenId,backgroundClosedId;
+    private int handleId, contentId, backgroundOpenId, backgroundClosedId;
     private boolean contentVisible, playClickSound = true;
     private GestureDetector mDetector;
     OnHandleClickListener mHandleClickListener;
-    private Drawable backgroundOpen,backgroundClosed;
+    private Drawable backgroundOpen, backgroundClosed;
     private Context context;
+    private String TAG = "Animation";
+    private Animation mSlideBottomUpAnimation;
+    private Animation mSlideBottomDownAnimation;   
 
     public interface OnHandleClickListener
     {
@@ -63,19 +68,20 @@ public class AccordionView extends LinearLayout implements OnTouchListener {
         Log.d("Handle", handleId + " " + R.styleable.AccordionView_addHandle);
         Log.d("Content", contentId + " " + R.styleable.AccordionView_addContent);
         if (handleId == -1 || contentId == -1)
-            throw new RuntimeException("Please Set both handle and content views by using the addHandle and addContent XML attributes.");
+            throw new RuntimeException(
+                    "Please Set both handle and content views by using the addHandle and addContent XML attributes.");
         setOrientation(LinearLayout.VERTICAL);
         LayoutInflater mInflater;
         mInflater = LayoutInflater.from(context);
         handle = mInflater.inflate(handleId, AccordionView.this, false);
         content = mInflater.inflate(contentId, AccordionView.this, false);
         handle.setOnTouchListener(this);
-        if(backgroundClosedId != -1)
+        if (backgroundClosedId != -1)
             backgroundClosed = context.getResources().getDrawable(backgroundClosedId);
         else
             backgroundClosed = context.getResources().getDrawable(R.drawable.open);
-        
-        if(backgroundOpenId != -1)
+
+        if (backgroundOpenId != -1)
             backgroundOpen = context.getResources().getDrawable(backgroundOpenId);
         else
             backgroundOpen = context.getResources().getDrawable(R.drawable.close);
@@ -84,7 +90,7 @@ public class AccordionView extends LinearLayout implements OnTouchListener {
         {
             setContentVisible(contentVisible);
         }
-            
+        //initAnimations();
         addView(handle);
         addView(content);
 
@@ -96,37 +102,37 @@ public class AccordionView extends LinearLayout implements OnTouchListener {
         return contentVisible;
     }
 
-    public void setHandleBackgrounds(Drawable backgroundClosed,Drawable backgroundOpen)
+    public void setHandleBackgrounds(Drawable backgroundClosed, Drawable backgroundOpen)
     {
         this.backgroundClosed = backgroundClosed;
         this.backgroundOpen = backgroundOpen;
-        if(isContentVisible())
+        if (isContentVisible())
             setHandleDrawable(backgroundOpen);
         else
             setHandleDrawable(backgroundClosed);
         invalidate();
         requestLayout();
     }
-    
-    public void setHandleBackgrounds(int backgroundClosedId,int backgroundOpenId)
+
+    public void setHandleBackgrounds(int backgroundClosedId, int backgroundOpenId)
     {
         this.backgroundClosed = context.getResources().getDrawable(backgroundClosedId);
         this.backgroundOpen = content.getResources().getDrawable(backgroundOpenId);
-        if(isContentVisible())
+        if (isContentVisible())
             setHandleDrawable(backgroundOpen);
         else
             setHandleDrawable(backgroundClosed);
     }
-    
+
     @SuppressLint("NewApi")
     private void setHandleDrawable(Drawable background)
     {
-        if(android.os.Build.VERSION.SDK_INT < 16)
+        if (android.os.Build.VERSION.SDK_INT < 16)
             handle.setBackgroundDrawable(background);
         else
             handle.setBackground(background);
     }
-    
+
     @SuppressLint("NewApi")
     public void setContentVisible(boolean visible)
     {
@@ -154,7 +160,7 @@ public class AccordionView extends LinearLayout implements OnTouchListener {
         this.addView(handle, indexOfChild(this.handle));
         this.removeView(this.handle);
         this.handle = handle;
-        if(isContentVisible())
+        if (isContentVisible())
             setHandleDrawable(backgroundOpen);
         else
             setHandleDrawable(backgroundClosed);
@@ -168,7 +174,7 @@ public class AccordionView extends LinearLayout implements OnTouchListener {
         this.addView(content, indexOfChild(this.content));
         this.removeView(this.content);
         this.content = content;
-        if(!isContentVisible())
+        if (!isContentVisible())
             this.content.setVisibility(View.GONE);
         invalidate();
         requestLayout();
@@ -184,7 +190,7 @@ public class AccordionView extends LinearLayout implements OnTouchListener {
         return handle;
     }
 
-    public void SetOnHandleClickListener(OnHandleClickListener listener)
+    public void setOnHandleClickListener(OnHandleClickListener listener)
     {
         mHandleClickListener = listener;
     }
@@ -214,6 +220,10 @@ public class AccordionView extends LinearLayout implements OnTouchListener {
 
             }
 
+            /*if(isContentVisible())
+                handle.startAnimation(mSlideBottomDownAnimation);
+            else
+                handle.startAnimation(mSlideBottomUpAnimation);*/
             setContentVisible(!isContentVisible());
             return true;
         }
@@ -223,7 +233,51 @@ public class AccordionView extends LinearLayout implements OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         boolean result = mDetector.onTouchEvent(event);
-        return result;        
+        return result;
     }
+
+    private void initAnimations() {
+
+        final AnimationListener makeContentGone = new AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                Log.d(TAG, "onAnimationEnd - makeBottomGone");
+                setContentVisible(false);
+            }
+        };
+
+        final AnimationListener makeContentVisible = new AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+                Log.d(TAG, "onAnimationStart - makeBottomVisible");
+                setContentVisible(true);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+            }
+        };
+
+        mSlideBottomDownAnimation = AnimationUtils.loadAnimation(context, R.anim.slide_bottom_down);
+        mSlideBottomDownAnimation.setAnimationListener(makeContentGone);        
+
+        mSlideBottomUpAnimation = AnimationUtils.loadAnimation(context, R.anim.slide_bottom_up);
+        mSlideBottomUpAnimation.setAnimationListener(makeContentVisible);
+        
+    }    
 
 }

@@ -6,7 +6,7 @@
     <string name="menu_about">About</string>
     <string name="menu_refresh">Refresh</string>
     <string name="menu_personal_info">Personal Info</string>
-    <string name="title_activity_main">GeoReporter</string>    
+    <string name="title_activity_main">GeoReporter</string>
     <string name="tab_servers">Servers</string>
     <string name="button_add_server">Add Server</string>
     <string name="button_accept_error">Dismiss</string>
@@ -30,6 +30,9 @@
     <string name="report_attributes">Attributes</string>
     <string name="report_description">Description of problem</string>
     <string name="report_date">Reported Date</string>
+    <string name="description">Description</string>
+    <string name="answer_here">Answer Here</string>
+    <string name="answer_number_here">Enter Number Here</string>
     <string name="submit">Submit</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
@@ -42,9 +45,9 @@
     <string name="radio_button_normal">Standard</string>
     <string name="radio_button_hybrid">Hybrid</string>
     <string name="radio_button_satellite">Satellite</string>
-    
     <string name="drawer_open">Open</string>
-    <string name="drawer_close">Close</string>    
+    <string name="drawer_close">Close</string>
+
     <string-array name="navigation_list">
         <item>Select Server</item>
         <item>Add Server</item>
@@ -54,4 +57,5 @@
         <item>My Reports</item>
         <item>About</item>
     </string-array>
+
 </resources>

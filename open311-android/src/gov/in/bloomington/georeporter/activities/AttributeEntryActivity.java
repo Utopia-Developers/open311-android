@@ -118,7 +118,7 @@ public class AttributeEntryActivity extends BaseFragmentActivity {
                 LinearLayout input = (LinearLayout) v.findViewById(R.id.input);
                 for (int i = 0; i < len; i++) {
                     ValuesJson value = values.get(i);
-                    CheckBox checkbox = (CheckBox) inflater.inflate(R.layout.checkbox, null);
+                    CheckBox checkbox=null;
                     checkbox.setText(value.getName());
                     input.addView(checkbox);
                 }

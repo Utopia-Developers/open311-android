@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:accordion="http://schemas.android.com/apk/res-auto/com.utopia.accordionview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.utopia.accordionview.AccordionView
+        android:id="@+id/accordianview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        accordion:addContent="@layout/multivalcontentlayout"
+        accordion:addHandle="@layout/multivalhandlelayout" >
+    </com.utopia.accordionview.AccordionView>
+
+</LinearLayout>

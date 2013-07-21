@@ -13,6 +13,7 @@ import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
@@ -21,13 +22,25 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
@@ -48,6 +61,7 @@ import gov.in.bloomington.georeporter.adapters.ServiceRequestAdapter;
 import gov.in.bloomington.georeporter.json.AttributesJson;
 import gov.in.bloomington.georeporter.json.RequestResponseJson;
 import gov.in.bloomington.georeporter.json.RequestsJson;
+import gov.in.bloomington.georeporter.json.ValuesJson;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
 import gov.in.bloomington.georeporter.util.Media;
@@ -65,7 +79,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class ReportFragment extends SherlockFragment implements OnItemClickListener {
+public class ReportFragment extends SherlockFragment implements OnItemClickListener,
+        OnClickListener {
     /**
      * Request for handling Photo attachments to the Service Request
      */
@@ -92,7 +107,13 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             );
 
     private ServiceRequest mServiceRequest;
-    private ListView mListView;
+    private LinearLayout contentView;
+    private TextView loadingFailedMessage;
+    private Button loadingFailedRetry;
+    private ProgressBar loadingProgress;
+    private LayoutInflater layoutInflator;
+    private ScrollView scrollView;
+    private int currentViewCount = 0;
     private Uri mImageUri;
 
     /**
@@ -133,100 +154,156 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_report, container, false);
-        mListView = (ListView) v.findViewById(R.id.reportListView);
-        mListView.setAdapter(new ServiceRequestAdapter(mServiceRequest, getActivity()));
-        mListView.setOnItemClickListener(this);
+        scrollView = (ScrollView) v.findViewById(R.id.reportScrollView);
+        contentView = (LinearLayout) v.findViewById(R.id.reportContentView);
 
-        v.findViewById(R.id.submit_button).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        loadingProgress = (ProgressBar) v.findViewById(R.id.progressBarLoading);
+        loadingFailedMessage = (TextView) v.findViewById(R.id.textViewMessage);
+        loadingFailedRetry = (Button) v.findViewById(R.id.buttonRetry);
+        loadingFailedRetry.setOnClickListener(this);
+        v.findViewById(R.id.submit_button).setOnClickListener(this);
+        v.findViewById(R.id.cancel_button).setOnClickListener(this);
 
-                mDialog = ProgressDialog.show(getActivity(),
-                        getString(R.string.dialog_posting_service), "Please Wait", true);
+        loadingProgress.setVisibility(View.GONE);
+        layoutInflator = (LayoutInflater) getActivity().getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
 
-                // Converting from a Uri to a real file path requires a database
-                // cursor. Media.getRealPathFromUri must be done on the main UI
-                // thread, since it makes its own loadInBackground call.
-                if (mServiceRequest.post_data.has(Open311.MEDIA)) {
-                    try {
-                        mMediaPath = Media.getRealPathFromUri(
-                                Uri.parse(mServiceRequest.post_data.getString(Open311.MEDIA)),
-                                getActivity());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+        // Insert All Possible Views
+        View temp;
+        ((TextView) contentView.getChildAt(0)).setText(mServiceRequest.service.getService_name());
+        ((TextView) contentView.getChildAt(1)).setText(mServiceRequest.service.getDescription());
+        if (mServiceRequest.endpoint != null && mServiceRequest.endpoint.supports_media)
+        {
+            temp = layoutInflator.inflate(R.layout.report_item_media, null, false);
+            temp.setTag(Open311.MEDIA);
+            temp.setOnClickListener(this);
+            contentView.addView(temp);
+
+            Log.d("Media", "true" + contentView.getChildCount());
+        }
+
+        temp = layoutInflator.inflate(R.layout.report_item_map, null, false);
+        temp.setTag(Open311.ADDRESS);
+        temp.setOnClickListener(this);
+        contentView.addView(temp);
+        temp = layoutInflator.inflate(R.layout.report_item_description, contentView, false);
+        contentView.addView(temp);
+
+        addAttributes();
+
+        return v;
+    }
+
+    private void addAttributes()
+    {
+        if (mServiceRequest.hasAttributes())
+        {
+            ArrayList<AttributesJson> attributes = (ArrayList<AttributesJson>) mServiceRequest.service_definition
+                    .getAttributes();
+            View temp;
+            TextView viewHeader = (TextView) layoutInflator.inflate(R.layout.list_item_header,
+                    contentView, false);
+            viewHeader.setText(getString(R.string.report_attributes));
+            contentView.addView(viewHeader);
+            AttributesJson attribute;
+            for (int i = 0; i < attributes.size(); i++)
+            {
+                attribute = attributes.get(i);
+                // Attributes with variable=false should get displayed just with
+                // description
+                if (!attribute.getVariable())
+                {
+                    temp = layoutInflator.inflate(R.layout.report_item_text_entry, contentView,
+                            false);
+                    ((TextView) temp.findViewById(R.id.textViewDescription)).setText(attribute
+                            .getDescription());
+                    temp.findViewById(R.id.editTextEntry).setVisibility(View.GONE);
+                    temp.setTag(attribute.getCode());
+                    contentView.addView(temp);
+                }
+                else
+                {
+                    if (attribute.getDatatype().contentEquals(Open311.SINGLEVALUELIST))
+                    {
+                        temp = layoutInflator.inflate(R.layout.report_item_singlevalued,
+                                contentView, false);
+                        ((TextView) temp.findViewById(R.id.textViewDescription)).setText(attribute
+                                .getDescription());
+                        Spinner spinner = (Spinner) temp.findViewById(R.id.spinnerEntry);
+                        ArrayList<String> adapterList = new ArrayList<String>();
+                        ArrayList<ValuesJson> values = attribute.getValues();
+                        for (int j = 0; j < values.size(); j++)
+                        {
+                            adapterList.add(values.get(j).getName());
+                        }
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                                getActivity(), android.R.layout.simple_spinner_item, adapterList);
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinner.setAdapter(adapter);
+                        temp.setTag(attribute.getCode());
+                        contentView.addView(temp);
+                    }
+                    else if (attribute.getDatatype().contentEquals(Open311.MULTIVALUELIST))
+                    {
+                        temp = layoutInflator.inflate(R.layout.report_item_multivalued,
+                                contentView, false);
+                        ((TextView) temp.findViewById(R.id.textViewDescription)).setText(attribute
+                                .getDescription());
+                        LinearLayout content = (LinearLayout) temp.findViewById(R.id.multivaluedContent);
+                        ArrayList<ValuesJson> values = attribute.getValues();
+                        CheckBox checkBox;
+                        for (int j = 0; j < values.size(); j++)
+                        {
+                            checkBox = new CheckBox(getActivity());
+                            checkBox.setText(values.get(j).getName());
+                            LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                            checkBox.setLayoutParams(params);
+                            content.addView(checkBox);
+                        }
+                        temp.setTag(attribute.getCode());
+                        contentView.addView(temp);
+                    }
+                    else if(attribute.getDatatype().contentEquals(Open311.DATATYPE))
+                    {
+                        temp = layoutInflator.inflate(R.layout.report_item_text_entry, contentView,
+                                false);
+                        ((TextView) temp.findViewById(R.id.textViewDescription)).setText(getString(R.string.report_date));
+                        temp.findViewById(R.id.editTextEntry).setVisibility(View.GONE);
+                        temp.setOnClickListener(this);
+                        temp.setTag(attribute.getCode());
+                        contentView.addView(temp);
+                    }
+                    else
+                    {
+
+                        temp = layoutInflator.inflate(R.layout.report_item_text_entry, contentView,
+                                false);
+                        ((TextView) temp.findViewById(R.id.textViewDescription)).setText(attribute
+                                .getDescription());
+                        EditText input = ((EditText) temp.findViewById(R.id.editTextEntry));
+                        String mDatatype = attribute.getDatatype();
+                        if (mDatatype.equals(Open311.NUMBER)) {
+                            input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                            input.setHint(getString(R.string.answer_number_here));
+                        }
+                        else if (mDatatype.equals(Open311.TEXT)) {
+                            input.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                            input.setHint(getString(R.string.answer_here));
+                        }
+                        else
+                        {
+                            input.setHint(getString(R.string.answer_here));
+                        }
+
+                        temp.setTag(attribute.getCode());
+                        contentView.addView(temp);
+
                     }
                 }
-                Open311.sPostServiceRequest = new GsonPostServiceRequest(getActivity(), url,
-                        new ErrorListener() {
-
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                mDialog.dismiss();
-                                int statusCode = 0;
-                                if(error.networkResponse != null)
-                                {
-                                    statusCode = error.networkResponse.statusCode;
-                                }
-                                switch (statusCode)
-                                {
-                                    case 403:
-                                        errorMessage = getString(
-                                                R.string.error_403);
-                                        break;
-                                    default:
-                                        errorMessage = getString(
-                                                R.string.failure_posting_service);
-                                }
-                                Util.displayCrashDialog(getActivity(), errorMessage);
-                            }
-                        }, new Listener<ArrayList<RequestsJson>>() {
-                            @Override
-                            public void onResponse(ArrayList<RequestsJson> responses) {
-                                // TODO It needs to be in a background thread
-                                RequestsJson response = responses.get(0);
-                                if (responses.size() > 0) {
-                                    SimpleDateFormat isoDate = new SimpleDateFormat(
-                                            Open311.DATETIME_FORMAT);
-                                    String requested_datetime = isoDate.format(new Date());
-                                    
-                                    mServiceRequest.endpoint = Open311.sEndpoint;
-                                    mServiceRequest.service_request = response;
-
-                                    try {
-                                        mServiceRequest.post_data.put(
-                                                ServiceRequest.REQUESTED_DATETIME,
-                                                requested_datetime);
-                                    } catch (JSONException e) {
-                                        errorMessage = getResources().getString(
-                                                R.string.failure_posting_service);
-                                    }
-                                    result = Open311.saveServiceRequest(getActivity(),
-                                            mServiceRequest);
-                                }
-                                mDialog.dismiss();
-                                if (!result) {
-                                    if (errorMessage == null) {
-                                        errorMessage = getString(R.string.failure_posting_service);
-                                    }
-                                    Util.displayCrashDialog(getActivity(), errorMessage);
-                                }
-                                else {
-                                    Intent intent = new Intent(getActivity(),
-                                            SavedReportsActivity.class);
-                                    startActivity(intent);
-                                }
-                            }
-                        }, mServiceRequest, mMediaPath);
-                Open311.requestQueue.add(Open311.sPostServiceRequest);
             }
-        });
-        v.findViewById(R.id.cancel_button).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-            }
-        });
-        return v;
+
+        }
+
     }
 
     @Override
@@ -250,45 +327,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             String labelKey = (String) adapter.getItem(position);
 
             if (labelKey.equals(Open311.MEDIA)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage(R.string.choose_media_source)
-                        .setPositiveButton(R.string.camera, new DialogInterface.OnClickListener() {
-                            /**
-                             * Start the camera activity To avoid differences in
-                             * non-google-provided camera activities, we should
-                             * always tell the camera activity to explicitly
-                             * save the file in a Uri of our choosing. The
-                             * camera activity may, or may not, also save an
-                             * image file in the gallery. For now, I'm just not
-                             * going to worry about creating duplicate files on
-                             * people's phones. Users can clean those up
-                             * themselves, if they want.
-                             */
-                            public void onClick(DialogInterface dialog, int id) {
-                                mImageUri = Media.getOutputMediaFileUri(Media.MEDIA_TYPE_IMAGE);
 
-                                Intent i = new Intent(
-                                        android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                                i.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
-                                startActivityForResult(i, MEDIA_REQUEST);
-                            }
-                        })
-                        .setNeutralButton(R.string.gallery, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent i = new Intent(
-                                        Intent.ACTION_PICK,
-                                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                i.setType("image/*");
-                                startActivityForResult(i, MEDIA_REQUEST);
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
             }
             else if (labelKey.equals(Open311.ADDRESS_STRING)) {
                 Intent i = new Intent(getActivity(), ChooseLocationActivity.class);
@@ -404,8 +443,9 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     }
 
     private void refreshAdapter() {
-        ServiceRequestAdapter a = (ServiceRequestAdapter) mListView.getAdapter();
-        a.updateServiceRequest(mServiceRequest);
+        // ServiceRequestAdapter a = (ServiceRequestAdapter)
+        // mListView.getAdapter();
+        // a.updateServiceRequest(mServiceRequest);
     }
 
     /**
@@ -485,11 +525,159 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                     mServiceRequest.post_data.put(Open311.ADDRESS_STRING, address);
                     refreshAdapter();
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
             super.onPostExecute(address);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        boolean clickConsumed = false;
+        if (v.getTag() != null && v.getTag().toString().contentEquals(Open311.MEDIA))
+        {
+            clickConsumed = true;
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.choose_media_source)
+                    .setPositiveButton(R.string.camera, new DialogInterface.OnClickListener() {
+                        /**
+                         * Start the camera activity To avoid differences in
+                         * non-google-provided camera activities, we should
+                         * always tell the camera activity to explicitly save
+                         * the file in a Uri of our choosing. The camera
+                         * activity may, or may not, also save an image file in
+                         * the gallery. For now, I'm just not going to worry
+                         * about creating duplicate files on people's phones.
+                         * Users can clean those up themselves, if they want.
+                         */
+                        public void onClick(DialogInterface dialog, int id) {
+                            mImageUri = Media.getOutputMediaFileUri(Media.MEDIA_TYPE_IMAGE);
+
+                            Intent i = new Intent(
+                                    android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                            i.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+                            startActivityForResult(i, MEDIA_REQUEST);
+                        }
+                    })
+                    .setNeutralButton(R.string.gallery, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent i = new Intent(
+                                    Intent.ACTION_PICK,
+                                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            i.setType("image/*");
+                            startActivityForResult(i, MEDIA_REQUEST);
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+        else if (v.getTag() != null && v.getTag().toString().contentEquals(Open311.ADDRESS))
+        {
+            Log.d("Map", "Click");
+        }
+        else if(v.getTag() != null && v.getTag().toString().contentEquals(Open311.DATETIME))
+        {
+            DatePickerDialogFragment datePicker = new DatePickerDialogFragment(v.getTag().toString());
+            datePicker.show(getActivity().getSupportFragmentManager(), "datePicker");
+        }
+
+        if (clickConsumed)
+            return;
+
+        switch (v.getId())
+        {
+            case R.id.buttonRetry:
+                break;
+            case R.id.submit_button:
+                mDialog = ProgressDialog.show(getActivity(),
+                        getString(R.string.dialog_posting_service), "Please Wait", true);
+
+                // Converting from a Uri to a real file path requires a database
+                // cursor. Media.getRealPathFromUri must be done on the main UI
+                // thread, since it makes its own loadInBackground call.
+                if (mServiceRequest.post_data.has(Open311.MEDIA)) {
+                    try {
+                        mMediaPath = Media.getRealPathFromUri(
+                                Uri.parse(mServiceRequest.post_data.getString(Open311.MEDIA)),
+                                getActivity());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Open311.sPostServiceRequest = new GsonPostServiceRequest(getActivity(), url,
+                        new ErrorListener() {
+
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                mDialog.dismiss();
+                                int statusCode = 0;
+                                if (error.networkResponse != null)
+                                {
+                                    statusCode = error.networkResponse.statusCode;
+                                }
+                                switch (statusCode)
+                                {
+                                    case 403:
+                                        errorMessage = getString(
+                                                R.string.error_403);
+                                        break;
+                                    default:
+                                        errorMessage = getString(
+                                                R.string.failure_posting_service);
+                                }
+                                Util.displayCrashDialog(getActivity(), errorMessage);
+                            }
+                        }, new Listener<ArrayList<RequestsJson>>() {
+                            @Override
+                            public void onResponse(ArrayList<RequestsJson> responses) {
+                                // TODO It needs to be in a background thread
+                                RequestsJson response = responses.get(0);
+                                if (responses.size() > 0) {
+                                    SimpleDateFormat isoDate = new SimpleDateFormat(
+                                            Open311.DATETIME_FORMAT);
+                                    String requested_datetime = isoDate.format(new Date());
+
+                                    mServiceRequest.endpoint = Open311.sEndpoint;
+                                    mServiceRequest.service_request = response;
+
+                                    try {
+                                        mServiceRequest.post_data.put(
+                                                ServiceRequest.REQUESTED_DATETIME,
+                                                requested_datetime);
+                                    } catch (JSONException e) {
+                                        errorMessage = getResources().getString(
+                                                R.string.failure_posting_service);
+                                    }
+                                    result = Open311.saveServiceRequest(getActivity(),
+                                            mServiceRequest);
+                                }
+                                mDialog.dismiss();
+                                if (!result) {
+                                    if (errorMessage == null) {
+                                        errorMessage = getString(R.string.failure_posting_service);
+                                    }
+                                    Util.displayCrashDialog(getActivity(), errorMessage);
+                                }
+                                else {
+                                    Intent intent = new Intent(getActivity(),
+                                            SavedReportsActivity.class);
+                                    startActivity(intent);
+                                }
+                            }
+                        }, mServiceRequest, mMediaPath);
+                Open311.requestQueue.add(Open311.sPostServiceRequest);
+                break;
+            case R.id.cancel_button:
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                break;
         }
     }
 
