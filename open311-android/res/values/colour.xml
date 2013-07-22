@@ -3,4 +3,6 @@
     <color name="navdrawer_text_colour">#ffffff</color>
     <color name="navdrawer_listview_divider_colour">#080808</color>
     <color name="text_colour_section_header">#0099CC</color>
+    <color name="transparent">#00000000</color>
+    <color name="text_colour_white">#ffffff</color>
 </resources>

@@ -36,6 +36,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -115,6 +116,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     private ScrollView scrollView;
     private int currentViewCount = 0;
     private Uri mImageUri;
+    private ImageView mediaUpload;
 
     /**
      * For Request Post
@@ -177,6 +179,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             temp = layoutInflator.inflate(R.layout.report_item_media, null, false);
             temp.setTag(Open311.MEDIA);
             temp.setOnClickListener(this);
+            mediaUpload = (ImageView) temp.findViewById(R.id.media_upload);
             contentView.addView(temp);
 
             Log.d("Media", "true" + contentView.getChildCount());
@@ -350,7 +353,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                 String datatype = attribute.getDatatype();
                 if (datatype.equals(Open311.DATETIME)) {
                     DatePickerDialogFragment datePicker = new DatePickerDialogFragment(labelKey);
-                    datePicker.show(getActivity().getSupportFragmentManager(), "datePicker");
+                    datePicker.show(getFragmentManager(), "datePicker");
                 }
                 // all other attribute types get a full seperate Activity
                 else {
@@ -377,6 +380,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                         Uri imageUri = (mImageUri != null) ? mImageUri : data.getData();
                         if (imageUri != null) {
                             mServiceRequest.post_data.put(Open311.MEDIA, imageUri.toString());
+                            mediaUpload.setImageURI(imageUri);
                             mImageUri = null; // Remember to wipe it out, so we
                                               // don't confuse camera and
                                               // gallery
@@ -395,7 +399,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                         // Display the lat/long as text for now
                         // It will get replaced with the address when
                         // ReverseGeoCodingTask returns
-                        new ReverseGeocodingTask().execute(new LatLng(latitude, longitude));
+                        //new ReverseGeocodingTask().execute(new LatLng(latitude, longitude));
                         break;
 
                     /**
@@ -483,54 +487,12 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                 mServiceRequest.post_data.put(code, date);
                 refreshAdapter();
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
     }
 
-    /**
-     * Task for using Google's Geocoder Queries Google's geocode, updates the
-     * address in ServiceRequest, then refreshes the view so the user can see
-     * the change
-     */
-    private class ReverseGeocodingTask extends AsyncTask<LatLng, Void, String> {
-        @Override
-        protected String doInBackground(LatLng... params) {
-            Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
-            LatLng point = params[0];
-            double latitude = point.latitude;
-            double longitude = point.longitude;
-
-            List<Address> addresses = null;
-            try {
-                addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            if (addresses != null && addresses.size() > 0) {
-                Address address = addresses.get(0);
-                return String.format("%s",
-                        address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "");
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String address) {
-            if (address != null) {
-                try {
-                    mServiceRequest.post_data.put(Open311.ADDRESS_STRING, address);
-                    refreshAdapter();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            super.onPostExecute(address);
-        }
-    }
+   
 
     @Override
     public void onClick(View v) {
@@ -584,7 +546,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
         else if(v.getTag() != null && v.getTag().toString().contentEquals(Open311.DATETIME))
         {
             DatePickerDialogFragment datePicker = new DatePickerDialogFragment(v.getTag().toString());
-            datePicker.show(getActivity().getSupportFragmentManager(), "datePicker");
+            datePicker.show(getFragmentManager(), "datePicker");
         }
 
         if (clickConsumed)

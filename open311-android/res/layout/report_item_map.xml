@@ -4,10 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical" >
-    
-    <TextView
+
+    <fragment
+        android:id="@+id/map_container_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/location" />
+        android:layout_marginLeft="@dimen/layout_margin"
+        android:layout_marginRight="@dimen/layout_margin"
+        class="gov.in.bloomington.georeporter.fragments.ChooseLocationFragment" />
 
 </RelativeLayout>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <fragment
+        android:id="@+id/map_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/map_height"
+        class="gov.in.bloomington.georeporter.customviews.EnhancedSupportMapFragment" />
+
+    <ImageView
+        android:layout_width="@dimen/crossair_size"
+        android:layout_height="@dimen/crossair_size"
+        android:layout_centerInParent="true"
+        android:src="@drawable/crosshairs" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#cc000000"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/buttonRemoveLocAddr"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:text="@string/map_removeaddr"
+            android:textColor="@color/text_colour_white" />
+
+        <Button
+            android:id="@+id/buttonAddLocAddr"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:text="@string/map_addaddr"
+            android:textColor="@color/text_colour_white" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonSnapToAddress"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="64dp"
+        android:background="@drawable/ic_access_location" />
+
+</RelativeLayout>

@@ -31,8 +31,11 @@
     <string name="report_description">Description of problem</string>
     <string name="report_date">Reported Date</string>
     <string name="description">Description</string>
+    <string name="report_attach_image">Attach Image</string>
     <string name="answer_here">Answer Here</string>
     <string name="answer_number_here">Enter Number Here</string>
+    <string name="map_removeaddr">Reset Address</string>
+    <string name="map_addaddr">Set Address</string>
     <string name="submit">Submit</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
