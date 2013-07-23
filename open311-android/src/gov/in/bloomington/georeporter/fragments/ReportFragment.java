@@ -49,8 +49,10 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
+import com.google.android.gms.internal.ch;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.utopia.accordionview.AccordionView;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.activities.AttributeEntryActivity;
@@ -59,7 +61,9 @@ import gov.in.bloomington.georeporter.activities.DataEntryActivity;
 import gov.in.bloomington.georeporter.activities.MainActivity;
 import gov.in.bloomington.georeporter.activities.SavedReportsActivity;
 import gov.in.bloomington.georeporter.adapters.ServiceRequestAdapter;
+import gov.in.bloomington.georeporter.fragments.ChooseLocationFragment.OnMapPositionClicked;
 import gov.in.bloomington.georeporter.json.AttributesJson;
+import gov.in.bloomington.georeporter.json.PostDataJson;
 import gov.in.bloomington.georeporter.json.RequestResponseJson;
 import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.json.ValuesJson;
@@ -81,7 +85,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class ReportFragment extends SherlockFragment implements OnItemClickListener,
-        OnClickListener {
+        OnClickListener,OnMapPositionClicked {
     /**
      * Request for handling Photo attachments to the Service Request
      */
@@ -117,6 +121,12 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     private int currentViewCount = 0;
     private Uri mImageUri;
     private ImageView mediaUpload;
+    
+    private String address;
+    private double latitude,longitude;
+    
+   
+    
 
     /**
      * For Request Post
@@ -185,11 +195,12 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             Log.d("Media", "true" + contentView.getChildCount());
         }
 
-        temp = layoutInflator.inflate(R.layout.report_item_map, null, false);
+        temp = layoutInflator.inflate(R.layout.report_item_map, contentView, false);
         temp.setTag(Open311.ADDRESS);
         temp.setOnClickListener(this);
         contentView.addView(temp);
         temp = layoutInflator.inflate(R.layout.report_item_description, contentView, false);
+        temp.setTag(Open311.DESCRIPTION);
         contentView.addView(temp);
 
         addAttributes();
@@ -252,25 +263,28 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                                 contentView, false);
                         ((TextView) temp.findViewById(R.id.textViewDescription)).setText(attribute
                                 .getDescription());
-                        LinearLayout content = (LinearLayout) temp.findViewById(R.id.multivaluedContent);
+                        LinearLayout content = (LinearLayout) temp
+                                .findViewById(R.id.multivaluedContent);
                         ArrayList<ValuesJson> values = attribute.getValues();
                         CheckBox checkBox;
                         for (int j = 0; j < values.size(); j++)
                         {
                             checkBox = new CheckBox(getActivity());
                             checkBox.setText(values.get(j).getName());
-                            LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                            LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                    LayoutParams.WRAP_CONTENT);
                             checkBox.setLayoutParams(params);
                             content.addView(checkBox);
                         }
                         temp.setTag(attribute.getCode());
                         contentView.addView(temp);
                     }
-                    else if(attribute.getDatatype().contentEquals(Open311.DATATYPE))
+                    else if (attribute.getDatatype().contentEquals(Open311.DATATYPE))
                     {
                         temp = layoutInflator.inflate(R.layout.report_item_text_entry, contentView,
                                 false);
-                        ((TextView) temp.findViewById(R.id.textViewDescription)).setText(getString(R.string.report_date));
+                        ((TextView) temp.findViewById(R.id.textViewDescription))
+                                .setText(getString(R.string.report_date));
                         temp.findViewById(R.id.editTextEntry).setVisibility(View.GONE);
                         temp.setOnClickListener(this);
                         temp.setTag(attribute.getCode());
@@ -399,7 +413,8 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                         // Display the lat/long as text for now
                         // It will get replaced with the address when
                         // ReverseGeoCodingTask returns
-                        //new ReverseGeocodingTask().execute(new LatLng(latitude, longitude));
+                        // new ReverseGeocodingTask().execute(new
+                        // LatLng(latitude, longitude));
                         break;
 
                     /**
@@ -492,7 +507,105 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
         }
     }
 
-   
+    // All Data Parsing Functions
+    public void parseData()
+    {
+        int linearLayoutCount = 0;
+        View childView;
+        LinearLayout linearChildView;
+        for (int i = 0; i < contentView.getChildCount(); i++)
+        {
+            childView = contentView.getChildAt(i);
+
+            /*
+             * if(childView.getTag()!=null)
+             * Log.d("Tag",childView.getTag().toString());
+             */
+
+            // Skip first one as thats for media
+            if (childView instanceof LinearLayout)
+            {
+                if (linearLayoutCount > 0)
+                {
+                    linearChildView = (LinearLayout) childView;
+                    if (childView.getTag().toString().contentEquals(Open311.DESCRIPTION))
+                    {
+                        EditText input = (EditText) linearChildView.getChildAt(1);
+                        String value = "";
+                        if (input!=null && input.getText() != null)
+                            value = input.getText().toString();
+                        try {
+                            Log.d("Value", value);
+                            mServiceRequest.post_data.put(Open311.DESCRIPTION, value);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        continue;
+                    }
+                    // I tagged the views with the code
+                    String key = String
+                            .format("%s[%s]", AttributeEntryActivity.ATTRIBUTE, childView.getTag());
+                    // Log.d("key", key);
+
+                    // Check through this linear layouts childs in view
+                    // hierarchy
+
+                    // Data Entry
+                    if (linearChildView.getChildAt(1) instanceof EditText)
+                    {
+                        EditText input = (EditText) linearChildView.getChildAt(1);
+                        String value = "";
+                        if (input!=null && input.getText() != null)
+                            value = input.getText().toString();
+                        try {
+                            Log.d("Value", value);
+                            mServiceRequest.post_data.put(key, value);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    // Single Valued
+                    else if (linearChildView.getChildAt(1) instanceof Spinner)
+                    {
+                        Spinner input = (Spinner) linearChildView.getChildAt(1);
+                        String value = "";
+                        if (input!=null && input.getSelectedItem() != null)
+                            value = input.getSelectedItem().toString();
+                        try {
+                            Log.d("Value", value);
+                            mServiceRequest.post_data.put(key, value);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    // Multi valued
+                    else if (linearChildView.getChildAt(0) instanceof AccordionView)
+                    {
+                        JSONArray submittedValues = new JSONArray();
+
+                        LinearLayout input = (LinearLayout) ((LinearLayout)linearChildView.getChildAt(0)).getChildAt(1);
+                        int count = input.getChildCount();
+                        for (int a = 0; a < count; a++) {
+                            CheckBox checkbox = (CheckBox) input.getChildAt(a);
+                            if (checkbox.isChecked()) {
+                                submittedValues.put(checkbox.getText().toString());
+                            }
+                        }
+                        
+                        try {
+                            mServiceRequest.post_data.put(key, submittedValues);
+                        } catch (JSONException e) {
+                            
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+
+                linearLayoutCount++;
+            }
+        }
+    }
 
     @Override
     public void onClick(View v) {
@@ -543,9 +656,10 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
         {
             Log.d("Map", "Click");
         }
-        else if(v.getTag() != null && v.getTag().toString().contentEquals(Open311.DATETIME))
+        else if (v.getTag() != null && v.getTag().toString().contentEquals(Open311.DATETIME))
         {
-            DatePickerDialogFragment datePicker = new DatePickerDialogFragment(v.getTag().toString());
+            DatePickerDialogFragment datePicker = new DatePickerDialogFragment(v.getTag()
+                    .toString());
             datePicker.show(getFragmentManager(), "datePicker");
         }
 
@@ -559,7 +673,8 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             case R.id.submit_button:
                 mDialog = ProgressDialog.show(getActivity(),
                         getString(R.string.dialog_posting_service), "Please Wait", true);
-
+                parseData();
+                Log.d("postData", mServiceRequest.post_data.toString());
                 // Converting from a Uri to a real file path requires a database
                 // cursor. Media.getRealPathFromUri must be done on the main UI
                 // thread, since it makes its own loadInBackground call.
@@ -642,5 +757,23 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                 break;
         }
     }
+
+    @Override
+    public void positionClicked(String address, double latitude, double longitude) {
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        try {
+            mServiceRequest.post_data.put(Open311.LATITUDE, latitude);
+            mServiceRequest.post_data.put(Open311.LONGITUDE, longitude);
+            mServiceRequest.post_data.put(Open311.ADDRESS_STRING, address);
+        } catch (JSONException e) {
+            
+            e.printStackTrace();
+        }
+       
+    }
+
+    
 
 }

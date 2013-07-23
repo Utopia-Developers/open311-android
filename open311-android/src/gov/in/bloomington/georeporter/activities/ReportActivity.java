@@ -69,9 +69,10 @@ public class ReportActivity extends BaseFragmentActivity
 
         ServiceRequest sr = new ServiceRequest(service, this);
         mReportFragment = ReportFragment.newInstance(sr);
+        
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, mReportFragment)
+                .replace(R.id.content_frame, mReportFragment,"Report")
                 .addToBackStack(null)
                 .commit();
     }

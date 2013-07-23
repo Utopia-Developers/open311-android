@@ -13,9 +13,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RadioGroup;
-import android.widget.RadioGroup.OnCheckedChangeListener;
-
 import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
@@ -31,13 +28,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.activities.ChooseLocationActivity;
 import gov.in.bloomington.georeporter.customviews.EnhancedSupportMapFragment;
-import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.util.LocationUtils;
 import gov.in.bloomington.georeporter.util.Util;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -56,10 +49,17 @@ public class ChooseLocationFragment extends SherlockFragment implements Location
     private Button setAddress, removeAddress, snapToAddress;
     private Marker addressMarker;
     private LatLng setPosition;
+    protected String addressVal;
 
     public static final int UPDATE_GOOGLE_MAPS_REQUEST = 0;
 
     public static final int DEFAULT_ZOOM = 17;
+    
+    private OnMapPositionClicked mapPositionClickedListener;
+    public interface OnMapPositionClicked
+    {
+        public void positionClicked(String address,double latitude,double longitude);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,6 +71,7 @@ public class ChooseLocationFragment extends SherlockFragment implements Location
         setAddress.setOnClickListener(this);
         removeAddress.setOnClickListener(this);
         snapToAddress.setOnClickListener(this);
+        mapPositionClickedListener = (ReportFragment)getFragmentManager().findFragmentByTag("Report");
         setUpMapIfNeeded();
         return layout;
     }
@@ -265,6 +266,7 @@ public class ChooseLocationFragment extends SherlockFragment implements Location
                                         "Lat: " + setPosition.latitude + " Long: "
                                                 + setPosition.longitude));
                 addressMarker.showInfoWindow();
+                mapPositionClickedListener.positionClicked(addressVal,setPosition.latitude,setPosition.longitude);
                 new ReverseGeocodingTask().execute(setPosition);
                 break;
             case R.id.buttonRemoveLocAddr:
@@ -309,6 +311,8 @@ public class ChooseLocationFragment extends SherlockFragment implements Location
         protected void onPostExecute(String address) {
             addressMarker.setSnippet(address);
             addressMarker.showInfoWindow();
+            addressVal = address;
+            mapPositionClickedListener.positionClicked(address,setPosition.latitude,setPosition.longitude);
         }
     }
 

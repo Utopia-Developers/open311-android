@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         accordion:addContent="@layout/multivalcontentlayout"
-        accordion:addHandle="@layout/multivalhandlelayout" >
+        accordion:addHandle="@layout/multivalhandlelayout"
+        accordion:contentVisible="true" >
     </com.utopia.accordionview.AccordionView>
 
 </LinearLayout>
