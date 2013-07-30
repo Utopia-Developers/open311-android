@@ -7,6 +7,7 @@
 package gov.in.bloomington.georeporter.fragments;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
@@ -19,7 +20,7 @@ public class ChooseGroupFragment extends SherlockListFragment {
     OnGroupSelectedListener mListener;
 
     public interface OnGroupSelectedListener {
-        public void onGroupSelected(String group);
+        public void onGroupSelected(String group,boolean single);
     }
 
     @Override
@@ -27,11 +28,22 @@ public class ChooseGroupFragment extends SherlockListFragment {
         super.onAttach(activity);
         setListAdapter(new GroupsAdapter(getActivity()));
         mListener = (OnGroupSelectedListener) activity;
+        
     }
+    
+    
+    
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+         super.onActivityCreated(savedInstanceState);
+         //setRetainInstance(true);
+    }
+
+
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        mListener.onGroupSelected(Open311.sGroups.get(position));
+        mListener.onGroupSelected(Open311.sGroups.get(position),false);
     }
 }

@@ -27,10 +27,14 @@ public class SavedReportsActivity extends BaseFragmentActivity implements OnItem
         super.setupNavigationDrawer();
         title = getString(R.string.menu_archive);
         getSupportActionBar().setTitle(title);
-        SavedReportsListFragment listFragment = new SavedReportsListFragment();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.content_frame, listFragment)                
-                .commit();
+        if(getSupportFragmentManager().findFragmentById(R.id.content_frame)==null)
+        {
+            SavedReportsListFragment listFragment = new SavedReportsListFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_frame, listFragment)                
+                    .commit();
+        }
+        
 
     }
 

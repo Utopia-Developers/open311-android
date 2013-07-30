@@ -7,6 +7,8 @@
 package gov.in.bloomington.georeporter.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 
@@ -36,30 +38,60 @@ public class ReportActivity extends BaseFragmentActivity
         title = getString(R.string.menu_report);
         mActionBar = getSupportActionBar();
         mActionBar.setTitle(title);
-        if(Open311.sGroups == null)
+        if (Open311.sGroups == null)
         {
-            
+
         }
         else if (Open311.sGroups.size() > 1) {
-            ChooseGroupFragment chooseGroup = new ChooseGroupFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_frame, chooseGroup)                    
-                    .commit();
+            Fragment temp = getSupportFragmentManager()
+                    .findFragmentById(R.id.content_frame);
+            ChooseGroupFragment chooseGroup;
+            if (temp == null)
+            {
+                chooseGroup = new ChooseGroupFragment();
+                Log.d("Frag", "Creating Grp Frag.");
+                getSupportFragmentManager().beginTransaction()
+                .add(R.id.content_frame, chooseGroup)
+                .commit();
+            }
+            
+
         }
         else {
-            onGroupSelected(Open311.sGroups.get(0));
+            onGroupSelected(Open311.sGroups.get(0), true);
         }
 
     }
 
     @Override
-    public void onGroupSelected(String group) {
-        ChooseServiceFragment chooseService = new ChooseServiceFragment();
-        chooseService.setServices(Open311.getServices(group, this));
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, chooseService)
-                .addToBackStack(null)
-                .commit();
+    public void onGroupSelected(String group, boolean single) {
+        if (single == true)
+        {
+            ChooseServiceFragment chooseService = new ChooseServiceFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content_frame, chooseService)
+                    .commit();
+        }
+
+        else
+        {
+            Fragment temp = getSupportFragmentManager()
+                    .findFragmentById(R.id.content_frame);
+            ChooseServiceFragment chooseService;
+            if (temp != null && temp instanceof ChooseServiceFragment)
+                chooseService = (ChooseServiceFragment) temp;
+            else
+            {
+                chooseService = new ChooseServiceFragment();
+            }
+
+            chooseService.setServices(Open311.getServices(group, this));
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_frame, chooseService)
+                    .addToBackStack(null)
+                    .commit();
+        }
+
     }
 
     @Override
@@ -69,10 +101,9 @@ public class ReportActivity extends BaseFragmentActivity
 
         ServiceRequest sr = new ServiceRequest(service, this);
         mReportFragment = ReportFragment.newInstance(sr);
-        
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, mReportFragment,"Report")
+                .replace(R.id.content_frame, mReportFragment)
                 .addToBackStack(null)
                 .commit();
     }

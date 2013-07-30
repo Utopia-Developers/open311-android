@@ -74,6 +74,7 @@ public class ChooseLocationFragment extends SherlockFragment implements Location
         snapToAddress.setOnClickListener(this);
         mapPositionClickedListener = (ReportFragment)getFragmentManager().findFragmentByTag("Report");
         setUpMapIfNeeded();
+        setRetainInstance(true);
         return layout;
     }
 

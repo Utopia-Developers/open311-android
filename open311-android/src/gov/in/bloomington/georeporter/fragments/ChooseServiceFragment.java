@@ -7,11 +7,13 @@
 package gov.in.bloomington.georeporter.fragments;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ListView;
-
 import com.actionbarsherlock.app.SherlockListFragment;
 
+import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.adapters.ServicesAdapter;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 
@@ -34,6 +36,23 @@ public class ChooseServiceFragment extends SherlockListFragment {
         super.onAttach(activity);
         setListAdapter(new ServicesAdapter(mServices, activity));
         mListener = (OnServiceSelectedListener) activity;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        getListView().setDivider(this.getResources().getDrawable(R.drawable.transperent_color));
+        int margin = getResources().getDimensionPixelSize(R.dimen.layout_margin_small);
+        getListView().setDividerHeight(margin/2);
+        getListView().setDrawSelectorOnTop(true);
+
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+
+        layoutParams.setMargins(margin, margin, margin, margin);
+        getListView().setLayoutParams(layoutParams);
+        //setRetainInstance(true);
     }
 
     @Override

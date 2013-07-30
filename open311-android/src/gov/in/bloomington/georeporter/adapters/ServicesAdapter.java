@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 
 import java.util.ArrayList;
@@ -51,10 +52,10 @@ public class ServicesAdapter extends BaseAdapter {
         ServiceEntityJson service = getItem(position);
 
         if (convertView == null) {
-            convertView = mInflater.inflate(android.R.layout.simple_list_item_2, null);
+            convertView = mInflater.inflate(R.layout.list_item_service, parent, false);
             holder = new ViewHolder();
-            holder.name = (TextView) convertView.findViewById(android.R.id.text1);
-            holder.description = (TextView) convertView.findViewById(android.R.id.text2);
+            holder.name = (TextView) convertView.findViewById(R.id.textViewHeading);
+            holder.description = (TextView) convertView.findViewById(R.id.textViewDescription);
             convertView.setTag(holder);
         }
         else {

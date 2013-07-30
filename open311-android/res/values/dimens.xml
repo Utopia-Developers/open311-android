@@ -3,6 +3,7 @@
     <dimen name="navdrawer_width">240dp</dimen>
     <dimen name="layout_margin">16dp</dimen>
     <dimen name="layout_margin_small">8dp</dimen>
+    <dimen name="layout_margin_extra_small">4dp</dimen>
     <dimen name="map_height">256dp</dimen>
     <dimen name="map_height_report">192dp</dimen>
     <dimen name="crossair_size">48dp</dimen>

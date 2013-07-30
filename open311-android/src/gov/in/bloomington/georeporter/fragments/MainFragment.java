@@ -63,7 +63,6 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
                 onTouchImage(v);
             }
         });
-        setRetainInstance(true);
         return layout;
     }
 
@@ -98,8 +97,8 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
 
     public void postResponseError(VolleyError error)
     {
-        if(error.networkResponse != null)
-            Log.d("Status GET",error.networkResponse.statusCode + "");
+        if (error.networkResponse != null)
+            Log.d("Status GET", error.networkResponse.statusCode + "");
         progressDialog.dismiss();
         Open311.isLatestServiceListLoaded = false;
         Util.displayCrashDialog(
@@ -134,73 +133,86 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
             String imageName = Open311.sEndpoint.splash_image;
             Log.d("Image Name", imageName + "");
             if (imageName != null) {
-                
+
                 splash.setImageResource(getResources().getIdentifier(imageName,
                         "drawable", getActivity().getPackageName()));
                 splash.setContentDescription(Open311.sEndpoint.name);
             }
         }
 
-        
     }
-    
+
     public void refresh()
     {
-        Open311.prevEndpoint = null;
-        Open311.isLatestServiceListLoaded = false;
-        
-        pendingRequests = new AtomicInteger(0);
-
-        progressDialog = ProgressDialog.show(getActivity(),
-                getString(R.string.dialog_loading_services), "Please Wait", true);
-
-        // TODO
-        if (Open311.requestQueue == null)
-            Open311.requestQueue = Volley.newRequestQueue(getActivity(), new OkHttpStack());
-
-        if (Open311.sEndpoint.format.contentEquals(Open311.JSON))
+        if(!Open311.isDataLoading)
         {
-            String url = Open311.getServiceListUrl();
-            // Else we get a exception from volley
-            if (url.startsWith("www."))
-                url += "http://";
-            Open311.sServiceRequestGson = new GsonGetRequest<ArrayList<ServiceEntityJson>>(
-                    url,
-                    new TypeToken<ArrayList<ServiceEntityJson>>() {
-                    }.getType(), null, new Listener<ArrayList<ServiceEntityJson>>() {
+            Open311.isDataLoading = true;
+            Open311.prevEndpoint = null;
+            Open311.isLatestServiceListLoaded = false;
 
-                        @Override
-                        public void onResponse(ArrayList<ServiceEntityJson> response) {
-                            postResponseSetup(response);
-                        }
-                    }, new ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            postResponseError(error);
-                        }
-                    });
-            Open311.requestQueue.add(Open311.sServiceRequestGson);
+            pendingRequests = new AtomicInteger(0);
+
+            progressDialog = ProgressDialog.show(getActivity(),
+                    getString(R.string.dialog_loading_services), "Please Wait", true);
+
+            // TODO
+            if (Open311.requestQueue == null)
+                Open311.requestQueue = Volley.newRequestQueue(getActivity(), new OkHttpStack());
+
+            if (Open311.sEndpoint.format.contentEquals(Open311.JSON))
+            {
+                String url = Open311.getServiceListUrl();
+                // Else we get a exception from volley
+                if (url.startsWith("www."))
+                    url += "http://";
+                Open311.sServiceRequestGson = new GsonGetRequest<ArrayList<ServiceEntityJson>>(
+                        url,
+                        new TypeToken<ArrayList<ServiceEntityJson>>() {
+                        }.getType(), null, new Listener<ArrayList<ServiceEntityJson>>() {
+
+                            @Override
+                            public void onResponse(ArrayList<ServiceEntityJson> response) {
+                                postResponseSetup(response);
+                                Open311.isDataLoading = false;
+                            }
+                        }, new ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Open311.isDataLoading = false;
+                                postResponseError(error);
+                            }
+                        });
+                Open311.requestQueue.add(Open311.sServiceRequestGson);
+            }
+            else
+            {
+                Open311.sServiceRequestXML = new Open311XmlRequest<ArrayList<ServiceEntityJson>>(
+                        Open311.getServiceListUrl(),
+                        new Listener<ArrayList<ServiceEntityJson>>() {
+
+                            @Override
+                            public void onResponse(ArrayList<ServiceEntityJson> response) {
+                                postResponseSetup(response);
+                                Open311.isDataLoading = false;
+                            }
+                        }, Open311XmlParser.SERVICE_REQUESTS, new ErrorListener() {
+
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Open311.isDataLoading = false;
+                                postResponseError(error);
+                            }
+                        });
+                Open311.requestQueue.add(Open311.sServiceRequestXML);
+            }
         }
         else
         {
-            Open311.sServiceRequestXML = new Open311XmlRequest<ArrayList<ServiceEntityJson>>(
-                    Open311.getServiceListUrl(),
-                    new Listener<ArrayList<ServiceEntityJson>>() {
-
-                        @Override
-                        public void onResponse(ArrayList<ServiceEntityJson> response) {
-                            postResponseSetup(response);
-                        }
-                    }, Open311XmlParser.SERVICE_REQUESTS, new ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            postResponseError(error);
-                        }
-                    });
-            Open311.requestQueue.add(Open311.sServiceRequestXML);
+            progressDialog = ProgressDialog.show(getActivity(),
+                    getString(R.string.dialog_loading_services), "Please Wait", true);
         }
         
+
     }
 
     public boolean loadServiceDefinations()
@@ -243,6 +255,7 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
                                     Open311.sServiceDefinitions.put(code, response);
                                     if (pendingRequests.decrementAndGet() == 0)
                                     {
+                                        Open311.isDataLoading = false;
                                         Open311.prevEndpoint = Open311.sEndpoint.url;
                                         Open311.isLatestServiceListLoaded = true;
                                         progressDialog.dismiss();
@@ -255,8 +268,9 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
 
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
-                                    if(error.networkResponse != null)
-                                        Log.d("Status GET",error.networkResponse.statusCode + "");
+                                    Open311.isDataLoading = false;
+                                    if (error.networkResponse != null)
+                                        Log.d("Status GET", error.networkResponse.statusCode + "");
                                     progressDialog.dismiss();
                                     Open311.isLatestServiceListLoaded = false;
                                     Util.displayCrashDialog(
@@ -282,6 +296,9 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
                                     Open311.sServiceDefinitions.put(code, response);
                                     if (pendingRequests.decrementAndGet() == 0)
                                     {
+                                        Open311.isDataLoading = false;
+                                        Open311.prevEndpoint = Open311.sEndpoint.url;
+                                        Open311.isLatestServiceListLoaded = true;
                                         progressDialog.dismiss();
                                         Intent intent = new Intent(getActivity(),
                                                 ReportActivity.class);
@@ -292,8 +309,9 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
 
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
-                                    if(error.networkResponse != null)
-                                        Log.d("Status GET",error.networkResponse.statusCode + "");
+                                    if (error.networkResponse != null)
+                                        Open311.isDataLoading = false;
+                                        Log.d("Status GET", error.networkResponse.statusCode + "");
                                     progressDialog.dismiss();
                                     Util.displayCrashDialog(
                                             getActivity(),

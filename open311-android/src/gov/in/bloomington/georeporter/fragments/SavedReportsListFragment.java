@@ -44,7 +44,7 @@ public class SavedReportsListFragment extends SherlockListFragment {
         getListView().setOnItemClickListener((OnItemClickListener) getActivity());
         getListView().setDivider(this.getResources().getDrawable(R.drawable.transperent_color));
         int margin = getResources().getDimensionPixelSize(R.dimen.layout_margin_small);
-        getListView().setDividerHeight(margin);
+        getListView().setDividerHeight(margin/2);
         getListView().setDrawSelectorOnTop(true);
 
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(

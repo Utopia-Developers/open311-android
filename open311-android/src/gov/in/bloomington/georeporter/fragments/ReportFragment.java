@@ -204,7 +204,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
         contentView.addView(temp);
 
         addAttributes();
-
+        //setRetainInstance(true);
         return v;
     }
 

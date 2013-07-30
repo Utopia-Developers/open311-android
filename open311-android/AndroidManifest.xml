@@ -38,43 +38,29 @@
 
         <!--
             You must register for your own Google Maps API Keys.
-            Documentation: https://developers.google.com/maps/documentation/android/start
+            Documentation: https://developers.google.com/maps/documentation/android/start
         -->
+        
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyCqGwT5p7B2J88E74Mu4mnKRrAsm0dMzjs" />
 
         <activity
             android:name="gov.in.bloomington.georeporter.activities.MainActivity"
-            android:label="@string/title_activity_main"
-            android:screenOrientation="portrait" >
+            android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="gov.in.bloomington.georeporter.activities.PersonalInfoActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="gov.in.bloomington.georeporter.activities.ReportActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="gov.in.bloomington.georeporter.activities.ChooseLocationActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="gov.in.bloomington.georeporter.activities.DataEntryActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="gov.in.bloomington.georeporter.activities.AttributeEntryActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="gov.in.bloomington.georeporter.activities.SavedReportsActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="gov.in.bloomington.georeporter.activities.AboutActivity"
-            android:screenOrientation="portrait" />
+        <activity android:name="gov.in.bloomington.georeporter.activities.PersonalInfoActivity" />
+        <activity android:name="gov.in.bloomington.georeporter.activities.ReportActivity" />
+        <activity android:name="gov.in.bloomington.georeporter.activities.ChooseLocationActivity" />
+        <activity android:name="gov.in.bloomington.georeporter.activities.DataEntryActivity" />
+        <activity android:name="gov.in.bloomington.georeporter.activities.AttributeEntryActivity" />
+        <activity android:name="gov.in.bloomington.georeporter.activities.SavedReportsActivity" />
+        <activity android:name="gov.in.bloomington.georeporter.activities.AboutActivity" />
     </application>
 
 </manifest>
