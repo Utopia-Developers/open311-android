@@ -76,13 +76,10 @@ public class SavedReportViewFragment extends SherlockFragment {
         ImageView media = (ImageView) v.findViewById(R.id.media);
         media.setImageBitmap(mServiceRequest.getMediaBitmap(100, 100, getActivity()));
 
-        textView = (TextView) v.findViewById(R.id.address);
-        if (mServiceRequest.service_request.getAddress() != null) {
-            textView.setText(mServiceRequest.service_request.getAddress());
-        }
-        else if (mServiceRequest.post_data.has(Open311.ADDRESS_STRING)) {
-            textView.setText(mServiceRequest.post_data.optString(Open311.ADDRESS_STRING));
-        }
+        textView = (TextView) v.findViewById(R.id.endpoint);
+        if (mServiceRequest.endpoint.name != null) {
+            textView.setText(mServiceRequest.endpoint.name);
+        }        
 
         textView = (TextView) v.findViewById(R.id.description);
         if (mServiceRequest.service.getDescription() != null) {

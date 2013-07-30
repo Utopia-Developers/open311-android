@@ -2,55 +2,86 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="4dip" >
+    android:background="@drawable/card_background" >
+
+    <ImageView
+        android:id="@+id/imageViewEndpoint"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="@dimen/layout_margin_small"
+        android:layout_marginRight="@dimen/layout_margin_small"
+        android:layout_marginTop="@dimen/layout_margin_small"
+        android:scaleType="centerCrop" />
 
     <ImageView
         android:id="@+id/media"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/address"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/layout_margin_small"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/service_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="80dip"
-        android:maxHeight="80dip"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignTop="@+id/imageViewEndpoint"
+        android:layout_marginLeft="@dimen/layout_margin_small"
+        android:layout_toRightOf="@+id/imageViewEndpoint"
+        android:text="service"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/text_colour_report_heading"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageViewEndpoint"
+        android:layout_marginLeft="@dimen/layout_margin_small"
+        android:layout_toRightOf="@+id/imageViewEndpoint"
+        android:text="status"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/text_colour_report" />
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:id="@+id/container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/media"
-        android:layout_marginLeft="4dip"
-        android:orientation="vertical" >
+        android:layout_below="@+id/imageViewEndpoint"
+        android:layout_marginLeft="@dimen/layout_margin_small"
+        android:layout_marginRight="@dimen/layout_margin_small"
+        android:layout_marginTop="@dimen/layout_margin_small"
+        android:orientation="horizontal" >
 
         <TextView
-            android:id="@+id/service_name"
-            android:layout_width="wrap_content"
+            android:id="@+id/endpoint"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-        
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_weight="1"
+            android:text="endpoint"
+            android:textColor="@color/text_colour_report" />
 
         <TextView
             android:id="@+id/date"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <TextView
-            android:id="@+id/address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-        
-        <TextView
-            android:id="@+id/endpoint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:layout_weight="1"
+            android:text="date"
+            android:textColor="@color/text_colour_report" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/container"
+        android:layout_marginLeft="@dimen/layout_margin_small"
+        android:layout_marginRight="@dimen/layout_margin_small"
+        android:layout_marginTop="@dimen/layout_margin_small"
+        android:text="address"
+        android:textColor="@color/text_colour_report" />
 
 </RelativeLayout>

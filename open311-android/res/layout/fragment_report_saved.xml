@@ -1,48 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollview_report_saved"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="4dip">
+    android:layout_height="wrap_content" >
 
-    <TextView
-        android:id="@+id/service_name"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:layout_marginBottom="4dip"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
-    <ImageView
-        android:id="@+id/media"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/service_name"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="4dip"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:maxHeight="100dip"
-        android:maxWidth ="100dip" />
+        <ImageView
+            android:id="@+id/imageViewEndpoint"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="@dimen/layout_margin_small"
+            android:layout_marginRight="@dimen/layout_margin_small"
+            android:layout_marginTop="@dimen/layout_margin_small"
+            android:scaleType="fitXY" />
 
-    <TextView
-        android:id="@+id/address"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dip"
-        android:layout_below="@+id/media" />
-    
-    <TextView
-        android:id="@+id/description"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dip"
-        android:layout_below="@+id/address" />
-    
-    <TextView android:id="@+id/status"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/description"
-        android:layout_marginBottom="4dip"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-    
-</RelativeLayout>
+        <TextView
+            android:id="@+id/service_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/imageViewEndpoint"
+            android:layout_marginLeft="@dimen/layout_margin_small"
+            android:layout_toRightOf="@+id/imageViewEndpoint"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/text_colour_report_heading"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/imageViewEndpoint"
+            android:layout_marginLeft="@dimen/layout_margin_small"
+            android:layout_toRightOf="@+id/imageViewEndpoint"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/text_colour_report" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/endpoint"
+            android:layout_marginLeft="@dimen/layout_margin_small"
+            android:layout_marginRight="@dimen/layout_margin_small"
+            android:layout_marginTop="@dimen/layout_margin_small"
+            android:background="@color/divider_colour" >
+        </View>
+
+        <TextView
+            android:id="@+id/endpoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/imageViewEndpoint"
+            android:layout_below="@+id/imageViewEndpoint"
+            android:layout_marginTop="@dimen/layout_margin_small"
+            android:textColor="@color/text_colour_report" />
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/endpoint"
+            android:layout_below="@+id/divider"
+            android:layout_marginTop="@dimen/layout_margin_small"
+            android:textColor="@color/text_colour_report" />
+
+        <ImageView
+            android:id="@+id/media"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/description"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="@dimen/layout_margin_small"
+            android:layout_marginRight="@dimen/layout_margin_small"
+            android:layout_marginTop="@dimen/layout_margin_small"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop" />
+
+        <fragment
+            android:id="@+id/map_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/map_height_report"
+            android:layout_below="@+id/media"
+            android:layout_marginBottom="@dimen/layout_margin_small"
+            android:layout_marginLeft="@dimen/layout_margin_small"
+            android:layout_marginRight="@dimen/layout_margin_small"
+            class="gov.in.bloomington.georeporter.customviews.EnhancedSupportMapFragment" />
+    </RelativeLayout>
+
+</ScrollView>

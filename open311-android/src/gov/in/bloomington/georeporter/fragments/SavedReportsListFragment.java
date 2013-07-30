@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 
@@ -32,6 +34,7 @@ public class SavedReportsListFragment extends SherlockListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mServiceRequests = Open311.loadServiceRequests(getActivity());
+
         setListAdapter(new SavedReportsAdapter(mServiceRequests, getActivity()));
     }
 
@@ -39,6 +42,16 @@ public class SavedReportsListFragment extends SherlockListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getListView().setOnItemClickListener((OnItemClickListener) getActivity());
+        getListView().setDivider(this.getResources().getDrawable(R.drawable.transperent_color));
+        int margin = getResources().getDimensionPixelSize(R.dimen.layout_margin_small);
+        getListView().setDividerHeight(margin);
+        getListView().setDrawSelectorOnTop(true);
+
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+
+        layoutParams.setMargins(margin, margin, margin, margin);
+        getListView().setLayoutParams(layoutParams);
         registerForContextMenu(getListView());
     }
 

@@ -8,6 +8,8 @@ package gov.in.bloomington.georeporter.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.customviews.RoundedDrawable;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
 
@@ -33,6 +36,7 @@ public class SavedReportsAdapter extends BaseAdapter {
 
     private DateFormat mDateFormat;
     private SimpleDateFormat mISODate;
+    private Context context;
 
     @SuppressLint("SimpleDateFormat")
     public SavedReportsAdapter(ArrayList<ServiceRequest> serviceRequests, Context c) {
@@ -40,6 +44,7 @@ public class SavedReportsAdapter extends BaseAdapter {
         mInflater = LayoutInflater.from(c);
         mDateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
         mISODate = new SimpleDateFormat(Open311.DATETIME_FORMAT);
+        context = c;
     }
 
     @Override
@@ -63,7 +68,7 @@ public class SavedReportsAdapter extends BaseAdapter {
 
     private static class ViewHolder {
         TextView serviceName, status, date, address, endpoint;
-        ImageView media;
+        ImageView media,logo;
     }
 
     @Override
@@ -78,6 +83,7 @@ public class SavedReportsAdapter extends BaseAdapter {
             holder.address = (TextView) convertView.findViewById(R.id.address);
             holder.endpoint = (TextView) convertView.findViewById(R.id.endpoint);
             holder.media = (ImageView) convertView.findViewById(R.id.media);
+            holder.logo = (ImageView) convertView.findViewById(R.id.imageViewEndpoint);
             convertView.setTag(holder);
         }
         else {
@@ -93,6 +99,8 @@ public class SavedReportsAdapter extends BaseAdapter {
             holder.date.setText(mDateFormat.format(mISODate.parse(sr.post_data
                     .optString(ServiceRequest.REQUESTED_DATETIME))));
             holder.media.setImageBitmap(sr.getMediaBitmap(80, 80, mInflater.getContext()));
+            int size = context.getResources().getDimensionPixelSize(R.dimen.logo);
+            holder.logo.setBackgroundDrawable(new RoundedDrawable(BitmapFactory.decodeResource(context.getResources(), R.drawable.card_background),size,size));
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

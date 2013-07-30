@@ -7,6 +7,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.SyncStateContract.Constants;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
