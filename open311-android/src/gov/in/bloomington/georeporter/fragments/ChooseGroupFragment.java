@@ -8,42 +8,45 @@ package gov.in.bloomington.georeporter.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.view.PagerTabStrip;
+import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ListView;
+import android.view.ViewGroup;
 
-import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.app.SherlockFragment;
 
-import gov.in.bloomington.georeporter.adapters.GroupsAdapter;
-import gov.in.bloomington.georeporter.models.Open311;
+import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.adapters.GroupsFragmentStatePagerAdapter;
 
-public class ChooseGroupFragment extends SherlockListFragment {
+public class ChooseGroupFragment extends SherlockFragment {
     OnGroupSelectedListener mListener;
-
+    View layout;
+    GroupsFragmentStatePagerAdapter adapter;
+    ViewPager pager;
+    PagerTabStrip tabStrip;
     public interface OnGroupSelectedListener {
         public void onGroupSelected(String group,boolean single);
     }
 
     @Override
     public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        setListAdapter(new GroupsAdapter(getActivity()));
-        mListener = (OnGroupSelectedListener) activity;
-        
+        super.onAttach(activity);        
+        mListener = (OnGroupSelectedListener) activity;        
     }
-    
-    
-    
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-         super.onActivityCreated(savedInstanceState);
-         //setRetainInstance(true);
-    }
-
-
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        mListener.onGroupSelected(Open311.sGroups.get(position),false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        layout = inflater.inflate(R.layout.fragment_choose_group, container, false);
+        adapter = new GroupsFragmentStatePagerAdapter(getFragmentManager(), getActivity());
+        pager = (ViewPager) layout.findViewById(R.id.pager);
+        tabStrip = (PagerTabStrip) layout.findViewById(R.id.pager_tab_strip);
+        pager.setAdapter(adapter);
+        tabStrip.setTabIndicatorColorResource(R.color.actionbar_background_colour);
+        return layout;
     }
+    
+    
+    
+    
 }

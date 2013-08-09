@@ -4,7 +4,6 @@ package gov.in.bloomington.georeporter.customviews;
 import android.annotation.SuppressLint;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;

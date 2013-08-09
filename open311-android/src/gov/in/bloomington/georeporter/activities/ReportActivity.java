@@ -68,6 +68,7 @@ public class ReportActivity extends BaseFragmentActivity
         if (single == true)
         {
             ChooseServiceFragment chooseService = new ChooseServiceFragment();
+            chooseService.setServices(Open311.getServices(group));
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.content_frame, chooseService)
                     .commit();
@@ -85,7 +86,7 @@ public class ReportActivity extends BaseFragmentActivity
                 chooseService = new ChooseServiceFragment();
             }
 
-            chooseService.setServices(Open311.getServices(group, this));
+            chooseService.setServices(Open311.getServices(group));
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_frame, chooseService)
                     .addToBackStack(null)

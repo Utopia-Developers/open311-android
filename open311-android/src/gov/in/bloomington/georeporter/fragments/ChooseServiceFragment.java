@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+
 import com.actionbarsherlock.app.SherlockListFragment;
 
 import gov.in.bloomington.georeporter.R;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 
 public class ChooseServiceFragment extends SherlockListFragment {
     private static OnServiceSelectedListener mListener;
-    private static ArrayList<ServiceEntityJson> mServices;
+    private ArrayList<ServiceEntityJson> mServices;
 
     public interface OnServiceSelectedListener {
         public void onServiceSelected(ServiceEntityJson service);
@@ -29,11 +30,29 @@ public class ChooseServiceFragment extends SherlockListFragment {
 
     public void setServices(ArrayList<ServiceEntityJson> services) {
         mServices = services;
+        //Log.d("Serv2",mServices.size()+" ");
     }
-
+    
+    /**
+     * @param sr
+     * @return ReportFragment
+     */
+    public static ChooseServiceFragment newInstance(ArrayList<ServiceEntityJson> services) {
+        //Log.d("Serv1",services.size()+" ");
+        ChooseServiceFragment fragment = new ChooseServiceFragment();
+        fragment.setServices(services);
+        return fragment;
+    }
+    
+    public ChooseServiceFragment()
+    {
+        
+    }
+    
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        //Log.d("Serv3",mServices.size()+" ");
         setListAdapter(new ServicesAdapter(mServices, activity));
         mListener = (OnServiceSelectedListener) activity;
     }

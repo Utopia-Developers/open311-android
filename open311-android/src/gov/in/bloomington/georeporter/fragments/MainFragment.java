@@ -108,10 +108,10 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
 
     public void postResponseSetup(ArrayList<ServiceEntityJson> response)
     {
-        Open311.sServiceList = response;
+        
 
         // If no metadata
-        if (!loadServiceDefinations())
+        if (!loadServiceDefinations(response))
         {
             progressDialog.dismiss();
             Open311.prevEndpoint = Open311.sEndpoint.url;
@@ -215,27 +215,36 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
 
     }
 
-    public boolean loadServiceDefinations()
+    public boolean loadServiceDefinations(ArrayList<ServiceEntityJson> response)
     {
         boolean isServiceDefinationPresent = false;
         Open311.sGroups = new ArrayList<String>();
         Open311.sServiceDefinitions = new HashMap<String, ServiceDefinationJson>();
-
+        ArrayList<ServiceEntityJson> temp;
         // Go through all the services and pull out the seperate groups
         // Also, while we're running through, load any service_definitions
         GsonGetRequest<ServiceDefinationJson> serviceDefinationRequestGson;
         Open311XmlRequest<ServiceDefinationJson> serviceDefinationRequestXML;
         String group = null;
-        int len = Open311.sServiceList.size();
+        if(Open311.sServiceGroups == null)
+            Open311.sServiceGroups = new HashMap<String, ArrayList<ServiceEntityJson>>();
+        int len = response.size();
         for (int i = 0; i < len; i++) {
-            ServiceEntityJson s = Open311.sServiceList.get(i);
+            ServiceEntityJson s = response.get(i);
             // services may have an empty string for the group parameter
             group = s.getGroup();
             if (group == null) {
                 group = getString(R.string.uncategorized);
             }
+            
             if (!Open311.sGroups.contains(group)) {
                 Open311.sGroups.add(group);
+                temp = new ArrayList<ServiceEntityJson>();
+                temp.add(s);
+                Open311.sServiceGroups.put(group, temp);
+            }else
+            {
+                Open311.sServiceGroups.get(group).add(s);
             }
 
             // Add Service Definitions to mServiceDefinitions

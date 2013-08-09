@@ -148,7 +148,7 @@ public class Open311 {
     public static Open311XmlRequest<ArrayList<ServiceEntityJson>> sServiceRequestXML = null;
     public static GsonPostServiceRequest sPostServiceRequest = null;
 
-    public static ArrayList<ServiceEntityJson> sServiceList = null;
+    public static HashMap<String, ArrayList<ServiceEntityJson>> sServiceGroups = null;
 
     public static String mBaseUrl;
     public static String mJurisdiction;
@@ -265,23 +265,8 @@ public class Open311 {
      * @param group
      * @return ArrayList<ServiceEntityJson>
      */
-    public static ArrayList<ServiceEntityJson> getServices(String group,
-            Context context) {
-        ArrayList<ServiceEntityJson> services = new ArrayList<ServiceEntityJson>();
-        int len = sServiceList.size();
-        for (int i = 0; i < len; i++) {
-
-            ServiceEntityJson s = sServiceList.get(i);
-            if (group.equals(context.getString(R.string.uncategorized))) {
-                services.add(s);
-                continue;
-            }
-            if (s.getGroup().equals(group)) {
-                services.add(s);
-            }
-
-        }
-        return services;
+    public static ArrayList<ServiceEntityJson> getServices(String group) {
+        return Open311.sServiceGroups.get(group);
     }
 
     /**

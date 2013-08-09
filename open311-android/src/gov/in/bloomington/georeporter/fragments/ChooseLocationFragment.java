@@ -7,13 +7,13 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.SyncStateContract.Constants;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+
 import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
@@ -32,6 +32,7 @@ import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.customviews.EnhancedSupportMapFragment;
 import gov.in.bloomington.georeporter.util.LocationUtils;
 import gov.in.bloomington.georeporter.util.Util;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;

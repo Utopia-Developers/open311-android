@@ -19,12 +19,13 @@ import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 import java.util.ArrayList;
 
 public class ServicesAdapter extends BaseAdapter {
-    private static LayoutInflater mInflater;
-    private static ArrayList<ServiceEntityJson> mServices;
+    private LayoutInflater mInflater;
+    private ArrayList<ServiceEntityJson> mServices;
 
     public ServicesAdapter(ArrayList<ServiceEntityJson> services, Context c) {
         mServices = services;
         mInflater = LayoutInflater.from(c);
+        //Log.d("Serv1",mServices.size()+" ");
     }
 
     @Override
