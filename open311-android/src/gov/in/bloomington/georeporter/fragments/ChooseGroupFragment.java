@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.adapters.GroupsFragmentStatePagerAdapter;
@@ -24,15 +25,16 @@ public class ChooseGroupFragment extends SherlockFragment {
     View layout;
     GroupsFragmentStatePagerAdapter adapter;
     ViewPager pager;
-    PagerTabStrip tabStrip;
+    PagerSlidingTabStrip tabStrip;
+
     public interface OnGroupSelectedListener {
-        public void onGroupSelected(String group,boolean single);
+        public void onGroupSelected(String group, boolean single);
     }
 
     @Override
     public void onAttach(Activity activity) {
-        super.onAttach(activity);        
-        mListener = (OnGroupSelectedListener) activity;        
+        super.onAttach(activity);
+        mListener = (OnGroupSelectedListener) activity;
     }
 
     @Override
@@ -40,13 +42,11 @@ public class ChooseGroupFragment extends SherlockFragment {
         layout = inflater.inflate(R.layout.fragment_choose_group, container, false);
         adapter = new GroupsFragmentStatePagerAdapter(getFragmentManager(), getActivity());
         pager = (ViewPager) layout.findViewById(R.id.pager);
-        tabStrip = (PagerTabStrip) layout.findViewById(R.id.pager_tab_strip);
+        tabStrip = (PagerSlidingTabStrip) layout.findViewById(R.id.tabs);
+        
         pager.setAdapter(adapter);
-        tabStrip.setTabIndicatorColorResource(R.color.actionbar_background_colour);
+        tabStrip.setViewPager(pager);
         return layout;
     }
-    
-    
-    
-    
+
 }

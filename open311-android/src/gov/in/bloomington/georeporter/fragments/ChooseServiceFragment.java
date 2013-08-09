@@ -8,11 +8,12 @@ package gov.in.bloomington.georeporter.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ListView;
-
-import com.actionbarsherlock.app.SherlockListFragment;
+import android.view.ViewGroup;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.rajul.staggeredgridview.StaggeredGridView;
+import com.rajul.staggeredgridview.StaggeredGridView.OnItemClickListener;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.adapters.ServicesAdapter;
@@ -20,9 +21,11 @@ import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 
 import java.util.ArrayList;
 
-public class ChooseServiceFragment extends SherlockListFragment {
+public class ChooseServiceFragment extends SherlockFragment implements OnItemClickListener {
     private static OnServiceSelectedListener mListener;
     private ArrayList<ServiceEntityJson> mServices;
+    private StaggeredGridView mGridView;
+    private int col_count;
 
     public interface OnServiceSelectedListener {
         public void onServiceSelected(ServiceEntityJson service);
@@ -33,6 +36,15 @@ public class ChooseServiceFragment extends SherlockListFragment {
         //Log.d("Serv2",mServices.size()+" ");
     }
     
+    
+    
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return mGridView;
+    }
+
+
+
     /**
      * @param sr
      * @return ReportFragment
@@ -52,31 +64,32 @@ public class ChooseServiceFragment extends SherlockListFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        //Log.d("Serv3",mServices.size()+" ");
-        setListAdapter(new ServicesAdapter(mServices, activity));
+        setRetainInstance(true);
         mListener = (OnServiceSelectedListener) activity;
+        mGridView = new StaggeredGridView(getActivity());
+        mGridView.setAdapter(new ServicesAdapter(mServices, getActivity()));   
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        getListView().setDivider(this.getResources().getDrawable(R.drawable.transperent_color));
+        col_count = this.getResources().getInteger(R.integer.column_no);
+        mGridView.setColumnCount(col_count);
+        mGridView.setOnItemClickListener(this);
         int margin = getResources().getDimensionPixelSize(R.dimen.layout_margin_small);
-        getListView().setDividerHeight(margin/2);
-        getListView().setDrawSelectorOnTop(true);
+        mGridView.setItemMargin(margin); // set the GridView margin
 
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-
-        layoutParams.setMargins(margin, margin, margin, margin);
-        getListView().setLayoutParams(layoutParams);
-        //setRetainInstance(true);
+        mGridView.setPadding(margin, 0, margin, 0); // have the margin on the
+                                                   // sides as well      
+        
     }
 
+    
+
+
+
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
+    public void onItemClick(StaggeredGridView parent, View view, int position, long id) {
         mListener.onServiceSelected(mServices.get(position));
     }
 

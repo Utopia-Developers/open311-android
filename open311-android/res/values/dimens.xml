@@ -8,4 +8,6 @@
     <dimen name="map_height_report">192dp</dimen>
     <dimen name="crossair_size">48dp</dimen>
     <dimen name="logo">50dp</dimen>
+    
+    <integer name="column_no" >1</integer>
 </resources>
