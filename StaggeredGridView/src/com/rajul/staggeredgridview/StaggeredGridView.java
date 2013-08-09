@@ -1914,7 +1914,7 @@ public class StaggeredGridView extends ViewGroup
         return new LayoutParams(getContext(), attrs);
     }
 
-    /*@Override
+    @Override
     public Parcelable onSaveInstanceState()
     {
         final Parcelable superState = super.onSaveInstanceState();
@@ -1941,8 +1941,8 @@ public class StaggeredGridView extends ViewGroup
         mFirstPosition = ss.position;
         mRestoreOffset = ss.topOffset;
         requestLayout();
-    }*/
-    
+    }
+    /*
     @Override
     public Parcelable onSaveInstanceState() {
         final Parcelable superState = super.onSaveInstanceState();
@@ -2012,7 +2012,7 @@ public class StaggeredGridView extends ViewGroup
         }
 
         requestLayout();
-    }
+    }*/
 
     public static class LayoutParams extends ViewGroup.LayoutParams
     {
@@ -2243,7 +2243,7 @@ public class StaggeredGridView extends ViewGroup
         }
     }
 
-    /*static class SavedState extends BaseSavedState
+    static class SavedState extends BaseSavedState
     {
         long firstId = -1;
         int position;
@@ -2293,8 +2293,9 @@ public class StaggeredGridView extends ViewGroup
                 return new SavedState[size];
             }
         };
-    }*/
+    }
     
+    /*
     static class SavedState extends BaseSavedState {
         long firstId = -1;
         int position;
@@ -2341,6 +2342,7 @@ public class StaggeredGridView extends ViewGroup
             }
         };
     }
+    */
 
     public void setOnScrollListener(OnScrollListener scrollListener) {
         mOnScrollListener = scrollListener;
