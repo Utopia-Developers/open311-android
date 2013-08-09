@@ -5,17 +5,21 @@
 
     <!-- The main content view -->
 
-    <FrameLayout
-        android:id="@+id/content_frame"
+    <android.support.v4.widget.SlidingPaneLayout
+        android:id="@+id/slidingpanelayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <fragment
-            android:id="@+id/mainFragemnt"
+        <FrameLayout
+            android:id="@+id/fragmentMaster"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            class="gov.in.bloomington.georeporter.fragments.MainFragment" />
-    </FrameLayout>
+            android:layout_height="match_parent" />
+
+        <FrameLayout
+            android:id="@+id/fragmentDetail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </android.support.v4.widget.SlidingPaneLayout>
 
     <!-- The navigation drawer -->
 

@@ -43,12 +43,9 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
     private AtomicInteger pendingRequests;
     private ProgressDialog progressDialog;
 
-    private OnSetActionBarTitleListener titleSetCallback;
+    //private OnSetActionBarTitleListener titleSetCallback;
 
-    public interface OnSetActionBarTitleListener
-    {
-        public void setActionBarTitle(String title);
-    }
+    
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,13 +53,13 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
         layout = inflater.inflate(R.layout.fragment_main,
                 container, false);
 
-        splashImage = (ImageView) layout.findViewById(R.id.splash);
+        /*splashImage = (ImageView) layout.findViewById(R.id.splash);
         splashImage.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 onTouchImage(v);
             }
-        });
+        });*/
         return layout;
     }
 
@@ -125,7 +122,7 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
 
     public void setupFragment()
     {
-        titleSetCallback = (OnSetActionBarTitleListener) getActivity();
+        /*titleSetCallback = (OnSetActionBarTitleListener) getActivity();
         ImageView splash = (ImageView) layout.findViewById(R.id.splash);
         if (Open311.sEndpoint != null)
         {
@@ -138,7 +135,7 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
                         "drawable", getActivity().getPackageName()));
                 splash.setContentDescription(Open311.sEndpoint.name);
             }
-        }
+        }*/
 
     }
 

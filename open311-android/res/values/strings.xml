@@ -44,12 +44,14 @@
     <string name="pending">Pending</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="retry">Retry</string>
     <string name="uncategorized">Uncategorized</string>
     <string name="radio_button_normal">Standard</string>
     <string name="radio_button_hybrid">Hybrid</string>
     <string name="radio_button_satellite">Satellite</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
+    <string name="reports_near">Reports Near You</string>
 
     <string-array name="navigation_list">
         <item>Select Server</item>

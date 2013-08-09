@@ -30,14 +30,17 @@ public class GroupsFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public ChooseServiceFragment getItem(int position) {
-        String serviceName = Open311.sGroups.get(position);       
-        //Log.d("Adapter",serviceName+"  "+position);
+        String serviceName = Open311.sGroups.get(position);
+        // Log.d("Adapter",serviceName+"  "+position);
         return ChooseServiceFragment.newInstance(Open311.getServices(serviceName));
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return Open311.sGroups.get(position);
+        if (Open311.sGroups == null)
+            return null;
+        else
+            return Open311.sGroups.get(position);
     }
 
 }
