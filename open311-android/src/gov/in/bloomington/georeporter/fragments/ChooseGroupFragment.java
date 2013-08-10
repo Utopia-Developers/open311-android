@@ -41,7 +41,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ChooseGroupFragment extends SherlockFragment implements OnDataRefreshListener, OnClickListener{
+public class ChooseGroupFragment extends SherlockFragment implements OnDataRefreshListener,
+        OnClickListener {
     private OnGroupSelectedListener mListener;
     private View layout;
     private GroupsFragmentStatePagerAdapter adapter;
@@ -50,7 +51,7 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
     private ProgressBar progressBar;
     private TextView error;
     private Button retry;
-    
+
     private AtomicInteger pendingRequests;
     private OnSetActionBarTitleListener titleSetCallback;
     private String serviceDefinationTag = "Defination";
@@ -59,7 +60,7 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
     {
         public void setActionBarTitle(String title);
     }
-    
+
     @Override
     public void onResume() {
         // Good to start task in onResume cause It garentees Activity is
@@ -103,22 +104,22 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
         tabStrip.setViewPager(pager);
         return layout;
     }
-    
+
     public void setErrorMessage(boolean showMessage)
     {
-        if(showMessage == false)
+        if (showMessage == false)
         {
-            error.setVisibility(View.GONE); 
-            retry.setVisibility(View.GONE); 
+            error.setVisibility(View.GONE);
+            retry.setVisibility(View.GONE);
         }
         else
         {
-            error.setVisibility(View.VISIBLE); 
-            retry.setVisibility(View.VISIBLE); 
+            error.setVisibility(View.VISIBLE);
+            retry.setVisibility(View.VISIBLE);
         }
-            
+
     }
-    
+
     public void postResponseError(VolleyError error)
     {
         if (error.networkResponse != null)
@@ -130,7 +131,6 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
 
     public void postResponseSetup(ArrayList<ServiceEntityJson> response)
     {
-        
 
         // If no metadata
         if (!loadServiceDefinations(response))
@@ -148,11 +148,15 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
     public void setupFragment()
     {
         titleSetCallback = (OnSetActionBarTitleListener) getActivity();
+        if (Open311.sEndpoint != null)
+        {
+            titleSetCallback.setActionBarTitle(Open311.sEndpoint.name);
+        }
     }
 
     public void refresh()
     {
-        if(!Open311.isDataLoading)
+        if (!Open311.isDataLoading)
         {
             Open311.isDataLoading = true;
             Open311.prevEndpoint = null;
@@ -160,7 +164,7 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
 
             pendingRequests = new AtomicInteger(0);
 
-            progressBar.setVisibility(View.VISIBLE);
+            showLoader(true);
 
             // TODO
             if (Open311.requestQueue == null)
@@ -215,10 +219,22 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
         }
         else
         {
-            progressBar.setVisibility(View.VISIBLE);
+            showLoader(true);
         }
-        
 
+    }
+
+    public void showLoader(boolean showLoader)
+    {
+        if (showLoader)
+        {
+            progressBar.setVisibility(View.VISIBLE);
+            setErrorMessage(false);
+            pager.setVisibility(View.GONE);
+            tabStrip.setVisibility(View.GONE);
+        }
+        else
+            progressBar.setVisibility(View.GONE);
     }
 
     public boolean loadServiceDefinations(ArrayList<ServiceEntityJson> response)
@@ -232,7 +248,7 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
         GsonGetRequest<ServiceDefinationJson> serviceDefinationRequestGson;
         Open311XmlRequest<ServiceDefinationJson> serviceDefinationRequestXML;
         String group = null;
-        if(Open311.sServiceGroups == null)
+        if (Open311.sServiceGroups == null)
             Open311.sServiceGroups = new HashMap<String, ArrayList<ServiceEntityJson>>();
         int len = response.size();
         for (int i = 0; i < len; i++) {
@@ -242,13 +258,13 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
             if (group == null) {
                 group = getString(R.string.uncategorized);
             }
-            
+
             if (!Open311.sGroups.contains(group)) {
                 Open311.sGroups.add(group);
                 temp = new ArrayList<ServiceEntityJson>();
                 temp.add(s);
                 Open311.sServiceGroups.put(group, temp);
-            }else
+            } else
             {
                 Open311.sServiceGroups.get(group).add(s);
             }
@@ -273,8 +289,9 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
                                         Open311.isDataLoading = false;
                                         Open311.prevEndpoint = Open311.sEndpoint.url;
                                         Open311.isLatestServiceListLoaded = true;
-                                        progressBar.setVisibility(View.GONE);
-                                        setErrorMessage(false);
+                                        showLoader(false);
+                                        pager.setVisibility(View.VISIBLE);
+                                        tabStrip.setVisibility(View.VISIBLE);
                                         adapter.notifyDataSetChanged();
                                         tabStrip.notifyDataSetChanged();
                                     }
@@ -286,8 +303,7 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
                                     Open311.isDataLoading = false;
                                     if (error.networkResponse != null)
                                         Log.d("Status GET", error.networkResponse.statusCode + "");
-                                    progressBar.setVisibility(View.GONE);
-                                    
+                                    showLoader(false);
                                     Open311.isLatestServiceListLoaded = false;
                                     setErrorMessage(true);
                                     Open311.requestQueue.cancelAll(serviceDefinationTag);
@@ -312,8 +328,9 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
                                         Open311.isDataLoading = false;
                                         Open311.prevEndpoint = Open311.sEndpoint.url;
                                         Open311.isLatestServiceListLoaded = true;
-                                        progressBar.setVisibility(View.GONE);
-                                        setErrorMessage(false);
+                                        showLoader(false);
+                                        pager.setVisibility(View.VISIBLE);
+                                        tabStrip.setVisibility(View.VISIBLE);
                                         adapter.notifyDataSetChanged();
                                         tabStrip.notifyDataSetChanged();
                                     }
@@ -324,8 +341,8 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
                                 public void onErrorResponse(VolleyError error) {
                                     if (error.networkResponse != null)
                                         Open311.isDataLoading = false;
-                                        Log.d("Status GET", error.networkResponse.statusCode + "");
-                                        progressBar.setVisibility(View.GONE);
+                                    Log.d("Status GET", error.networkResponse.statusCode + "");
+                                    showLoader(false);
                                     setErrorMessage(true);
                                     Open311.requestQueue.cancelAll(serviceDefinationTag);
                                 }
@@ -350,7 +367,7 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
 
     @Override
     public void onClick(View v) {
-        switch(v.getId())
+        switch (v.getId())
         {
             case R.id.buttonRetry:
                 refresh();

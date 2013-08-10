@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
+import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
@@ -160,11 +161,25 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
 
         ServiceRequest sr = new ServiceRequest(service, this);
         mReportFragment = ReportFragment.newInstance(sr);
-
+        
+        int backstack = getSupportFragmentManager().getBackStackEntryCount();
+        
+        Log.d("Backstack", backstack+" ");
+        
+        
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentDetail, mReportFragment)
                 .addToBackStack(null)
                 .commit();
+        slidingPane.closePane();
     }
+
+    @Override
+    public void onBackPressed() {
+        slidingPane.openPane();
+        super.onBackPressed();
+    }
+    
+    
 
 }

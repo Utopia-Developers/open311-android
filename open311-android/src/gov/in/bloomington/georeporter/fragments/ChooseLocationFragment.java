@@ -128,18 +128,7 @@ public class ChooseLocationFragment extends SherlockFragment implements Location
     private void setUpMap() {
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setMyLocationEnabled(false);
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));
-
-        // mapRadio = (RadioGroup) layout.findViewById(R.id.map_radio);
-
-        /*
-         * mapRadio.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-         * @Override public void onCheckedChanged(RadioGroup group, int
-         * checkedId) { switch (checkedId) { case R.id.rb_satellite:
-         * mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE); break; case
-         * R.id.rb_hybrid: mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID); break;
-         * default: mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL); } } });
-         */
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));        
     }
 
     @Override
