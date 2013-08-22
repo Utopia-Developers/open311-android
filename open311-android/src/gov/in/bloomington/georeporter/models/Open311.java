@@ -159,6 +159,8 @@ public class Open311 {
     private static final int TIMEOUT = 3000;
 
     private static Open311 mInstance;
+    
+    public static int selectedActionPosition = -1;
 
     private Open311() {
     }

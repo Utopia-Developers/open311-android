@@ -53,6 +53,7 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
         // Needs to be called to setup the Nav drawer
         super.setupNavigationDrawer();
         title = "GeoReporter";
+        Open311.selectedActionPosition = totalServers + 3;
         if (current_server == null)
         {
             mListAdapter.isServerSelected = false;
@@ -60,7 +61,7 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
         }
         else
-        {
+        {            
             Open311.sEndpoint = current_server;
             // Set the variable in the model from the server
             Open311.setCurrentServerDetails(current_server);

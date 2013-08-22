@@ -5,7 +5,16 @@
         <item name="android:drawablePadding">4dp</item>
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:paddingLeft">4dp</item>
-        <item name="android:textColor">@color/navdrawer_text_colour</item>
+        <item name="android:textColor">@color/text_colour_section_header</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    
+    <style name="sectionHeaderServer" parent="android:Widget.TextView">
+        <item name="android:drawableBottom">@drawable/section_header_navdrawer_server</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:textColor">@color/navdrawer_server_selected_colour</item>
         <item name="android:textSize">14sp</item>
     </style>
 </resources>

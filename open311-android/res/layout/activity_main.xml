@@ -31,6 +31,6 @@
         android:background="#222222"
         android:choiceMode="singleChoice"
         android:divider="@color/navdrawer_listview_divider_colour"
-        android:dividerHeight="2px" />
+        android:dividerHeight="@dimen/navdrawer_divider_height" />
 
 </android.support.v4.widget.DrawerLayout>

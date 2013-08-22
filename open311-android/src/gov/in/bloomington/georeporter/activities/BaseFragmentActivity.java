@@ -60,7 +60,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
     private LayoutInflater inflater;
     private boolean returnNow;
     private int mOrignallyAvailableServers;
-    
+    public int totalServers;
     protected Gson gson;
     // Servers
     protected ArrayList<ServerAttributeJson> mCustomServers = null;
@@ -126,7 +126,8 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
         for (int i = 0; i < len; i++) {
             mServers.add(mCustomServers.get(i));
         }
-
+        
+        totalServers = mServers.size();
         mListAdapter = new NavigationDrawerAdapter(mServers, this);
         mDrawerList.setAdapter(mListAdapter);
         mDrawerList.setOnItemClickListener(mClickListener);
@@ -274,7 +275,10 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
             returnNow = false;
             Log.d("Position", pos + "  " + mServers.size());
             if (pos >= mServers.size() + 2)
+            {
                 position = pos - (mServers.size() + 3);
+                Open311.selectedActionPosition = pos;
+            }
             // Add Server
             else if (pos == (mServers.size() + 1))
             {
@@ -338,11 +342,11 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
 
                 //First Occurrence
                 if (mListAdapter.selectedView != null)
-                    ((RadioButton) mListAdapter.selectedView
-                            .findViewById(R.id.radioButtonServerSelect))
-                            .setChecked(false);
+                    mListAdapter.selectedView
+                            .findViewById(R.id.viewSelected).setBackgroundColor(getResources().getColor(R.color.transparent)); 
+                
                 mListAdapter.selectedView = view;
-                ((RadioButton) view.findViewById(R.id.radioButtonServerSelect)).setChecked(true);
+                view.findViewById(R.id.viewSelected).setBackgroundColor(getResources().getColor(R.color.navdrawer_server_selected_colour));
                 
                 //Check for when no server is selected
                 if(Open311.prevEndpoint == null)
@@ -369,8 +373,11 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
             Intent intent;
             switch (position) {
                 case 0:
-                    intent = new Intent(BaseFragmentActivity.this, ReportActivity.class);
-                    startActivity(intent);
+                    Intent i = new Intent(BaseFragmentActivity.this, MainActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(i);
+                    //To prevent the jarring effect of activity transition.
+                    overridePendingTransition(0, 0);
                     break;
                 case 1:
                     intent = new Intent(BaseFragmentActivity.this, PersonalInfoActivity.class);

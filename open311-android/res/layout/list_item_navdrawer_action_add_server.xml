@@ -5,11 +5,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <View
-        android:id="@+id/viewActionSelected"
-        android:layout_width="@dimen/layout_margin_small"
-        android:layout_height="@dimen/navdrawer_action_item_height"
-        android:background="@color/text_colour_section_header" />
 
     <ImageView
         android:id="@+id/imageViewAction"
@@ -18,14 +13,14 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="@dimen/layout_margin"
         android:layout_marginTop="@dimen/layout_margin_small"
-        android:layout_toRightOf="@+id/viewActionSelected" />
+        android:layout_alignParentLeft="true" />
 
     <TextView
         android:id="@+id/textViewAction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/imageViewAction"
-        android:layout_marginLeft="@dimen/layout_margin_small"
+        android:layout_marginLeft="@dimen/layout_margin_extra_small"
         android:layout_marginRight="@dimen/layout_margin"
         android:layout_toRightOf="@+id/imageViewAction"
         android:paddingBottom="3dp"

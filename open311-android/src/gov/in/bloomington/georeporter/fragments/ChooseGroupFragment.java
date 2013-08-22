@@ -135,7 +135,7 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
         // If no metadata
         if (!loadServiceDefinations(response))
         {
-            progressBar.setVisibility(View.GONE);
+            showLoader(false);
             Open311.prevEndpoint = Open311.sEndpoint.url;
             Open311.isLatestServiceListLoaded = true;
             adapter.notifyDataSetChanged();

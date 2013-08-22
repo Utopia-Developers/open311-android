@@ -54,13 +54,13 @@
     <string name="reports_near">Reports Near You</string>
 
     <string-array name="navigation_list">
-        <item>Select Server</item>
-        <item>Add Server</item>
-        <item>Actions</item>
-        <item>Reports</item>
-        <item>Personal Info</item>
-        <item>My Reports</item>
-        <item>About</item>
+        <item>SELECT SERVER</item>
+        <item>ADD SERVER</item>
+        <item>ACTIONS</item>
+        <item>HOME</item>
+        <item>PERSONAL INFO</item>
+        <item>MY REPORTS</item>
+        <item>ABOUT</item>
     </string-array>
 
 </resources>

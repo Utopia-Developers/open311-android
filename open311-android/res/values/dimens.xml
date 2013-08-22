@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="navdrawer_width">240dp</dimen>
+    <dimen name="navdrawer_server_item_height">64dp</dimen>
+    <dimen name="navdrawer_action_item_height">48dp</dimen>
+    <dimen name="navdrawer_divider_height">1px</dimen>
     <dimen name="layout_margin">16dp</dimen>
     <dimen name="layout_margin_small">8dp</dimen>
     <dimen name="layout_margin_extra_small">4dp</dimen>
