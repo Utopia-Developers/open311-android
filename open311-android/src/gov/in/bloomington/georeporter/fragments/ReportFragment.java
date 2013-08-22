@@ -741,9 +741,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                 Open311.requestQueue.add(Open311.sPostServiceRequest);
                 break;
             case R.id.cancel_button:
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                getActivity().onBackPressed();
                 break;
         }
     }

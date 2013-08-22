@@ -100,6 +100,7 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
         error = (TextView) layout.findViewById(R.id.textViewError);
         retry = (Button) layout.findViewById(R.id.buttonRetry);
         retry.setOnClickListener(this);
+        progressBar.setVisibility(View.GONE);
         pager.setAdapter(adapter);
         tabStrip.setViewPager(pager);
         return layout;

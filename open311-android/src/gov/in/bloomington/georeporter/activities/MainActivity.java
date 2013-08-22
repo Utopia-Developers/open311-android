@@ -61,7 +61,7 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
         }
         else
-        {            
+        {
             Open311.sEndpoint = current_server;
             // Set the variable in the model from the server
             Open311.setCurrentServerDetails(current_server);
@@ -162,12 +162,7 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
 
         ServiceRequest sr = new ServiceRequest(service, this);
         mReportFragment = ReportFragment.newInstance(sr);
-        
-        int backstack = getSupportFragmentManager().getBackStackEntryCount();
-        
-        Log.d("Backstack", backstack+" ");
-        
-        
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentDetail, mReportFragment)
                 .addToBackStack(null)
@@ -177,10 +172,16 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
 
     @Override
     public void onBackPressed() {
-        slidingPane.openPane();
-        super.onBackPressed();
+        int backstack = getSupportFragmentManager().getBackStackEntryCount();
+        Log.d("Backstack", backstack + " " +slidingPane.isOpen());
+        if (backstack == 0 && !slidingPane.isOpen())
+            slidingPane.openPane();
+        else
+        {
+            slidingPane.openPane();
+            super.onBackPressed();
+        }
+
     }
-    
-    
 
 }

@@ -16,7 +16,7 @@
         android:text="@string/reports_near"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/map_near_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
