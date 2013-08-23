@@ -136,7 +136,9 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
         // If no metadata
         if (!loadServiceDefinations(response))
         {
-            showLoader(false);
+            showLoader(false);            
+            pager.setVisibility(View.VISIBLE);
+            tabStrip.setVisibility(View.VISIBLE);
             Open311.prevEndpoint = Open311.sEndpoint.url;
             Open311.isLatestServiceListLoaded = true;
             adapter.notifyDataSetChanged();
@@ -167,7 +169,6 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
 
             showLoader(true);
 
-            // TODO
             if (Open311.requestQueue == null)
                 Open311.requestQueue = Volley.newRequestQueue(getActivity(), new OkHttpStack());
 

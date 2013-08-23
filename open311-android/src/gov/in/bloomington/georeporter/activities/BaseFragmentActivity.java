@@ -84,7 +84,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
                 null);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, getSupportActionBar(), mDrawerLayout,
-                R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close)
+                R.drawable.ic_navigation_drawer, R.string.drawer_open, R.string.drawer_close)
         {
 
             /** Called when a drawer has settled in a completely closed state. */

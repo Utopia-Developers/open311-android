@@ -48,6 +48,8 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         slidingPane = (SlidingPaneLayout) findViewById(R.id.slidingpanelayout);
+        slidingPane.setSliderFadeColor(getResources().getColor(R.color.drawer_shader_colour));
+        slidingPane.setShadowResource(R.drawable.shadow);
         slidingPane.openPane();
         current_server = Preferences.getCurrentServer(MainActivity.this);
         // Needs to be called to setup the Nav drawer
@@ -159,7 +161,6 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
         if (mActionBar == null)
             mActionBar = getSupportActionBar();
         mActionBar.setTitle(title);
-
         ServiceRequest sr = new ServiceRequest(service, this);
         mReportFragment = ReportFragment.newInstance(sr);
 

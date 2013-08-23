@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/card_background"
-    android:padding="@dimen/layout_margin_small" >
+    android:paddingBottom="@dimen/layout_margin" >
 
     <TextView
         android:id="@+id/textViewHeading"
@@ -12,9 +12,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="@dimen/layout_margin_small"
-        android:layout_marginRight="@dimen/layout_margin_small"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_marginLeft="@dimen/layout_margin"
+        android:layout_marginRight="@dimen/layout_margin"
+        android:layout_marginTop="@dimen/layout_margin_small"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/text_colour_report_heading" />
 
    
@@ -25,8 +26,10 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textViewHeading"
         android:layout_below="@+id/textViewHeading"
-        android:layout_marginRight="@dimen/layout_margin_small"
+        android:layout_marginRight="@dimen/layout_margin"
         android:layout_marginTop="@dimen/layout_margin_extra_small"
+        android:layout_marginBottom="@dimen/layout_margin_small"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@color/text_colour_report" />
 
 </RelativeLayout>

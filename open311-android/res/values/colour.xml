@@ -7,7 +7,8 @@
     <color name="text_colour_section_header">#0099CC</color>
     <color name="transparent">#00000000</color>
     <color name="text_colour_white">#ffffff</color>
-    <color name="background_app">#e5e5e5</color>
+    <color name="background_app">#F7F7F7</color>
+    <color name="drawer_shader_colour">#e5e5e5</color>
     <color name="text_colour_report">#555555</color>
     <color name="text_colour_report_heading">#444444</color>
     <color name="divider_colour">#c5c5c5</color>
