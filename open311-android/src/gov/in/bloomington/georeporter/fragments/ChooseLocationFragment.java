@@ -1,17 +1,23 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
+import android.app.Activity;
 import android.content.IntentSender;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -37,11 +43,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class ChooseLocationFragment extends SherlockFragment implements LocationListener,
+public class ChooseLocationFragment extends DialogFragment implements LocationListener,
         ConnectionCallbacks, OnConnectionFailedListener, OnClickListener {
 
     private View layout;
     private GoogleMap mMap;
+    private EnhancedSupportMapFragment mapFragment;
     // private RadioGroup mapRadio;
 
     // Define an object that holds accuracy and frequency parameters
@@ -57,6 +64,33 @@ public class ChooseLocationFragment extends SherlockFragment implements Location
 
     public static final int DEFAULT_ZOOM = 17;
     
+    /**
+     * Create a new instance of MyDialogFragment, providing "num"
+     * as an argument.
+     */
+    static ChooseLocationFragment newInstance() {
+        ChooseLocationFragment f = new ChooseLocationFragment();
+
+        return f;
+    }
+    
+    
+
+    
+    @Override
+    public void onAttach(Activity activity) {        
+        super.onAttach(activity);
+        FragmentManager fm = getChildFragmentManager();
+        mapFragment =  (EnhancedSupportMapFragment) fm.findFragmentById(R.id.map_fragment_select);
+        if ( mapFragment == null) {
+            mapFragment = new EnhancedSupportMapFragment();
+            fm.beginTransaction().replace(R.id.map_fragment_select,  mapFragment).commit();
+        }
+    }
+
+
+
+
     private OnMapPositionClicked mapPositionClickedListener;
     public interface OnMapPositionClicked
     {
@@ -73,11 +107,26 @@ public class ChooseLocationFragment extends SherlockFragment implements Location
         setAddress.setOnClickListener(this);
         removeAddress.setOnClickListener(this);
         snapToAddress.setOnClickListener(this);
-        mapPositionClickedListener = (ReportFragment)getFragmentManager().findFragmentByTag("Report");
-        setUpMapIfNeeded();
-        setRetainInstance(true);
+        mapPositionClickedListener = (ReportFragment)getParentFragment();
+        setUpMapIfNeeded();    
+        
         return layout;
     }
+    
+    
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+             
+        setStyle(DialogFragment.STYLE_NO_FRAME, R.style.MapDialogStyle);
+    }
+    
+    
+
+
+
 
     @Override
     public void onResume() {
@@ -108,8 +157,7 @@ public class ChooseLocationFragment extends SherlockFragment implements Location
         // map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            EnhancedSupportMapFragment mapFragment = (EnhancedSupportMapFragment) getFragmentManager()
-                    .findFragmentById(R.id.map_fragment);
+            
             mMap = mapFragment.getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
@@ -134,6 +182,9 @@ public class ChooseLocationFragment extends SherlockFragment implements Location
     @Override
     public void onStart() {
         super.onStart();
+        int width  = LayoutParams.MATCH_PARENT;
+        int height = getResources().getDimensionPixelSize(R.dimen.map_height);        
+        getDialog().getWindow().setLayout(width, height);
         mLocationClient.connect();
     }
 

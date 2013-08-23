@@ -12,5 +12,8 @@
     <dimen name="crossair_size">48dp</dimen>
     <dimen name="logo">50dp</dimen>
     
+    <dimen name="add_media_container">112dp</dimen>
+    <dimen name="add_media_image">96dp</dimen>
+    
     <integer name="column_no" >1</integer>
 </resources>

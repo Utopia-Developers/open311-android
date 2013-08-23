@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="@dimen/map_height"
+    android:paddingLeft="@dimen/layout_margin"
+    android:paddingRight="@dimen/layout_margin" >
 
-    <fragment
-        android:id="@+id/map_fragment"
+    <RelativeLayout
+        android:id="@+id/map_fragment_select"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/map_height"
-        class="gov.in.bloomington.georeporter.customviews.EnhancedSupportMapFragment" />
+        android:layout_height="@dimen/map_height" >
+    </RelativeLayout>
 
     <ImageView
         android:layout_width="@dimen/crossair_size"
@@ -48,7 +49,7 @@
         android:layout_height="64dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="64dp"
+        android:layout_marginBottom="@dimen/layout_margin_extra_small"
         android:background="@drawable/ic_access_location" />
 
 </RelativeLayout>

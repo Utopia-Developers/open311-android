@@ -2,29 +2,74 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:baselineAligned="false"
     android:orientation="horizontal" >
 
-    <ImageView
-        android:id="@+id/media"
-        android:layout_width="60dp"
-        android:layout_height="45dip"
-        android:scaleType="fitCenter"
-        android:layout_gravity="center_vertical"
-        android:src="@android:drawable/ic_menu_camera" />
+    <RelativeLayout
+        android:id="@+id/add_media"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/add_media_container"
+        android:layout_weight="0.33"
+        android:background="@drawable/media_selecter" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="16dp"
-        android:text="@string/report_attach_image"
-        android:textAppearance="@android:style/TextAppearance.Medium" />
+        <ImageView
+            android:id="@+id/media_upload"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/add_media_image"
+            android:background="@drawable/card_background"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_camera" >
+        </ImageView>
 
-    <ImageView
-        android:id="@+id/media_upload"
-        android:layout_width="104dp"
-        android:layout_height="78dip"
-        android:layout_marginLeft="16dp"
-        android:scaleType="fitCenter" />
+        <ImageView
+            android:id="@+id/imageViewMedia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/media_upload"
+            android:layout_marginLeft="@dimen/layout_margin_extra_small"
+            android:src="@drawable/ic_camera_action" />
+
+        <TextView
+            android:id="@+id/textViewAttach"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/imageViewMedia"
+            android:layout_toRightOf="@+id/imageViewMedia"
+            android:text="@string/attach_media"
+            android:textColor="@color/text_colour_report" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/set_location"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/add_media_container"
+        android:layout_weight="0.66"
+        android:background="@drawable/media_selecter" >
+
+        <ImageView
+            android:id="@+id/media_map"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/add_media_image"
+            android:background="@drawable/card_background"
+            android:scaleType="center"
+            android:src="@drawable/ic_location_map" />
+
+        <ImageView
+            android:id="@+id/imageViewLocationPlace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/media_map"
+            android:layout_marginLeft="@dimen/layout_margin_extra_small"
+            android:src="@drawable/ic_location_place" />
+
+        <TextView
+            android:id="@+id/textViewLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/imageViewLocationPlace"
+            android:layout_toRightOf="@+id/imageViewLocationPlace"
+            android:text="@string/set_loc"
+            android:textColor="@color/text_colour_report" />
+    </RelativeLayout>
 
 </LinearLayout>

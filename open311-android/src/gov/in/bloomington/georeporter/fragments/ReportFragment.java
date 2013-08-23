@@ -19,6 +19,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -75,7 +78,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ReportFragment extends SherlockFragment implements OnItemClickListener,
-        OnClickListener,OnMapPositionClicked {
+        OnClickListener, OnMapPositionClicked {
     /**
      * Request for handling Photo attachments to the Service Request
      */
@@ -111,12 +114,9 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     private int currentViewCount = 0;
     private Uri mImageUri;
     private ImageView mediaUpload;
-    
+
     private String address;
-    private double latitude,longitude;
-    
-   
-    
+    private double latitude, longitude;
 
     /**
      * For Request Post
@@ -171,30 +171,32 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                 Context.LAYOUT_INFLATER_SERVICE);
 
         // Insert All Possible Views
-        View temp;
+        View temp = null;
         ((TextView) contentView.getChildAt(0)).setText(mServiceRequest.service.getService_name());
         ((TextView) contentView.getChildAt(1)).setText(mServiceRequest.service.getDescription());
         if (mServiceRequest.endpoint != null && mServiceRequest.endpoint.supports_media)
         {
             temp = layoutInflator.inflate(R.layout.report_item_media, null, false);
-            temp.setTag(Open311.MEDIA);
-            temp.setOnClickListener(this);
-            mediaUpload = (ImageView) temp.findViewById(R.id.media_upload);
+            View media = temp.findViewById(R.id.add_media);
+            media.setTag(Open311.MEDIA);
+            media.setOnClickListener(this);
+            mediaUpload = (ImageView) media.findViewById(R.id.media_upload);
             contentView.addView(temp);
 
             Log.d("Media", "true" + contentView.getChildCount());
         }
 
-        temp = layoutInflator.inflate(R.layout.report_item_map, contentView, false);
-        temp.setTag(Open311.ADDRESS);
-        temp.setOnClickListener(this);
-        contentView.addView(temp);
+        // TODO Handle Case if Media Not supported
+        View map = temp.findViewById(R.id.set_location);
+        map.setTag(Open311.ADDRESS);
+        map.setOnClickListener(this);
+
         temp = layoutInflator.inflate(R.layout.report_item_description, contentView, false);
         temp.setTag(Open311.DESCRIPTION);
         contentView.addView(temp);
 
         addAttributes();
-        //setRetainInstance(true);
+        // setRetainInstance(true);
         return v;
     }
 
@@ -522,7 +524,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                     {
                         EditText input = (EditText) linearChildView.getChildAt(1);
                         String value = "";
-                        if (input!=null && input.getText() != null)
+                        if (input != null && input.getText() != null)
                             value = input.getText().toString();
                         try {
                             Log.d("Value", value);
@@ -545,7 +547,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                     {
                         EditText input = (EditText) linearChildView.getChildAt(1);
                         String value = "";
-                        if (input!=null && input.getText() != null)
+                        if (input != null && input.getText() != null)
                             value = input.getText().toString();
                         try {
                             Log.d("Value", value);
@@ -559,7 +561,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                     {
                         Spinner input = (Spinner) linearChildView.getChildAt(1);
                         String value = "";
-                        if (input!=null && input.getSelectedItem() != null)
+                        if (input != null && input.getSelectedItem() != null)
                             value = input.getSelectedItem().toString();
                         try {
                             Log.d("Value", value);
@@ -573,7 +575,8 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                     {
                         JSONArray submittedValues = new JSONArray();
 
-                        LinearLayout input = (LinearLayout) ((LinearLayout)linearChildView.getChildAt(0)).getChildAt(1);
+                        LinearLayout input = (LinearLayout) ((LinearLayout) linearChildView
+                                .getChildAt(0)).getChildAt(1);
                         int count = input.getChildCount();
                         for (int a = 0; a < count; a++) {
                             CheckBox checkbox = (CheckBox) input.getChildAt(a);
@@ -581,11 +584,11 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                                 submittedValues.put(checkbox.getText().toString());
                             }
                         }
-                        
+
                         try {
                             mServiceRequest.post_data.put(key, submittedValues);
                         } catch (JSONException e) {
-                            
+
                             e.printStackTrace();
                         }
                     }
@@ -644,7 +647,21 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
         }
         else if (v.getTag() != null && v.getTag().toString().contentEquals(Open311.ADDRESS))
         {
-            Log.d("Map", "Click");
+            // DialogFragment.show() will take care of adding the fragment
+            // in a transaction. We also want to remove any currently showing
+            // dialog, so make our own transaction and take care of that here.
+            FragmentManager fm = getChildFragmentManager();
+            Fragment prev = fm.findFragmentByTag("dialog");
+            FragmentTransaction ft = fm.beginTransaction();
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
+
+            // Create and show the dialog.
+            ChooseLocationFragment newFragment = ChooseLocationFragment.newInstance();
+            newFragment.show(fm, "dialog");
+
         }
         else if (v.getTag() != null && v.getTag().toString().contentEquals(Open311.DATETIME))
         {
@@ -756,12 +773,10 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             mServiceRequest.post_data.put(Open311.LONGITUDE, longitude);
             mServiceRequest.post_data.put(Open311.ADDRESS_STRING, address);
         } catch (JSONException e) {
-            
+
             e.printStackTrace();
         }
-       
-    }
 
-    
+    }
 
 }

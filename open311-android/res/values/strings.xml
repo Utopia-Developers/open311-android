@@ -62,5 +62,7 @@
         <item>MY REPORTS</item>
         <item>ABOUT</item>
     </string-array>
+        <string name="attach_media">Attach</string>
+        <string name="set_loc">Set Location</string>
 
 </resources>
