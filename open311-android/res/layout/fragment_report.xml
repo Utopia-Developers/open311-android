@@ -10,8 +10,7 @@
         android:id="@+id/reportScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/submit_cancel_buttons"
-        android:layout_marginBottom="48dp" >
+        android:layout_marginBottom="@dimen/cancel_button_layout_height">
 
         <LinearLayout
             android:id="@+id/reportContentView"
@@ -30,6 +29,7 @@
                 android:id="@+id/textView1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/text_colour_report_heading"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>
     </ScrollView>
@@ -37,6 +37,8 @@
     <include
         android:id="@+id/submit_cancel_buttons"
         android:layout_alignParentBottom="true"
+        android:layout_below="@+id/reportScrollView"
+        android:layout_marginTop="@dimen/layout_margin_small"
         layout="@layout/submit_cancel_buttons" />
 
 </RelativeLayout>

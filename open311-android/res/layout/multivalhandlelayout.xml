@@ -2,11 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/close"
     android:orientation="vertical" >
     <TextView
         android:id="@+id/textViewDescription"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"        
+        android:layout_height="wrap_content"      
+        android:textColor="@color/text_colour_report_heading"  
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </LinearLayout>

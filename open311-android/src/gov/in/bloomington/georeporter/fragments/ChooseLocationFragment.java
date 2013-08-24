@@ -59,6 +59,7 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
     private Marker addressMarker;
     private LatLng setPosition;
     protected String addressVal;
+    protected String markerText;
 
     public static final int UPDATE_GOOGLE_MAPS_REQUEST = 0;
 
@@ -301,19 +302,23 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
                     setPosition = new LatLng(0, 0);
                 }
 
+                markerText = String.format("Lat: %02f Long: %02f", setPosition.latitude,setPosition.longitude);
+                        
+                
                 addressMarker = mMap
                         .addMarker(new MarkerOptions()
                                 .position(setPosition)
                                 .title("Address")
-                                .snippet(
-                                        "Lat: " + setPosition.latitude + " Long: "
-                                                + setPosition.longitude));
+                                .snippet(markerText));
+                Log.d("Marker", markerText);
                 addressMarker.showInfoWindow();
+                mMap.moveCamera(CameraUpdateFactory.scrollBy(0, -(3 * getResources().getDimension(R.dimen.layout_margin))));
                 mapPositionClickedListener.positionClicked(addressVal,setPosition.latitude,setPosition.longitude);
                 new ReverseGeocodingTask().execute(setPosition);
                 break;
             case R.id.buttonRemoveLocAddr:
-                addressMarker.remove();
+                if(addressMarker!=null)
+                    addressMarker.remove();
                 break;
             case R.id.buttonSnapToAddress:
                 if (setPosition != null)
@@ -340,14 +345,16 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
                 addresses = geocoder.getFromLocation(latitude, longitude, 1);
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-
+                
+            }            
+            
+            
             if (addresses != null && addresses.size() > 0) {
                 Address address = addresses.get(0);
                 return String.format("%s",
                         address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "");
             }
-            return null;
+            return markerText;
         }
 
         @Override
@@ -355,7 +362,9 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
             addressMarker.setSnippet(address);
             addressMarker.showInfoWindow();
             addressVal = address;
+            mMap.snapshot((ReportFragment)getParentFragment());
             mapPositionClickedListener.positionClicked(address,setPosition.latitude,setPosition.longitude);
+            dismiss();
         }
     }
 

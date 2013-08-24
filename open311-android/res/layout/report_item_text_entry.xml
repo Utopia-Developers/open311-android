@@ -7,13 +7,15 @@
     <TextView
         android:id="@+id/textViewDescription"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"        
+        android:layout_height="wrap_content"   
+        android:textColor="@color/text_colour_report_heading"     
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <EditText
         android:id="@+id/editTextEntry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/text_colour_report"        
         android:ems="10" >
 
     </EditText>

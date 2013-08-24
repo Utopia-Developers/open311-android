@@ -16,6 +16,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -37,6 +38,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -48,6 +50,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
+import com.google.android.gms.maps.GoogleMap.SnapshotReadyCallback;
 import com.google.gson.Gson;
 import com.utopia.accordionview.AccordionView;
 
@@ -78,7 +81,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ReportFragment extends SherlockFragment implements OnItemClickListener,
-        OnClickListener, OnMapPositionClicked {
+        OnClickListener, OnMapPositionClicked,SnapshotReadyCallback {
     /**
      * Request for handling Photo attachments to the Service Request
      */
@@ -113,7 +116,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     private ScrollView scrollView;
     private int currentViewCount = 0;
     private Uri mImageUri;
-    private ImageView mediaUpload;
+    private ImageView mediaUpload,mapImage;
 
     private String address;
     private double latitude, longitude;
@@ -190,6 +193,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
         View map = temp.findViewById(R.id.set_location);
         map.setTag(Open311.ADDRESS);
         map.setOnClickListener(this);
+        mapImage = (ImageView) map.findViewById(R.id.media_map);
 
         temp = layoutInflator.inflate(R.layout.report_item_description, contentView, false);
         temp.setTag(Open311.DESCRIPTION);
@@ -263,6 +267,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                         {
                             checkBox = new CheckBox(getActivity());
                             checkBox.setText(values.get(j).getName());
+                            checkBox.setTextColor(getResources().getColor(R.color.text_colour_report));
                             LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
                                     LayoutParams.WRAP_CONTENT);
                             checkBox.setLayoutParams(params);
@@ -444,8 +449,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                     default:
                         break;
                 }
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
+            } catch (JSONException e) {                
                 e.printStackTrace();
             }
         }
@@ -777,6 +781,12 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public void onSnapshotReady(Bitmap bitmap) {
+        mapImage.setScaleType(ScaleType.CENTER_CROP);
+        mapImage.setImageBitmap(bitmap);
     }
 
 }

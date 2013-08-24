@@ -9,6 +9,7 @@
         android:id="@+id/textViewDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/text_colour_report_heading"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Spinner

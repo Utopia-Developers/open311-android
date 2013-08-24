@@ -3,25 +3,36 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/cancel_button_layout_height"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal" >
+        android:background="@drawable/bacground_cancel"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/layout_margin_small"
+        android:paddingLeft="@dimen/layout_margin"
+        android:paddingRight="@dimen/layout_margin"
+        android:paddingTop="12dp" >
 
         <Button
             android:id="@+id/cancel_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/layout_margin"
             android:layout_weight="1"
+            android:background="@drawable/button_red_background"
             android:onClick="cancel"
-            android:text="@string/cancel" />
+            android:text="@string/cancel"
+            android:textColor="@color/navdrawer_text_colour" />
 
         <Button
             android:id="@+id/submit_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/layout_margin"
             android:layout_weight="1"
+            android:background="@drawable/button_blue_background"
             android:onClick="submit"
-            android:text="@string/save" />
+            android:text="@string/save"
+            android:textColor="@color/navdrawer_text_colour" />
     </LinearLayout>
 
 </merge>

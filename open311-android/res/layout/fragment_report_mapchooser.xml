@@ -29,7 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/transparent"
+            android:background="@drawable/media_selecter"
             android:text="@string/map_removeaddr"
             android:textColor="@color/text_colour_white" />
 
@@ -38,7 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/transparent"
+            android:background="@drawable/media_selecter"
             android:text="@string/map_addaddr"
             android:textColor="@color/text_colour_white" />
     </LinearLayout>

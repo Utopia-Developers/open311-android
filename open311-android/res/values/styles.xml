@@ -3,8 +3,20 @@
     <style name="MapDialogStyle" parent="@style/Theme.Bloomington">
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:cacheColorHint">@android:color/transparent</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        
+        <item name="android:windowBackground">@android:color/transparent</item>        
+    </style>
+    
+    <style name="Theme.Spinner" parent="@style/Theme.Bloomington">
+        <item name="android:spinnerItemStyle">@style/SpinnerItem</item>
+        <item name="android:spinnerDropDownItemStyle">@style/SpinnerItem.DropDownItem</item>
+    </style>
+
+    <style name="SpinnerItem" parent="@android:style/Widget.TextView.SpinnerItem">
+        <item name="android:textColor">@color/text_colour_report_heading</item>
+    </style>
+
+    <style name="SpinnerItem.DropDownItem" parent="@android:style/Widget.DropDownItem.Spinner">
+        <item name="android:textColor">@color/text_colour_report</item>
     </style>
 
 </resources>
