@@ -34,6 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:textColor="@color/text_colour_report_heading"
         android:text="@string/failure_loading_services"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:visibility="gone" />

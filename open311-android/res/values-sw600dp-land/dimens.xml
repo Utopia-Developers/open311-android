@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="master_width">512dp</dimen>
+
+    <integer name="column_no">3</integer>
+
+    <dimen name="activity_margin">192dp</dimen>
+    <dimen name="report_margin">16dp</dimen>
+
+</resources>

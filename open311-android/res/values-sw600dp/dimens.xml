@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="navdrawer_width">300dp</dimen>
+    <dimen name="master_width">360dp</dimen>    
     <integer name="column_no" >2</integer>
+     <dimen name="activity_margin">64dp</dimen>
+     
+     <dimen name="report_margin">64dp</dimen>
 </resources>

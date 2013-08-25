@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -73,6 +74,11 @@ import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.volleyrequests.GsonPostServiceRequest;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,8 +123,10 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     private int currentViewCount = 0;
     private Uri mImageUri;
     private ImageView mediaUpload,mapImage;
+    private Bundle mapBundle;
+    private int THUMBNAIL_SIZE;
 
-    private String address;
+    private String address,mapKey = "MarkerAddress";
     private double latitude, longitude;
 
     /**
@@ -202,6 +210,34 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
         addAttributes();
         // setRetainInstance(true);
         return v;
+    }
+    
+    public Bitmap generateThumbnail(Uri uri)
+    {
+            //TODO Do on Background Thread
+            InputStream image = null;
+            try {
+                image = getActivity().getContentResolver().openInputStream(uri);
+            } catch (FileNotFoundException e) {                
+                e.printStackTrace();
+            }
+            
+            THUMBNAIL_SIZE = (mediaUpload.getWidth() > mediaUpload.getHeight()) ? mediaUpload.getWidth() : mediaUpload.getHeight();
+
+            BitmapFactory.Options bounds = new BitmapFactory.Options();
+            bounds.inJustDecodeBounds = true;
+            
+            BitmapFactory.decodeStream(image, null, bounds);
+            if ((bounds.outWidth == -1) || (bounds.outHeight == -1))
+                return null;
+
+            int originalSize = (bounds.outHeight > bounds.outWidth) ? bounds.outHeight
+                    : bounds.outWidth;
+
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inSampleSize = originalSize / THUMBNAIL_SIZE;
+            return BitmapFactory.decodeStream(image, null, opts);     
+        
     }
 
     private void addAttributes()
@@ -391,6 +427,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                         Uri imageUri = (mImageUri != null) ? mImageUri : data.getData();
                         if (imageUri != null) {
                             mServiceRequest.post_data.put(Open311.MEDIA, imageUri.toString());
+                            //mediaUpload.setImageBitmap(generateThumbnail(imageUri));
                             mediaUpload.setImageURI(imageUri);
                             mImageUri = null; // Remember to wipe it out, so we
                                               // don't confuse camera and
@@ -454,14 +491,10 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             }
         }
 
-        refreshAdapter();
+        
     }
 
-    private void refreshAdapter() {
-        // ServiceRequestAdapter a = (ServiceRequestAdapter)
-        // mListView.getAdapter();
-        // a.updateServiceRequest(mServiceRequest);
-    }
+    
 
     /**
      * A basic date picker used for DateTime attributes Pass in the attribute
@@ -496,7 +529,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                         mAttributeCode);
                 String date = DateFormat.getDateFormat(getActivity()).format(c.getTime());
                 mServiceRequest.post_data.put(code, date);
-                refreshAdapter();
+                
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -663,7 +696,12 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             ft.addToBackStack(null);
 
             // Create and show the dialog.
-            ChooseLocationFragment newFragment = ChooseLocationFragment.newInstance();
+            if(mapBundle == null)
+                mapBundle = new Bundle();
+            mapBundle.putString(mapKey, address);
+            mapBundle.putDouble("Lat", latitude);
+            mapBundle.putDouble("Lng", longitude);
+            ChooseLocationFragment newFragment = ChooseLocationFragment.newInstance(mapBundle);
             newFragment.show(fm, "dialog");
 
         }

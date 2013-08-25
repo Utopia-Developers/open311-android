@@ -11,9 +11,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="@dimen/layout_margin"
+        android:layout_marginLeft="@dimen/report_margin"
+        android:layout_marginRight="@dimen/report_margin"
         android:layout_marginTop="@dimen/layout_margin"
         android:text="@string/reports_near"
+        android:textColor="@color/text_colour_report_heading"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <RelativeLayout
@@ -21,6 +23,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/textViewHeader"
-        android:layout_margin="@dimen/layout_margin" />
+        android:layout_marginTop="@dimen/layout_margin"
+        android:layout_marginBottom="@dimen/layout_margin"
+        android:layout_marginLeft="@dimen/report_margin"
+        android:layout_marginRight="@dimen/report_margin" />
 
 </RelativeLayout>

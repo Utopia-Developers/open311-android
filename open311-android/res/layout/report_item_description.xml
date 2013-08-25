@@ -2,12 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/layout_margin"
     android:orientation="vertical" >
 
     <TextView
+        style="@style/sectionHeaderGeneric"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/sectionHeaderGeneric"
         android:text="@string/description" />
 
     <EditText
@@ -15,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textMultiLine"
-        android:hint="@string/report_description" />
+        android:hint="@string/report_description"
+        android:inputType="textMultiLine" />
 
 </LinearLayout>

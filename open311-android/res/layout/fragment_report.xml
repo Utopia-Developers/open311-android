@@ -17,8 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginLeft="@dimen/layout_margin"
-            android:layout_marginRight="@dimen/layout_margin" >
+            android:layout_marginLeft="@dimen/report_margin"
+            android:layout_marginRight="@dimen/report_margin" >
 
             <TextView
                 style="@style/sectionHeaderGeneric"

@@ -69,9 +69,9 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
      * Create a new instance of MyDialogFragment, providing "num"
      * as an argument.
      */
-    static ChooseLocationFragment newInstance() {
+    static ChooseLocationFragment newInstance(Bundle bundle) {       
         ChooseLocationFragment f = new ChooseLocationFragment();
-
+        f.setArguments(bundle);
         return f;
     }
     
@@ -118,10 +118,12 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-             
+        super.onCreate(savedInstanceState);               
         setStyle(DialogFragment.STYLE_NO_FRAME, R.style.MapDialogStyle);
+        Bundle b = getArguments();
+        addressVal = b.getString("MarkerAddress");
+        setPosition = new LatLng(b.getDouble("Lat"), b.getDouble("Lng"));
+        
     }
     
     
@@ -157,7 +159,7 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
         // Do a null check to confirm that we have not already instantiated the
         // map.
         if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
+            // Try to obtain the map from the EnhancedSupportMapFragment.
             
             mMap = mapFragment.getMap();
             // Check if we were successful in obtaining the map.
@@ -177,7 +179,35 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
     private void setUpMap() {
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setMyLocationEnabled(false);
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));        
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));   
+        if(addressVal!=null)
+        {
+            setMarker(addressVal, setPosition);
+        }
+    }
+    
+    /**
+     * 
+     * @param markerText
+     * @param pos
+     * 
+     */
+    public void setMarker(String markerText,LatLng pos)
+    {
+        this.markerText = markerText;
+        if (addressMarker != null)
+            addressMarker.remove();        
+
+        addressMarker = mMap
+                .addMarker(new MarkerOptions()
+                        .position(setPosition)
+                        .title("Address")
+                        .snippet(markerText));
+        
+        addressMarker.showInfoWindow();
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
+        mMap.moveCamera(CameraUpdateFactory.scrollBy(0, -(3 * getResources().getDimension(R.dimen.layout_margin))));
+        
     }
 
     @Override
@@ -293,8 +323,7 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
         switch (v.getId())
         {
             case R.id.buttonAddLocAddr:
-                if (addressMarker != null)
-                    addressMarker.remove();
+               
 
                 setPosition = mMap.getCameraPosition().target;
                 if (setPosition == null)
@@ -304,15 +333,8 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
 
                 markerText = String.format("Lat: %02f Long: %02f", setPosition.latitude,setPosition.longitude);
                         
+                setMarker(markerText, setPosition);
                 
-                addressMarker = mMap
-                        .addMarker(new MarkerOptions()
-                                .position(setPosition)
-                                .title("Address")
-                                .snippet(markerText));
-                Log.d("Marker", markerText);
-                addressMarker.showInfoWindow();
-                mMap.moveCamera(CameraUpdateFactory.scrollBy(0, -(3 * getResources().getDimension(R.dimen.layout_margin))));
                 mapPositionClickedListener.positionClicked(addressVal,setPosition.latitude,setPosition.longitude);
                 new ReverseGeocodingTask().execute(setPosition);
                 break;

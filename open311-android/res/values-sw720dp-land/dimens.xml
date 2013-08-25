@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="navdrawer_width">300dp</dimen>
+    <dimen name="master_width">656dp</dimen>    
+    <integer name="column_no" >3</integer>
+    <dimen name="report_margin">16dp</dimen>
+</resources>

@@ -7,8 +7,9 @@
         android:id="@+id/linearLayoutContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginLeft="@dimen/activity_margin"  
+        android:layout_marginRight="@dimen/activity_margin"      
+        android:layout_marginTop="@dimen/layout_margin_small"
         android:orientation="vertical" >
 
         <TextView

@@ -16,5 +16,8 @@
     <dimen name="add_media_container">112dp</dimen>
     <dimen name="add_media_image">96dp</dimen>
     
+    <dimen name="activity_margin">16dp</dimen>
+    <dimen name="report_margin">16dp</dimen>
+    
     <integer name="column_no" >1</integer>
 </resources>
