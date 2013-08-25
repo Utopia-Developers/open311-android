@@ -19,7 +19,7 @@ import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.fragments.SavedReportViewFragment;
 import gov.in.bloomington.georeporter.fragments.SavedReportsListFragment;
 
-public class SavedReportsActivity extends BaseFragmentActivity implements OnItemClickListener {
+public class SavedReportsActivity extends BaseFragmentActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,14 +38,6 @@ public class SavedReportsActivity extends BaseFragmentActivity implements OnItem
 
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> l, View v, int position, long id) {
-        SavedReportViewFragment fragment = SavedReportViewFragment.newInstance(position);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .addToBackStack(null)
-                .commit();
-    }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item)

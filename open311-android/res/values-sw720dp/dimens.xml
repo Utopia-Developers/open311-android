@@ -4,4 +4,6 @@
     <dimen name="master_width">480dp</dimen>  
     <integer name="column_no" >2</integer>
     <dimen name="report_margin">96dp</dimen>
+    
+    <integer name="column_no_saved_report" >2</integer> 
 </resources>

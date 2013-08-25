@@ -60,6 +60,7 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
     private LatLng setPosition;
     protected String addressVal;
     protected String markerText;
+    private int parentWidth;
 
     public static final int UPDATE_GOOGLE_MAPS_REQUEST = 0;
 
@@ -123,7 +124,7 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
         Bundle b = getArguments();
         addressVal = b.getString("MarkerAddress");
         setPosition = new LatLng(b.getDouble("Lat"), b.getDouble("Lng"));
-        
+        parentWidth = b.getInt("Width");
     }
     
     
@@ -213,9 +214,15 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
     @Override
     public void onStart() {
         super.onStart();
-        int width  = LayoutParams.MATCH_PARENT;
-        int height = getResources().getDimensionPixelSize(R.dimen.map_height);        
-        getDialog().getWindow().setLayout(width, height);
+        int width  = parentWidth;
+        int height = getResources().getDimensionPixelSize(R.dimen.map_height);  
+        WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
+        params.width = width;
+        params.height =  height;
+        params.gravity = Gravity.RIGHT;
+        
+        getDialog().getWindow().setAttributes(params);        
+        
         mLocationClient.connect();
     }
 

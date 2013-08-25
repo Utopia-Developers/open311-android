@@ -6,4 +6,5 @@
      <dimen name="activity_margin">64dp</dimen>
      
      <dimen name="report_margin">64dp</dimen>
+     <integer name="column_no_saved_report" >1</integer> 
 </resources>

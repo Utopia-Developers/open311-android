@@ -6,6 +6,7 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -13,10 +14,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.rajul.staggeredgridview.StaggeredGridView;
+import com.rajul.staggeredgridview.StaggeredGridView.OnItemClickListener;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.adapters.SavedReportsAdapter;
@@ -25,34 +28,38 @@ import gov.in.bloomington.georeporter.models.ServiceRequest;
 
 import java.util.ArrayList;
 
-public class SavedReportsListFragment extends SherlockListFragment {
+public class SavedReportsListFragment extends SherlockFragment implements OnItemClickListener {
     private ArrayList<ServiceRequest> mServiceRequests;
     private boolean mDataChanged = false;
+    private StaggeredGridView mGridView;
+    private int colCount;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mServiceRequests = Open311.loadServiceRequests(getActivity());
 
-        setListAdapter(new SavedReportsAdapter(mServiceRequests, getActivity()));
     }
+    
+    
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getListView().setOnItemClickListener((OnItemClickListener) getActivity());
-        getListView().setDivider(this.getResources().getDrawable(R.drawable.transperent_color));
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mGridView = new StaggeredGridView(activity);
+        mGridView.setAdapter(new SavedReportsAdapter(mServiceRequests, activity));
+        mGridView.setOnItemClickListener(this);
+        colCount = this.getResources().getInteger(R.integer.column_no_saved_report);
+        mGridView.setColumnCount(colCount);
         int margin = getResources().getDimensionPixelSize(R.dimen.layout_margin_small);
-        getListView().setDividerHeight(margin/2);
-        getListView().setDrawSelectorOnTop(true);
+        mGridView.setItemMargin(margin); // set the GridView margin
 
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-
-        layoutParams.setMargins(margin, margin, margin, margin);
-        getListView().setLayoutParams(layoutParams);
-        registerForContextMenu(getListView());
+        mGridView.setPadding(margin, 0, margin, 0); // have the margin on the
+                                                   // sides as well  
+        registerForContextMenu(mGridView);
+        
     }
+    
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -86,7 +93,18 @@ public class SavedReportsListFragment extends SherlockListFragment {
     }
 
     private void refreshAdapter() {
-        SavedReportsAdapter a = (SavedReportsAdapter) getListAdapter();
+        SavedReportsAdapter a = (SavedReportsAdapter) mGridView.getAdapter();
         a.updateSavedReports(mServiceRequests);
+    }
+
+
+
+    @Override
+    public void onItemClick(StaggeredGridView parent, View view, int position, long id) {
+        SavedReportViewFragment fragment = SavedReportViewFragment.newInstance(position);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

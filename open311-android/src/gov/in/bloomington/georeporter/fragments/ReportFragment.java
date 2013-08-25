@@ -159,8 +159,6 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // TODO
         mServiceRequest = new ServiceRequest(getArguments());
     }
 
@@ -428,6 +426,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                         if (imageUri != null) {
                             mServiceRequest.post_data.put(Open311.MEDIA, imageUri.toString());
                             //mediaUpload.setImageBitmap(generateThumbnail(imageUri));
+                            mediaUpload.setScaleType(ScaleType.CENTER_CROP);
                             mediaUpload.setImageURI(imageUri);
                             mImageUri = null; // Remember to wipe it out, so we
                                               // don't confuse camera and
@@ -701,6 +700,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             mapBundle.putString(mapKey, address);
             mapBundle.putDouble("Lat", latitude);
             mapBundle.putDouble("Lng", longitude);
+            mapBundle.putInt("Width", contentView.getWidth());
             ChooseLocationFragment newFragment = ChooseLocationFragment.newInstance(mapBundle);
             newFragment.show(fm, "dialog");
 

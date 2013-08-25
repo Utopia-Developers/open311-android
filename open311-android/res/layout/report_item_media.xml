@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/add_media_image"
             android:background="@drawable/card_background"
-            android:scaleType="centerCrop"
+            android:scaleType="center"
             android:src="@drawable/ic_camera" >
         </ImageView>
 
