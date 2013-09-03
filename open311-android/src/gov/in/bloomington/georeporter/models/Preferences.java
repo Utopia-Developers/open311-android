@@ -74,7 +74,7 @@ public class Preferences {
      */
     public static void setPersonalInfo(JSONObject personal_info, Context c) {
         Preferences.loadSettings(c);
-
+        Open311.mPersonalInfo = personal_info;
         SharedPreferences.Editor editor = mSettings.edit();
         editor.putString(PERSONAL_INFO, personal_info.toString());
         editor.commit();

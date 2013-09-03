@@ -42,6 +42,7 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -56,23 +57,23 @@ import com.google.gson.Gson;
 import com.utopia.accordionview.AccordionView;
 
 import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.activities.AttributeEntryActivity;
 import gov.in.bloomington.georeporter.activities.ChooseLocationActivity;
-import gov.in.bloomington.georeporter.activities.DataEntryActivity;
 import gov.in.bloomington.georeporter.activities.MainActivity;
 import gov.in.bloomington.georeporter.activities.SavedReportsActivity;
-import gov.in.bloomington.georeporter.adapters.ServiceRequestAdapter;
 import gov.in.bloomington.georeporter.fragments.ChooseLocationFragment.OnMapPositionClicked;
 import gov.in.bloomington.georeporter.json.AttributesJson;
 import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.json.ValuesJson;
 import gov.in.bloomington.georeporter.models.Open311;
+import gov.in.bloomington.georeporter.models.Preferences;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
 import gov.in.bloomington.georeporter.util.Media;
 import gov.in.bloomington.georeporter.util.Util;
 import gov.in.bloomington.georeporter.util.json.JSONArray;
 import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.volleyrequests.GsonPostServiceRequest;
+
+import org.jraf.android.backport.switchwidget.Switch;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -86,8 +87,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class ReportFragment extends SherlockFragment implements OnItemClickListener,
-        OnClickListener, OnMapPositionClicked,SnapshotReadyCallback {
+public class ReportFragment extends SherlockFragment implements OnClickListener,
+        OnMapPositionClicked, SnapshotReadyCallback {
     /**
      * Request for handling Photo attachments to the Service Request
      */
@@ -106,6 +107,8 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
      */
     public static final int DATA_ENTRY_REQUEST = 3;
 
+    public String ATTRIBUTE = "attribute";
+
     static Gson gson;
 
     private static final List<String> DATA_ENTRY_FIELDS = Arrays.asList(
@@ -116,17 +119,18 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     private ServiceRequest mServiceRequest;
     private LinearLayout contentView;
     private TextView loadingFailedMessage;
+    private Switch anonomously;
     private Button loadingFailedRetry;
     private ProgressBar loadingProgress;
     private LayoutInflater layoutInflator;
     private ScrollView scrollView;
     private int currentViewCount = 0;
     private Uri mImageUri;
-    private ImageView mediaUpload,mapImage;
+    private ImageView mediaUpload, mapImage;
     private Bundle mapBundle;
     private int THUMBNAIL_SIZE;
 
-    private String address,mapKey = "MarkerAddress";
+    private String address, mapKey = "MarkerAddress";
     private double latitude, longitude;
 
     /**
@@ -204,38 +208,40 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
         temp = layoutInflator.inflate(R.layout.report_item_description, contentView, false);
         temp.setTag(Open311.DESCRIPTION);
         contentView.addView(temp);
-
         addAttributes();
-        // setRetainInstance(true);
+        temp = layoutInflator.inflate(R.layout.report_item_postanom, contentView, false);
+        temp.setTag(Open311.ANONOMOUSLY);
+        contentView.addView(temp);
         return v;
     }
-    
+
     public Bitmap generateThumbnail(Uri uri)
     {
-            //TODO Do on Background Thread
-            InputStream image = null;
-            try {
-                image = getActivity().getContentResolver().openInputStream(uri);
-            } catch (FileNotFoundException e) {                
-                e.printStackTrace();
-            }
-            
-            THUMBNAIL_SIZE = (mediaUpload.getWidth() > mediaUpload.getHeight()) ? mediaUpload.getWidth() : mediaUpload.getHeight();
+        // TODO Do on Background Thread
+        InputStream image = null;
+        try {
+            image = getActivity().getContentResolver().openInputStream(uri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
-            BitmapFactory.Options bounds = new BitmapFactory.Options();
-            bounds.inJustDecodeBounds = true;
-            
-            BitmapFactory.decodeStream(image, null, bounds);
-            if ((bounds.outWidth == -1) || (bounds.outHeight == -1))
-                return null;
+        THUMBNAIL_SIZE = (mediaUpload.getWidth() > mediaUpload.getHeight()) ? mediaUpload
+                .getWidth() : mediaUpload.getHeight();
 
-            int originalSize = (bounds.outHeight > bounds.outWidth) ? bounds.outHeight
-                    : bounds.outWidth;
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
 
-            BitmapFactory.Options opts = new BitmapFactory.Options();
-            opts.inSampleSize = originalSize / THUMBNAIL_SIZE;
-            return BitmapFactory.decodeStream(image, null, opts);     
-        
+        BitmapFactory.decodeStream(image, null, bounds);
+        if ((bounds.outWidth == -1) || (bounds.outHeight == -1))
+            return null;
+
+        int originalSize = (bounds.outHeight > bounds.outWidth) ? bounds.outHeight
+                : bounds.outWidth;
+
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inSampleSize = originalSize / THUMBNAIL_SIZE;
+        return BitmapFactory.decodeStream(image, null, opts);
+
     }
 
     private void addAttributes()
@@ -301,7 +307,8 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                         {
                             checkBox = new CheckBox(getActivity());
                             checkBox.setText(values.get(j).getName());
-                            checkBox.setTextColor(getResources().getColor(R.color.text_colour_report));
+                            checkBox.setTextColor(getResources().getColor(
+                                    R.color.text_colour_report));
                             LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
                                     LayoutParams.WRAP_CONTENT);
                             checkBox.setLayoutParams(params);
@@ -361,56 +368,6 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
     }
 
     /**
-     * Starts a seperate activity for each report field Design background: We
-     * cannot fit all the text and controls onto a single screen. In addition,
-     * controls like the Camera and Map chooser must be in a seperate activity
-     * anyway. This streamlines the process so each report field is handled the
-     * same way.
-     */
-    public void onItemClick(AdapterView<?> l, View v, int position, long id) {
-        ServiceRequestAdapter adapter = (ServiceRequestAdapter) l.getAdapter();
-
-        if (adapter.getItemViewType(position) != ServiceRequestAdapter.TYPE_HEADER) {
-            // TODO Figure out which type of dialog to draw
-            String labelKey = (String) adapter.getItem(position);
-
-            if (labelKey.equals(Open311.MEDIA)) {
-
-            }
-            else if (labelKey.equals(Open311.ADDRESS_STRING)) {
-                Intent i = new Intent(getActivity(), ChooseLocationActivity.class);
-                startActivityForResult(i, LOCATION_REQUEST);
-            }
-            else if (DATA_ENTRY_FIELDS.contains(labelKey)) {
-                TextView label = (TextView) v.findViewById(android.R.id.text1);
-
-                Intent i = new Intent(getActivity(), DataEntryActivity.class);
-                i.putExtra(DataEntryActivity.KEY, labelKey);
-                i.putExtra(DataEntryActivity.VALUE, mServiceRequest.post_data.optString(labelKey));
-                i.putExtra(DataEntryActivity.PROMPT, label.getText().toString());
-                startActivityForResult(i, DATA_ENTRY_REQUEST);
-            }
-            else {
-                AttributesJson attribute = mServiceRequest.getAttribute(labelKey);
-
-                // For datetime attributes, we'll just pop open a date
-                // picker dialog
-                String datatype = attribute.getDatatype();
-                if (datatype.equals(Open311.DATETIME)) {
-                    DatePickerDialogFragment datePicker = new DatePickerDialogFragment(labelKey);
-                    datePicker.show(getFragmentManager(), "datePicker");
-                }
-                // all other attribute types get a full seperate Activity
-                else {
-                    Intent i = new Intent(getActivity(), AttributeEntryActivity.class);
-                    i.putExtra(AttributeEntryActivity.ATTRIBUTE, new Gson().toJson(attribute));
-                    startActivityForResult(i, ATTRIBUTE_REQUEST);
-                }
-            }
-        }
-    }
-
-    /**
      * Reads data returned from activities and updates mServiceRequest
      */
     @Override
@@ -425,7 +382,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                         Uri imageUri = (mImageUri != null) ? mImageUri : data.getData();
                         if (imageUri != null) {
                             mServiceRequest.post_data.put(Open311.MEDIA, imageUri.toString());
-                            //mediaUpload.setImageBitmap(generateThumbnail(imageUri));
+                            // mediaUpload.setImageBitmap(generateThumbnail(imageUri));
                             mediaUpload.setScaleType(ScaleType.CENTER_CROP);
                             mediaUpload.setImageURI(imageUri);
                             mImageUri = null; // Remember to wipe it out, so we
@@ -450,50 +407,15 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                         // LatLng(latitude, longitude));
                         break;
 
-                    /**
-                     * Case to handle all the text-based parameters description,
-                     * firstname, lastname, etc.
-                     */
-                    case DATA_ENTRY_REQUEST:
-                        String labelKey = data.getStringExtra(DataEntryActivity.KEY);
-                        String val = data.getStringExtra(DataEntryActivity.VALUE);
-                        mServiceRequest.post_data.put(labelKey, val);
-                        break;
-
-                    /**
-                     * Case to handle all possible attributes
-                     */
-                    case ATTRIBUTE_REQUEST:
-                        String code = data.getStringExtra(Open311.CODE);
-                        String datatype = data.getStringExtra(Open311.DATATYPE);
-                        String value = data.getStringExtra(AttributeEntryActivity.VALUE);
-
-                        String key = String
-                                .format("%s[%s]", AttributeEntryActivity.ATTRIBUTE, code);
-
-                        // Multivaluelist attributes will return a JSON string
-                        // containg a JSONArray of values the user chose
-                        if (datatype.equals(Open311.MULTIVALUELIST)) {
-                            JSONArray array = new JSONArray(value);
-                            mServiceRequest.post_data.put(key, array);
-                        }
-                        else {
-                            mServiceRequest.post_data.put(key, value);
-                        }
-                        break;
-
                     default:
                         break;
                 }
-            } catch (JSONException e) {                
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
-        
     }
-
-    
 
     /**
      * A basic date picker used for DateTime attributes Pass in the attribute
@@ -524,11 +446,11 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             Calendar c = Calendar.getInstance();
             c.set(year, monthOfYear, dayOfMonth);
             try {
-                String code = String.format("%s[%s]", AttributeEntryActivity.ATTRIBUTE,
+                String code = String.format("%s[%s]", ATTRIBUTE,
                         mAttributeCode);
                 String date = DateFormat.getDateFormat(getActivity()).format(c.getTime());
                 mServiceRequest.post_data.put(code, date);
-                
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -550,6 +472,48 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
              * Log.d("Tag",childView.getTag().toString());
              */
 
+            // Anonomous Check
+            if (childView instanceof RelativeLayout
+                    && childView.getTag().toString().contentEquals(Open311.ANONOMOUSLY)) {
+                anonomously = (Switch) childView.findViewById(R.id.switchAnon);
+                Log.d("Checked", anonomously.isChecked() + " ");
+                if (!anonomously.isChecked())
+                {
+                    if (Open311.mPersonalInfo == null)
+                    {
+                        Open311.mPersonalInfo = Preferences.getPersonalInfo(getActivity());
+                    }
+                    try {
+                        mServiceRequest.post_data.put(Open311.FIRST_NAME,
+                                Open311.mPersonalInfo.get(Open311.FIRST_NAME));
+                        mServiceRequest.post_data.put(Open311.LAST_NAME,
+                                Open311.mPersonalInfo.get(Open311.LAST_NAME));
+                        mServiceRequest.post_data.put(Open311.EMAIL,
+                                Open311.mPersonalInfo.get(Open311.EMAIL));
+                        mServiceRequest.post_data.put(Open311.PHONE,
+                                Open311.mPersonalInfo.get(Open311.PHONE));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                {
+                    try {
+                        mServiceRequest.post_data.put(Open311.FIRST_NAME,
+                                "");
+                        mServiceRequest.post_data.put(Open311.LAST_NAME,
+                                "");
+                        mServiceRequest.post_data.put(Open311.EMAIL,
+                                "");
+                        mServiceRequest.post_data.put(Open311.PHONE,
+                                "");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                continue;
+            }
             // Skip first one as thats for media
             if (childView instanceof LinearLayout)
             {
@@ -570,10 +534,10 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
                         }
                         continue;
                     }
+
                     // I tagged the views with the code
                     String key = String
-                            .format("%s[%s]", AttributeEntryActivity.ATTRIBUTE, childView.getTag());
-                    // Log.d("key", key);
+                            .format("%s[%s]", ATTRIBUTE, childView.getTag());
 
                     // Check through this linear layouts childs in view
                     // hierarchy
@@ -695,7 +659,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
             ft.addToBackStack(null);
 
             // Create and show the dialog.
-            if(mapBundle == null)
+            if (mapBundle == null)
                 mapBundle = new Bundle();
             mapBundle.putString(mapKey, address);
             mapBundle.putDouble("Lat", latitude);
@@ -771,6 +735,7 @@ public class ReportFragment extends SherlockFragment implements OnItemClickListe
 
                                     mServiceRequest.endpoint = Open311.sEndpoint;
                                     mServiceRequest.service_request = response;
+                                    Log.d("response", new Gson().toJson(response));
 
                                     try {
                                         mServiceRequest.post_data.put(

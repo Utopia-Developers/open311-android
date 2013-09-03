@@ -20,6 +20,8 @@
 <resources>
 
     <style name="Theme.Bloomington" parent="@style/Theme.Sherlock.Light">
+        <item name="switchStyle">@style/Widget.Holo.CompoundButton.Switch</item>
+        <item name="switchPreferenceStyle">@style/Preference.SwitchPreference</item>
         <item name="android:actionBarItemBackground">@drawable/selectable_background_bloomington</item>
         <item name="android:popupMenuStyle">@style/PopupMenu.Bloomington</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Bloomington</item>

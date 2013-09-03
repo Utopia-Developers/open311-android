@@ -219,7 +219,7 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
         WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
         params.width = width;
         params.height =  height;
-        params.gravity = Gravity.RIGHT;
+        params.gravity = Gravity.CENTER;
         
         getDialog().getWindow().setAttributes(params);        
         

@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
+import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
 import android.util.Log;
+import android.view.View;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
@@ -31,13 +33,14 @@ import gov.in.bloomington.georeporter.models.ServiceRequest;
 
 public class MainActivity extends BaseFragmentActivity implements OnSetActionBarTitleListener,
         OnGroupSelectedListener,
-        OnServiceSelectedListener {
+        OnServiceSelectedListener, PanelSlideListener {
 
     private ServerAttributeJson current_server;
     OnDataRefreshListener mListener;
     private SlidingPaneLayout slidingPane;
     private ActionBar mActionBar;
     private ReportFragment mReportFragment;
+    private boolean paneOpen;
 
     public interface OnDataRefreshListener {
         public void onRefreshRequested();
@@ -47,9 +50,10 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         slidingPane = (SlidingPaneLayout) findViewById(R.id.slidingpanelayout);
-        slidingPane.setSliderFadeColor(getResources().getColor(R.color.drawer_shader_colour));
+        slidingPane.setPanelSlideListener(this);
+        //slidingPane.setSliderFadeColor(getResources().getColor(R.color.drawer_shader_colour));
         slidingPane.setShadowResource(R.drawable.shadow);
         slidingPane.openPane();
         current_server = Preferences.getCurrentServer(MainActivity.this);
@@ -107,8 +111,10 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content
         // view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.menu_refresh).setVisible(!drawerOpen);
+        
+        Log.d("Prepare", "Prep "+paneOpen);
+        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);        
+        menu.findItem(R.id.menu_refresh).setVisible(!(drawerOpen || paneOpen));
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -175,14 +181,33 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
     @Override
     public void onBackPressed() {
         int backstack = getSupportFragmentManager().getBackStackEntryCount();
-        Log.d("Backstack", backstack + " " +slidingPane.isOpen());
+        Log.d("Backstack", backstack + " " + slidingPane.isOpen());
         if (backstack == 0 && !slidingPane.isOpen())
             slidingPane.openPane();
         else
         {
             slidingPane.openPane();
+            title = Open311.sEndpoint.name;
+            mActionBar.setTitle(title);
             super.onBackPressed();
         }
+
+    }
+
+    @Override
+    public void onPanelClosed(View arg0) {
+        paneOpen = true;
+        this.supportInvalidateOptionsMenu();
+    }
+
+    @Override
+    public void onPanelOpened(View arg0) {
+        paneOpen = false;
+        this.supportInvalidateOptionsMenu();
+    }
+
+    @Override
+    public void onPanelSlide(View arg0, float arg1) {
 
     }
 

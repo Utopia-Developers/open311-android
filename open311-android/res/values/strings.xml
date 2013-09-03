@@ -64,5 +64,6 @@
     </string-array>
         <string name="attach_media">Attach</string>
         <string name="set_loc">Set Location</string>
+        <string name="post_anon">Would you like to post this issue anonomously?</string>
 
 </resources>

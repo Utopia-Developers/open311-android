@@ -88,6 +88,7 @@ public class Open311 {
     public static final String ADDRESS = "address";
     public static final String ADDRESS_STRING = "address_string";
     public static final String DESCRIPTION = "description";
+    public static final String ANONOMOUSLY = "anonomously";
     public static final String SERVICE_NOTICE = "service_notice";
     public static final String ACCOUNT_ID = "account_id";
     public static final String STATUS = "status";
@@ -142,6 +143,7 @@ public class Open311 {
     public static String prevEndpoint;
     public static HashMap<String, ServiceDefinationJson> sServiceDefinitions;
     public static ArrayList<String> sGroups;
+    public static JSONObject mPersonalInfo;
 
     public static RequestQueue requestQueue = null;
     public static GsonGetRequest<ArrayList<ServiceEntityJson>> sServiceRequestGson = null;
