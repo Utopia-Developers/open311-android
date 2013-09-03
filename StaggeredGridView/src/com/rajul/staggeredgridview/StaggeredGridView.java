@@ -53,8 +53,6 @@ import android.view.View.BaseSavedState;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ListAdapter;
 
-
-
 /**
  * ListView and GridView just not complex enough? Try StaggeredGridView!
  * <p>
@@ -110,9 +108,9 @@ public class StaggeredGridView extends ViewGroup
     private int mItemMargin;
     private int mColWidth;
     private long mFirstAdapterId;
-    
+
     private int[] mRestoreOffsets;
-    //TODO
+    // TODO
 
     private int[] mItemTops;
     private int[] mItemBottoms;
@@ -126,8 +124,8 @@ public class StaggeredGridView extends ViewGroup
     private final RecycleBin mRecycler = new RecycleBin();
 
     private final AdapterDataSetObserver mObserver = new AdapterDataSetObserver();
-    
-    private ArrayList<ArrayList<Integer>> mColMappings = new ArrayList<ArrayList<Integer>>(); 
+
+    private ArrayList<ArrayList<Integer>> mColMappings = new ArrayList<ArrayList<Integer>>();
 
     private boolean mDataChanged;
     private int mOldItemCount;
@@ -1899,7 +1897,10 @@ public class StaggeredGridView extends ViewGroup
     @Override
     protected LayoutParams generateLayoutParams(ViewGroup.LayoutParams lp)
     {
-        return new LayoutParams(lp);
+        if (lp == null)
+            return generateDefaultLayoutParams();
+        else
+            return new LayoutParams(lp);
     }
 
     @Override
@@ -1942,82 +1943,39 @@ public class StaggeredGridView extends ViewGroup
         mRestoreOffset = ss.topOffset;
         requestLayout();
     }
+
     /*
-    @Override
-    public Parcelable onSaveInstanceState() {
-        final Parcelable superState = super.onSaveInstanceState();
-        final SavedState ss = new SavedState(superState);
-        final int position = mFirstPosition;
-        ss.position = mFirstPosition;
-
-        if (position >= 0 && mAdapter != null && position < mAdapter.getCount()) {
-            ss.firstId = mAdapter.getItemId(position);
-        }
-
-        if (getChildCount() > 0) {
-
-            int topOffsets[]= new int[this.mColCount];
-
-            if(this.mColWidth>0)
-            for(int i =0; i < mColCount; i++){
-                if(getChildAt(i)!=null){
-                    final View child = getChildAt(i);
-                    final int left = child.getLeft();
-                    int col = 0;
-                    Log.w("mColWidth", mColWidth+" "+left);
-
-                    // determine the column by cycling widths
-                    while( left > col*(this.mColWidth + mItemMargin*2) + getPaddingLeft() ){
-                        col++;
-                    }
-
-                    topOffsets[col] = getChildAt(i).getTop() - mItemMargin - getPaddingTop();
-                }
-
-            }
-
-            ss.topOffsets = topOffsets;
-
-            // convert nested arraylist so it can be parcelable
-            ArrayList<ColMap> convert = new ArrayList<ColMap>();
-            for(ArrayList<Integer> cols : mColMappings){
-                convert.add(new ColMap(cols));
-            }
-
-            ss.mapping = convert;
-        }
-        return ss;
-    }
-
-    @Override
-    public void onRestoreInstanceState(Parcelable state) {
-        SavedState ss = (SavedState) state;
-        super.onRestoreInstanceState(ss.getSuperState());
-        mDataChanged = true;
-        mFirstPosition = ss.position;
-        mRestoreOffsets = ss.topOffsets;
-
-        ArrayList<ColMap> convert = ss.mapping;
-
-        if(convert != null){
-            mColMappings.clear();
-            for(ColMap colMap : convert){
-                mColMappings.add(colMap.values);
-            }
-        }
-
-        if(ss.firstId>=0){
-            this.mFirstAdapterId = ss.firstId;
-            mSelectorPosition = INVALID_POSITION;
-        }
-
-        requestLayout();
-    }*/
+     * @Override public Parcelable onSaveInstanceState() { final Parcelable
+     * superState = super.onSaveInstanceState(); final SavedState ss = new
+     * SavedState(superState); final int position = mFirstPosition; ss.position
+     * = mFirstPosition; if (position >= 0 && mAdapter != null && position <
+     * mAdapter.getCount()) { ss.firstId = mAdapter.getItemId(position); } if
+     * (getChildCount() > 0) { int topOffsets[]= new int[this.mColCount];
+     * if(this.mColWidth>0) for(int i =0; i < mColCount; i++){
+     * if(getChildAt(i)!=null){ final View child = getChildAt(i); final int left
+     * = child.getLeft(); int col = 0; Log.w("mColWidth", mColWidth+" "+left);
+     * // determine the column by cycling widths while( left >
+     * col*(this.mColWidth + mItemMargin*2) + getPaddingLeft() ){ col++; }
+     * topOffsets[col] = getChildAt(i).getTop() - mItemMargin - getPaddingTop();
+     * } } ss.topOffsets = topOffsets; // convert nested arraylist so it can be
+     * parcelable ArrayList<ColMap> convert = new ArrayList<ColMap>();
+     * for(ArrayList<Integer> cols : mColMappings){ convert.add(new
+     * ColMap(cols)); } ss.mapping = convert; } return ss; }
+     * @Override public void onRestoreInstanceState(Parcelable state) {
+     * SavedState ss = (SavedState) state;
+     * super.onRestoreInstanceState(ss.getSuperState()); mDataChanged = true;
+     * mFirstPosition = ss.position; mRestoreOffsets = ss.topOffsets;
+     * ArrayList<ColMap> convert = ss.mapping; if(convert != null){
+     * mColMappings.clear(); for(ColMap colMap : convert){
+     * mColMappings.add(colMap.values); } } if(ss.firstId>=0){
+     * this.mFirstAdapterId = ss.firstId; mSelectorPosition = INVALID_POSITION;
+     * } requestLayout(); }
+     */
 
     public static class LayoutParams extends ViewGroup.LayoutParams
     {
         private static final int[] LAYOUT_ATTRS = new int[] {
-            android.R.attr.layout_span
+                android.R.attr.layout_span
         };
 
         private static final int SPAN_INDEX = 0;
@@ -2294,55 +2252,27 @@ public class StaggeredGridView extends ViewGroup
             }
         };
     }
-    
+
     /*
-    static class SavedState extends BaseSavedState {
-        long firstId = -1;
-        int position;
-        int topOffsets[];
-        ArrayList<ColMap> mapping;
-
-        SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        private SavedState(Parcel in) {
-            super(in);
-            firstId = in.readLong();
-            position = in.readInt();
-            in.readIntArray(topOffsets);
-            in.readTypedList(mapping, ColMap.CREATOR);
-            
-        }
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            super.writeToParcel(out, flags);
-            out.writeLong(firstId);
-            out.writeInt(position);
-            out.writeIntArray(topOffsets);
-            out.writeTypedList(mapping);
-        }
-
-        @Override
-        public String toString() {
-            return "StaggereGridView.SavedState{"
-                        + Integer.toHexString(System.identityHashCode(this))
-                        + " firstId=" + firstId
-                        + " position=" + position + "}";
-        }
-
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
-    }
-    */
+     * static class SavedState extends BaseSavedState { long firstId = -1; int
+     * position; int topOffsets[]; ArrayList<ColMap> mapping;
+     * SavedState(Parcelable superState) { super(superState); } private
+     * SavedState(Parcel in) { super(in); firstId = in.readLong(); position =
+     * in.readInt(); in.readIntArray(topOffsets); in.readTypedList(mapping,
+     * ColMap.CREATOR); }
+     * @Override public void writeToParcel(Parcel out, int flags) {
+     * super.writeToParcel(out, flags); out.writeLong(firstId);
+     * out.writeInt(position); out.writeIntArray(topOffsets);
+     * out.writeTypedList(mapping); }
+     * @Override public String toString() { return
+     * "StaggereGridView.SavedState{" +
+     * Integer.toHexString(System.identityHashCode(this)) + " firstId=" +
+     * firstId + " position=" + position + "}"; } public static final
+     * Parcelable.Creator<SavedState> CREATOR = new
+     * Parcelable.Creator<SavedState>() { public SavedState
+     * createFromParcel(Parcel in) { return new SavedState(in); } public
+     * SavedState[] newArray(int size) { return new SavedState[size]; } }; }
+     */
 
     public void setOnScrollListener(OnScrollListener scrollListener) {
         mOnScrollListener = scrollListener;
@@ -2784,7 +2714,7 @@ public class StaggeredGridView extends ViewGroup
                 mSelector.setState(getDrawableState());
             } else {
                 mSelector.setState(new int[] {
-                    0
+                        0
                 });
             }
         }
@@ -2880,15 +2810,15 @@ public class StaggeredGridView extends ViewGroup
             // TODO: hide selector properly
         }
     }
-    
+
     static class ColMap implements Parcelable {
         private ArrayList<Integer> values;
         int tempMap[];
-        
-        public ColMap(ArrayList<Integer> values){
+
+        public ColMap(ArrayList<Integer> values) {
             this.values = values;
         }
-        
+
         private ColMap(Parcel in) {
             in.readIntArray(tempMap);
             values = new ArrayList<Integer>();
@@ -2896,13 +2826,13 @@ public class StaggeredGridView extends ViewGroup
                 values.add(tempMap[index]);
             }
         }
-        
+
         @Override
         public void writeToParcel(Parcel out, int flags) {
             tempMap = toIntArray(values);
             out.writeIntArray(tempMap);
         }
-        
+
         public static final Creator<ColMap> CREATOR = new Creator<ColMap>() {
             public ColMap createFromParcel(Parcel source) {
                 return new ColMap(source);

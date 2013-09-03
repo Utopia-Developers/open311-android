@@ -48,7 +48,9 @@ public class SavedReportsAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return (mServiceRequests == null) ? 0 : mServiceRequests.size();
+        int count = (mServiceRequests == null) ? 0 : mServiceRequests.size();
+        Log.d("Count", count+"");
+        return count;
     }
 
     @Override
@@ -74,7 +76,7 @@ public class SavedReportsAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.list_item_saved_reports, null);
+            convertView = mInflater.inflate(R.layout.list_item_saved_reports, parent,false);
             holder = new ViewHolder();
             holder.serviceName = (TextView) convertView.findViewById(R.id.service_name);
             holder.status = (TextView) convertView.findViewById(R.id.status);
@@ -99,7 +101,7 @@ public class SavedReportsAdapter extends BaseAdapter {
                     .optString(ServiceRequest.REQUESTED_DATETIME))));
             holder.media.setImageBitmap(sr.getMediaBitmap(80, 80, mInflater.getContext()));
             int size = context.getResources().getDimensionPixelSize(R.dimen.logo);
-            holder.logo.setBackgroundDrawable(new RoundedDrawable(BitmapFactory.decodeResource(context.getResources(), R.drawable.card_background),size,size));
+            holder.logo.setImageDrawable(new RoundedDrawable(BitmapFactory.decodeResource(context.getResources(), R.drawable.card_background),size,size));
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

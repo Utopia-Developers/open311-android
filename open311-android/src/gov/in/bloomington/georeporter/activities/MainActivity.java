@@ -47,6 +47,7 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
         slidingPane = (SlidingPaneLayout) findViewById(R.id.slidingpanelayout);
         slidingPane.setSliderFadeColor(getResources().getColor(R.color.drawer_shader_colour));
         slidingPane.setShadowResource(R.drawable.shadow);

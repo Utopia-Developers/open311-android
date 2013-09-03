@@ -21,7 +21,7 @@ import java.util.Locale;
 
 public class NavigationDrawerAdapter extends BaseAdapter {
     private ArrayList<ServerAttributeJson> mServers;
-    private static LayoutInflater mInflater;
+    private LayoutInflater mInflater;
     public String mCurrentServerURL;
     private String[] navigationList;
     private ArrayList<AdapterList> mList;
@@ -187,7 +187,7 @@ public class NavigationDrawerAdapter extends BaseAdapter {
     }
 
     /*
-     * (non-Javadoc)
+     * 
      * @see android.widget.Adapter#getView(int, android.view.View,
      * android.view.ViewGroup)
      */

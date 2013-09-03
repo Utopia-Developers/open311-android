@@ -6,18 +6,16 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.FrameLayout;
-
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockListFragment;
 import com.rajul.staggeredgridview.StaggeredGridView;
 import com.rajul.staggeredgridview.StaggeredGridView.OnItemClickListener;
 
@@ -33,33 +31,40 @@ public class SavedReportsListFragment extends SherlockFragment implements OnItem
     private boolean mDataChanged = false;
     private StaggeredGridView mGridView;
     private int colCount;
+    private SavedReportsAdapter adapter;
+    private View layout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mServiceRequests = Open311.loadServiceRequests(getActivity());
-
     }
-    
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        layout = inflater.inflate(R.layout.fragment_report_saved_list, container,false);
+        mGridView = (StaggeredGridView) layout.findViewById(R.id.report_list);
+        adapter = new SavedReportsAdapter(mServiceRequests, getActivity());
+        mGridView.setAdapter(adapter);
+        return mGridView;
+    }
+
     
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mGridView = new StaggeredGridView(activity);
-        mGridView.setAdapter(new SavedReportsAdapter(mServiceRequests, activity));
-        mGridView.setOnItemClickListener(this);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        
         colCount = this.getResources().getInteger(R.integer.column_no_saved_report);
         mGridView.setColumnCount(colCount);
+        mGridView.setOnItemClickListener(this);
         int margin = getResources().getDimensionPixelSize(R.dimen.layout_margin_small);
         mGridView.setItemMargin(margin); // set the GridView margin
 
         mGridView.setPadding(margin, 0, margin, 0); // have the margin on the
-                                                   // sides as well  
+                                                    // sides as well
         registerForContextMenu(mGridView);
-        
     }
-    
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -96,8 +101,6 @@ public class SavedReportsListFragment extends SherlockFragment implements OnItem
         SavedReportsAdapter a = (SavedReportsAdapter) mGridView.getAdapter();
         a.updateSavedReports(mServiceRequests);
     }
-
-
 
     @Override
     public void onItemClick(StaggeredGridView parent, View view, int position, long id) {
