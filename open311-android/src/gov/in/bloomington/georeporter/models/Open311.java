@@ -653,4 +653,21 @@ public class Open311 {
         }
         return url;
     }
+    
+    public static String getServiceRequestUrl(double minLat,double minLong,double maxLat,double maxLong) {
+        String url = mBaseUrl + "/requests" + "." + mFormat+"?bbox="+minLat+","+minLong+","+maxLat+","+maxLong;
+        if (mJurisdiction.length() > 0) {
+            url = url + "&" + JURISDICTION + "=" + mJurisdiction;
+        }
+        return url;
+    }
+    
+    public static String getServiceRequestUrl(String startDate,String endDate,String status) {
+        String url = mBaseUrl + "/requests" + "." + mFormat+"?start_date="+startDate+"&end_date="+endDate+"&status="+status;
+        if (mJurisdiction.length() > 0) {
+            url = url + "&" + JURISDICTION + "=" + mJurisdiction;
+        }
+        return url;
+    }
+    
 }

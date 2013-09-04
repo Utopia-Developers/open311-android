@@ -23,6 +23,8 @@ public class RequestsJson {
     public String status_notes;
     public String expected_datetime;
     public String agency_responsible;
+    public String address_id;
+    public String zipcode;
     
     public void setServiceNotice(String serviceNotice)
     {

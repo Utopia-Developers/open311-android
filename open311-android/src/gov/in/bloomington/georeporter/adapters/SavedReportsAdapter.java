@@ -101,9 +101,9 @@ public class SavedReportsAdapter extends BaseAdapter {
                     .optString(ServiceRequest.REQUESTED_DATETIME))));
             holder.media.setImageBitmap(sr.getMediaBitmap(80, 80, mInflater.getContext()));
             int size = context.getResources().getDimensionPixelSize(R.dimen.logo);
-            holder.logo.setImageDrawable(new RoundedDrawable(BitmapFactory.decodeResource(context.getResources(), R.drawable.card_background),size,size));
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
+            //TODO Depending on the Endpoint show a image
+            holder.logo.setImageDrawable(new RoundedDrawable(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_camera_action),size,size));
+        } catch (ParseException e) {            
             e.printStackTrace();
         }
 

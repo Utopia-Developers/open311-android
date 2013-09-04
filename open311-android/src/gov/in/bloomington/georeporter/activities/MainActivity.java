@@ -11,12 +11,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.github.espiandev.showcaseview.ShowcaseView;
+import com.github.espiandev.showcaseview.ShowcaseView.OnShowcaseEventListener;
+import com.github.espiandev.showcaseview.ShowcaseViews;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.fragments.ChooseGroupFragment;
@@ -41,6 +46,7 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
     private ActionBar mActionBar;
     private ReportFragment mReportFragment;
     private boolean paneOpen;
+    private ShowcaseView sv;
 
     public interface OnDataRefreshListener {
         public void onRefreshRequested();
@@ -66,6 +72,16 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
             mListAdapter.isServerSelected = false;
             mListAdapter.notifyDataSetChanged();
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+            ShowcaseView.ConfigOptions co = new ShowcaseView.ConfigOptions();
+            co.hideOnClickOutside = true;
+           
+            sv = ShowcaseView.insertShowcaseView(mDrawerLayout.getChildAt(1), this, "Select a Server.","Please Select one of the servers or add your own sever to get started.", co);
+            DisplayMetrics dm = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(dm);
+            int Y = dm.heightPixels/2 + 60;
+            
+            int X = getResources().getDimensionPixelOffset(R.dimen.navdrawer_width)/2;            
+            sv.animateGesture(X+100, Y, X, Y);
         }
         else
         {
@@ -210,5 +226,7 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
     public void onPanelSlide(View arg0, float arg1) {
 
     }
+
+    
 
 }

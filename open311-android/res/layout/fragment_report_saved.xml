@@ -14,8 +14,7 @@
             android:layout_height="50dp"
             android:layout_marginLeft="@dimen/layout_margin_small"
             android:layout_marginRight="@dimen/layout_margin_small"
-            android:layout_marginTop="@dimen/layout_margin_small"
-            android:scaleType="fitXY" />
+            android:layout_marginTop="@dimen/layout_margin_small" />
 
         <TextView
             android:id="@+id/service_name"
@@ -35,6 +34,7 @@
             android:layout_alignBottom="@+id/imageViewEndpoint"
             android:layout_marginLeft="@dimen/layout_margin_small"
             android:layout_toRightOf="@+id/imageViewEndpoint"
+            android:text="status"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/text_colour_report" />
 
@@ -88,6 +88,16 @@
             android:layout_marginLeft="@dimen/layout_margin_small"
             android:layout_marginRight="@dimen/layout_margin_small"
             class="gov.in.bloomington.georeporter.customviews.EnhancedSupportMapFragment" />
+
+        <ImageView
+            android:id="@+id/imageViewStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/status"
+            android:layout_marginLeft="@dimen/layout_margin_small"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@+id/status"
+            android:src="@drawable/openissue" />
     </RelativeLayout>
 
 </ScrollView>

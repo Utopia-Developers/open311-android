@@ -4,6 +4,7 @@
 		"supports_media": TRUE,
 		"jurisdiction_id":"some.domain.org",
 		"api_key":"Your API Key",
-		"splash_image":"domain"
+		"splash_image":"domain",
+		"bbox":TRUE
 	}
 ]
