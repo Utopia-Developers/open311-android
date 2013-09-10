@@ -7,18 +7,17 @@
 package gov.in.bloomington.georeporter.fragments;
 
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.ActionMode;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.rajul.staggeredgridview.StaggeredGridView;
 import com.rajul.staggeredgridview.StaggeredGridView.OnItemClickListener;
+import com.rajul.staggeredgridview.StaggeredGridView.OnItemLongClickListener;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.adapters.SavedReportsAdapter;
@@ -27,13 +26,16 @@ import gov.in.bloomington.georeporter.models.ServiceRequest;
 
 import java.util.ArrayList;
 
-public class SavedReportsListFragment extends SherlockFragment implements OnItemClickListener {
+public class SavedReportsListFragment extends SherlockFragment implements OnItemClickListener,
+        OnItemLongClickListener, com.actionbarsherlock.view.ActionMode.Callback {
     private ArrayList<ServiceRequest> mServiceRequests;
     private boolean mDataChanged = false;
     private StaggeredGridView mGridView;
     private int colCount;
     private SavedReportsAdapter adapter;
     private View layout;
+    protected ActionMode mActionMode;
+    private int position;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,30 +64,7 @@ public class SavedReportsListFragment extends SherlockFragment implements OnItem
 
         mGridView.setPadding(margin, 0, margin, 0); // have the margin on the
                                                     // sides as well
-        registerForContextMenu(mGridView);
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.context_listitem, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-
-        switch (item.getItemId()) {
-            case R.id.menu_delete:
-                mServiceRequests.remove(info.position);
-                mDataChanged = true;
-                refreshAdapter();
-                return true;
-
-            default:
-                return super.onContextItemSelected(item);
-        }
+        mGridView.setOnItemLongClickListener(this);
     }
 
     @Override
@@ -108,5 +87,53 @@ public class SavedReportsListFragment extends SherlockFragment implements OnItem
                 .replace(R.id.content_frame, fragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public boolean onItemLongClick(StaggeredGridView parent, View view, int position, long id) {
+        if (mActionMode != null) {
+            return false;
+        }
+        mActionMode = getSherlockActivity().startActionMode(this);
+        view.setSelected(true);  
+        this.position = position;
+        return true;
+    }
+
+    // Called when the action mode is created; startActionMode() was called
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        // Inflate a menu resource providing context menu items
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.context_listitem, menu);
+        return true;
+    }
+
+    // Called each time the action mode is shown. Always called after
+    // onCreateActionMode, but may be called multiple times if the mode is invalidated.
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false; // Return false if nothing is done
+    }
+
+    // Called when the user selects a contextual menu item
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_delete:                
+                mServiceRequests.remove(position);
+                mDataChanged = true;
+                refreshAdapter();                        
+                mode.finish(); // Action picked, so close the CAB
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // Called when the user exits the action mode
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        mActionMode = null;
     }
 }

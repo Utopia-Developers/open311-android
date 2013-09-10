@@ -6,6 +6,9 @@
     <integer name="column_no">3</integer>
 
     <dimen name="activity_margin">192dp</dimen>
+    <dimen name="saved_report_margin">192dp</dimen>
     <dimen name="report_margin">16dp</dimen>
-<integer name="column_no_saved_report" >2</integer> 
+
+    <integer name="column_no_saved_report">2</integer>
+
 </resources>

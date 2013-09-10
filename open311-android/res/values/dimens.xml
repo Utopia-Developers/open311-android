@@ -18,6 +18,7 @@
     
     <dimen name="activity_margin">16dp</dimen>
     <dimen name="report_margin">16dp</dimen>
+    <dimen name="saved_report_margin">0dp</dimen>
     
     <integer name="column_no" >1</integer>
     <integer name="column_no_saved_report" >1</integer> 

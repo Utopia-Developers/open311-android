@@ -341,7 +341,7 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
 
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
-                                    if (error.networkResponse != null)
+                                    if (error!= null && error.networkResponse != null)
                                         Open311.isDataLoading = false;
                                     Log.d("Status GET", error.networkResponse.statusCode + "");
                                     showLoader(false);
