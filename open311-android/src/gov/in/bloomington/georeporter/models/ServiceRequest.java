@@ -30,8 +30,9 @@ import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 import gov.in.bloomington.georeporter.json.ValuesJson;
 import gov.in.bloomington.georeporter.util.Media;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -48,7 +49,6 @@ public class ServiceRequest {
     public static final String REQUESTED_DATETIME = "requested_datetime";
     public static final String UPDATED_DATETIME = "updated_datetime";
 
-    
     private transient Gson gson;
 
     /**
@@ -88,7 +88,7 @@ public class ServiceRequest {
         service = s;
 
         post_data = new JSONObject();
-        
+
         endpoint = Open311.sEndpoint;
 
         if (service.getMetadata()) {

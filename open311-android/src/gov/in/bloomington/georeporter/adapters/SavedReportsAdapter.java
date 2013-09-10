@@ -49,7 +49,7 @@ public class SavedReportsAdapter extends BaseAdapter {
     @Override
     public int getCount() {
         int count = (mServiceRequests == null) ? 0 : mServiceRequests.size();
-        Log.d("Count", count+"");
+        Log.d("Count", count + "");
         return count;
     }
 
@@ -69,14 +69,14 @@ public class SavedReportsAdapter extends BaseAdapter {
 
     private static class ViewHolder {
         TextView serviceName, status, date, address, endpoint;
-        ImageView media,logo;
+        ImageView media, logo;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.list_item_saved_reports, parent,false);
+            convertView = mInflater.inflate(R.layout.list_item_saved_reports, parent, false);
             holder = new ViewHolder();
             holder.serviceName = (TextView) convertView.findViewById(R.id.service_name);
             holder.status = (TextView) convertView.findViewById(R.id.status);
@@ -101,9 +101,10 @@ public class SavedReportsAdapter extends BaseAdapter {
                     .optString(ServiceRequest.REQUESTED_DATETIME))));
             holder.media.setImageBitmap(sr.getMediaBitmap(80, 80, mInflater.getContext()));
             int size = context.getResources().getDimensionPixelSize(R.dimen.logo);
-            //TODO Depending on the Endpoint show a image
-            holder.logo.setImageDrawable(new RoundedDrawable(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_camera_action),size,size));
-        } catch (ParseException e) {            
+            // TODO Depending on the Endpoint show a image
+            holder.logo.setImageDrawable(new RoundedDrawable(BitmapFactory.decodeResource(
+                    context.getResources(), R.drawable.ic_camera_action), size, size));
+        } catch (ParseException e) {
             e.printStackTrace();
         }
 

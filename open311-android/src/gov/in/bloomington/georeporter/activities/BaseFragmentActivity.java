@@ -11,10 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,12 +21,15 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
 import com.actionbarsherlock.app.ActionBarDrawerToggle;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.ActionMode;
+import com.actionbarsherlock.view.ActionMode.Callback;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -45,12 +45,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
+public abstract class BaseFragmentActivity extends SherlockFragmentActivity implements Callback {
     // Navigation Drawer
     protected DrawerLayout mDrawerLayout;
     protected ActionBarDrawerToggle mDrawerToggle;
     protected ListView mDrawerList;
     protected NavigationDrawerAdapter mListAdapter;
+    protected ActionMode mActionMode;
     protected String title;
     protected NavigationDrawerItemClickListener mClickListener;
     protected NavigationDrawerOnLongItemClickListener mLongClickListener;
@@ -60,7 +61,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
     private LayoutInflater inflater;
     private boolean returnNow;
     private int mOrignallyAvailableServers;
-    public int totalServers;
+    public int totalServers,deleteListPosition;
     protected Gson gson;
     // Servers
     protected ArrayList<ServerAttributeJson> mCustomServers = null;
@@ -126,16 +127,13 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
         for (int i = 0; i < len; i++) {
             mServers.add(mCustomServers.get(i));
         }
-        
+
         totalServers = mServers.size();
         mListAdapter = new NavigationDrawerAdapter(mServers, this);
         mDrawerList.setAdapter(mListAdapter);
         mDrawerList.setOnItemClickListener(mClickListener);
-        mDrawerList.setOnItemLongClickListener(mLongClickListener);
-        registerForContextMenu(mDrawerList);
+        mDrawerList.setOnItemLongClickListener(mLongClickListener);        
     }
-
-    
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -143,19 +141,11 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
                 .getMenuInfo();
         Intent intent;
         switch (item.getItemId()) {
-            case R.id.menu_delete:
-                int position = (info.position - mOrignallyAvailableServers) - 1;
-                Log.d("Delete Pos", info.position + " " + position);
-                mCustomServers.remove(position);
-                Preferences.setCustomServers(mCustomServers, BaseFragmentActivity.this);
-                mListAdapter.removeServer(info.position, info.position - 1);
-                mServers.remove(info.position - 1);
-                return true;
-            case android.R.id.home:
+           case android.R.id.home:
                 intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
-                return true; 
+                return true;
             case R.id.menu_refresh:
                 return true;
             default:
@@ -236,31 +226,34 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
 
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        // Only show the delete menu for the custom servers.
-        // Servers from available_servers cannot be deleted.
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-        int reqPos = 0;
-        if (mCustomServers == null)
-            reqPos = (mServers.size());
-        else
-            reqPos = (mServers.size() - mCustomServers.size());
-        if (info.position > reqPos
-                && info.position <= mServers.size() + 2) {
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.context_listitem, menu);
-        }
-    }
-
     private class NavigationDrawerOnLongItemClickListener implements OnItemLongClickListener
     {
 
         @Override
-        public boolean onItemLongClick(AdapterView<?> arg0, View v, int arg2, long arg3) {
-            openContextMenu(mDrawerList);
-            return true;
+        public boolean onItemLongClick(AdapterView<?> arg0, View view, int position, long arg3) {
+            if (mActionMode != null) {
+                return false;
+            }
+            // Only show the delete menu for the custom servers.
+            // Servers from available_servers cannot be deleted.
+            
+            int reqPos = 0;
+            if (mCustomServers == null)
+                reqPos = -1;
+            else
+                reqPos = (mServers.size() - mCustomServers.size());            
+            Log.d("ActionPos",mServers.size()+" " + position+" "+reqPos+ " "+ mCustomServers.size());
+            if (position > reqPos
+                    && position <= mServers.size()) {                
+                // Start the CAB using the ActionMode.Callback implemented by the class
+                mActionMode = startActionMode(BaseFragmentActivity.this);
+                view.setSelected(true);
+                deleteListPosition = position;
+                return true;
+            }
+            else
+                return false;
+
         }
 
     }
@@ -340,32 +333,34 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
                 mListAdapter.selectedServerPosition = pos;
                 mListAdapter.mCurrentServerURL = current_server.url;
 
-                //First Occurrence
+                // First Occurrence
                 if (mListAdapter.selectedView != null)
                     mListAdapter.selectedView
-                            .findViewById(R.id.viewSelected).setBackgroundColor(getResources().getColor(R.color.transparent)); 
-                
+                            .findViewById(R.id.viewSelected).setBackgroundColor(
+                                    getResources().getColor(R.color.transparent));
+
                 mListAdapter.selectedView = view;
-                view.findViewById(R.id.viewSelected).setBackgroundColor(getResources().getColor(R.color.navdrawer_server_selected_colour));
-                
-                //Check for when no server is selected
-                if(Open311.prevEndpoint == null)
+                view.findViewById(R.id.viewSelected).setBackgroundColor(
+                        getResources().getColor(R.color.navdrawer_server_selected_colour));
+
+                // Check for when no server is selected
+                if (Open311.prevEndpoint == null)
                 {
                     Intent i = new Intent(BaseFragmentActivity.this, MainActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(i);
-                    //To prevent the jarring effect of activity transition.
+                    // To prevent the jarring effect of activity transition.
                     overridePendingTransition(0, 0);
                 }
-                else if(!Open311.sEndpoint.url.contentEquals(Open311.prevEndpoint))
+                else if (!Open311.sEndpoint.url.contentEquals(Open311.prevEndpoint))
                 {
                     Intent i = new Intent(BaseFragmentActivity.this, MainActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(i);
-                    //To prevent the jarring effect of activity transition.
+                    // To prevent the jarring effect of activity transition.
                     overridePendingTransition(0, 0);
                 }
-                
+
             }
             mDrawerLayout.closeDrawers();
             if (returnNow)
@@ -376,7 +371,7 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
                     Intent i = new Intent(BaseFragmentActivity.this, MainActivity.class);
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(i);
-                    //To prevent the jarring effect of activity transition.
+                    // To prevent the jarring effect of activity transition.
                     overridePendingTransition(0, 0);
                     break;
                 case 1:
@@ -395,4 +390,45 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity {
         }
 
     }
+
+    // Called when the action mode is created; startActionMode() was called
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        // Inflate a menu resource providing context menu items
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.context_listitem, menu);
+        return true;
+    }
+
+    // Called each time the action mode is shown. Always called after
+    // onCreateActionMode, but
+    // may be called multiple times if the mode is invalidated.
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false; // Return false if nothing is done
+    }
+
+    // Called when the user selects a contextual menu item
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_delete:                
+                int position = (deleteListPosition - mOrignallyAvailableServers) - 1;
+                Log.d("Delete Pos", deleteListPosition + " " + position);
+                mCustomServers.remove(position);
+                Preferences.setCustomServers(mCustomServers, BaseFragmentActivity.this);
+                mListAdapter.removeServer(deleteListPosition, deleteListPosition- 1);                               
+                mode.finish(); // Action picked, so close the CAB
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // Called when the user exits the action mode
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        mActionMode = null;
+    }
+
 }

@@ -1,7 +1,6 @@
 
 package gov.in.bloomington.georeporter.json;
 
-
 public class ValuesJson {
     private String key;
     private String name;

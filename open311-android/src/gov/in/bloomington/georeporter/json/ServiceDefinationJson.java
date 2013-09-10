@@ -3,7 +3,6 @@ package gov.in.bloomington.georeporter.json;
 
 import java.util.ArrayList;
 
-
 /**
  * This is a java object representaion of the service defination response
  */

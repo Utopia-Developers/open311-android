@@ -7,10 +7,10 @@
 package gov.in.bloomington.georeporter.util;
 
 import gov.in.bloomington.georeporter.models.Open311;
-import gov.in.bloomington.georeporter.util.json.JSONArray;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class Open311Parser {
             }
             else {
                 Open311XmlParser mParser = new Open311XmlParser();
-                //return mParser.parseServices(response);
+                // return mParser.parseServices(response);
             }
         } catch (JSONException e) {
             // TODO Auto-generated catch block
@@ -54,7 +54,7 @@ public class Open311Parser {
                 return new JSONObject(xml);
             } else {
                 Open311XmlParser mParser = new Open311XmlParser();
-                //return mParser.parseServiceDefinition(xml);
+                // return mParser.parseServiceDefinition(xml);
             }
         } catch (JSONException e) {
             // TODO Auto-generated catch block
@@ -73,7 +73,7 @@ public class Open311Parser {
                 return new JSONArray(xml);
             } else {
                 Open311XmlParser mParser = new Open311XmlParser();
-                //return mParser.parseRequests(xml);
+                // return mParser.parseRequests(xml);
             }
         } catch (JSONException e) {
             // TODO Auto-generated catch block

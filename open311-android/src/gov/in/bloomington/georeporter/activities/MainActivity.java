@@ -14,21 +14,18 @@ import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.widget.ListView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.github.espiandev.showcaseview.ShowcaseView;
-import com.github.espiandev.showcaseview.ShowcaseView.OnShowcaseEventListener;
-import com.github.espiandev.showcaseview.ShowcaseViews;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.fragments.ChooseGroupFragment;
-import gov.in.bloomington.georeporter.fragments.ChooseGroupFragment.OnSetActionBarTitleListener;
-import gov.in.bloomington.georeporter.fragments.ReportFragment;
 import gov.in.bloomington.georeporter.fragments.ChooseGroupFragment.OnGroupSelectedListener;
+import gov.in.bloomington.georeporter.fragments.ChooseGroupFragment.OnSetActionBarTitleListener;
 import gov.in.bloomington.georeporter.fragments.ChooseServiceFragment.OnServiceSelectedListener;
+import gov.in.bloomington.georeporter.fragments.ReportFragment;
 import gov.in.bloomington.georeporter.fragments.ReportsNearYouFragment;
 import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
@@ -59,7 +56,7 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
 
         slidingPane = (SlidingPaneLayout) findViewById(R.id.slidingpanelayout);
         slidingPane.setPanelSlideListener(this);
-        //slidingPane.setSliderFadeColor(getResources().getColor(R.color.drawer_shader_colour));
+        // slidingPane.setSliderFadeColor(getResources().getColor(R.color.drawer_shader_colour));
         slidingPane.setShadowResource(R.drawable.shadow);
         slidingPane.openPane();
         current_server = Preferences.getCurrentServer(MainActivity.this);
@@ -74,14 +71,16 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
             ShowcaseView.ConfigOptions co = new ShowcaseView.ConfigOptions();
             co.hideOnClickOutside = true;
-           
-            sv = ShowcaseView.insertShowcaseView(mDrawerLayout.getChildAt(1), this, "Select a Server.","Please Select one of the servers or add your own sever to get started.", co);
+
+            sv = ShowcaseView.insertShowcaseView(mDrawerLayout.getChildAt(1), this,
+                    "Select a Server.",
+                    "Please Select one of the servers or add your own sever to get started.", co);
             DisplayMetrics dm = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(dm);
-            int Y = dm.heightPixels/2 + 60;
-            
-            int X = getResources().getDimensionPixelOffset(R.dimen.navdrawer_width)/2;            
-            sv.animateGesture(X+100, Y, X, Y);
+            int Y = dm.heightPixels / 2 + 60;
+
+            int X = getResources().getDimensionPixelOffset(R.dimen.navdrawer_width) / 2;
+            sv.animateGesture(X + 100, Y, X, Y);
         }
         else
         {
@@ -127,9 +126,9 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content
         // view
-        
-        Log.d("Prepare", "Prep "+paneOpen);
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);        
+
+        Log.d("Prepare", "Prep " + paneOpen);
+        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
         menu.findItem(R.id.menu_refresh).setVisible(!(drawerOpen || paneOpen));
         return super.onPrepareOptionsMenu(menu);
     }
@@ -226,7 +225,5 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
     public void onPanelSlide(View arg0, float arg1) {
 
     }
-
-    
 
 }

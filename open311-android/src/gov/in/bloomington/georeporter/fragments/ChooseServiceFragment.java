@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.actionbarsherlock.app.SherlockFragment;
 import com.rajul.staggeredgridview.StaggeredGridView;
 import com.rajul.staggeredgridview.StaggeredGridView.OnItemClickListener;
@@ -33,41 +34,37 @@ public class ChooseServiceFragment extends SherlockFragment implements OnItemCli
 
     public void setServices(ArrayList<ServiceEntityJson> services) {
         mServices = services;
-        //Log.d("Serv2",mServices.size()+" ");
+        // Log.d("Serv2",mServices.size()+" ");
     }
-    
-    
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return mGridView;
     }
-
-
 
     /**
      * @param sr
      * @return ReportFragment
      */
     public static ChooseServiceFragment newInstance(ArrayList<ServiceEntityJson> services) {
-        //Log.d("Serv1",services.size()+" ");
+        // Log.d("Serv1",services.size()+" ");
         ChooseServiceFragment fragment = new ChooseServiceFragment();
         fragment.setServices(services);
         return fragment;
     }
-    
+
     public ChooseServiceFragment()
     {
-        
+
     }
-    
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         setRetainInstance(true);
         mListener = (OnServiceSelectedListener) activity;
         mGridView = new StaggeredGridView(getActivity());
-        mGridView.setAdapter(new ServicesAdapter(mServices, getActivity()));   
+        mGridView.setAdapter(new ServicesAdapter(mServices, getActivity()));
     }
 
     @Override
@@ -80,13 +77,9 @@ public class ChooseServiceFragment extends SherlockFragment implements OnItemCli
         mGridView.setItemMargin(margin); // set the GridView margin
 
         mGridView.setPadding(margin, 0, margin, 0); // have the margin on the
-                                                   // sides as well      
-        
+                                                    // sides as well
+
     }
-
-    
-
-
 
     @Override
     public void onItemClick(StaggeredGridView parent, View view, int position, long id) {

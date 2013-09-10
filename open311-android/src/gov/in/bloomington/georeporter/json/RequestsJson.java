@@ -19,28 +19,28 @@ public class RequestsJson {
     private String updated_datetime;
     private String account_id;
     private String service_notice;
-    
+
     public String status_notes;
     public String expected_datetime;
     public String agency_responsible;
     public String address_id;
     public String zipcode;
-    
+
     public void setServiceNotice(String serviceNotice)
     {
         this.service_notice = serviceNotice;
     }
-    
+
     public String getServiceNotice()
     {
         return this.service_notice;
     }
-    
+
     public void setAccountId(String accountId)
     {
         this.account_id = accountId;
     }
-    
+
     public String getAccountId()
     {
         return this.account_id;

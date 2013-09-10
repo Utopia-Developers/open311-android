@@ -1,7 +1,6 @@
 
 package gov.in.bloomington.georeporter.json;
 
-
 public class ServiceEntityJson {
     private String description;
     private String group;

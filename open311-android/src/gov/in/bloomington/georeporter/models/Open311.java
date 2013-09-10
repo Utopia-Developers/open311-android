@@ -43,15 +43,15 @@ import gov.in.bloomington.georeporter.json.RequestResponseJson;
 import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
-import gov.in.bloomington.georeporter.util.EasySSLSocketFactory;
 import gov.in.bloomington.georeporter.util.Media;
 import gov.in.bloomington.georeporter.util.Open311Parser;
-import gov.in.bloomington.georeporter.util.json.JSONArray;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
 import gov.in.bloomington.georeporter.volleyrequests.GsonGetRequest;
 import gov.in.bloomington.georeporter.volleyrequests.GsonPostServiceRequest;
 import gov.in.bloomington.georeporter.volleyrequests.Open311XmlRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -161,11 +161,9 @@ public class Open311 {
     private static final int TIMEOUT = 3000;
 
     private static Open311 mInstance;
-    
+
     public static int selectedActionPosition = -1;
 
-    private Open311() {
-    }
 
     public static synchronized Open311 getInstance() {
         if (mInstance == null) {
@@ -174,46 +172,7 @@ public class Open311 {
         return mInstance;
     }
 
-    /**
-     * Lazy load an Http client
-     * 
-     * @return DefaultHttpClient
-     */
-    public static DefaultHttpClient getClient(Context c) {
-        if (mClient == null) {
-            mClient = new DefaultHttpClient();
-
-            String user_agent;
-            try {
-                PackageInfo info = c.getPackageManager().getPackageInfo(
-                        c.getPackageName(), 0);
-                user_agent = String.format("%s/%s (Android/%s)",
-                        c.getString(R.string.app_name), info.versionName,
-                        Build.VERSION.RELEASE);
-            } catch (NameNotFoundException e) {
-                user_agent = String.format("%s (Android/%s)",
-                        c.getString(R.string.app_name), Build.VERSION.RELEASE);
-            }
-
-            Scheme http = new Scheme("http", 80,
-                    PlainSocketFactory.getSocketFactory());
-            Scheme https = new Scheme("https", 443, new EasySSLSocketFactory());
-            mClient.getConnectionManager().getSchemeRegistry().register(http);
-            mClient.getConnectionManager().getSchemeRegistry().register(https);
-
-            mClient.getParams().setParameter(
-                    CoreProtocolPNames.HTTP_CONTENT_CHARSET, "UTF-8");
-            mClient.getParams().setParameter(
-                    CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-            mClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT,
-                    user_agent);
-            mClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,
-                    TIMEOUT);
-            mClient.getParams().setParameter(
-                    CoreConnectionPNames.CONNECTION_TIMEOUT, TIMEOUT);
-        }
-        return mClient;
-    }
+    
 
     // TODO Doc
     public static void setCurrentServerDetails(ServerAttributeJson cuurentServer)
@@ -303,7 +262,7 @@ public class Open311 {
      * @throws ClientProtocolException
      * @throws Open311Exception
      */
-
+/*
     public static ArrayList<RequestResponseJson> postServiceRequest(ServiceRequest sr,
             Context context, String mediaPath) throws JSONException,
             ClientProtocolException, IOException, Open311Exception {
@@ -316,7 +275,7 @@ public class Open311 {
         }
         HttpResponse r = getClient(context).execute(request);
         String responseString = EntityUtils.toString(r.getEntity());
-        
+
         Log.d("Server Response", responseString);
 
         int status = r.getStatusLine().getStatusCode();
@@ -331,8 +290,8 @@ public class Open311 {
             serviceRequests = new Gson().fromJson(responseString,
                     new TypeToken<ArrayList<RequestResponseJson>>() {
                     }.getType());
-            
-            Log.d("Server Response Parsed","Yes");
+
+            Log.d("Server Response Parsed", "Yes");
         } else {
             // The server indicated some error. See if they returned the
             // error description as JSON
@@ -357,6 +316,7 @@ public class Open311 {
         }
         return serviceRequests;
     }
+    */
 
     public static String getServiceRequestId(String token) {
         return "";
@@ -512,18 +472,17 @@ public class Open311 {
      */
     public static ArrayList<ServiceRequest> loadServiceRequests(Context c) {
         ArrayList<ServiceRequest> service_requests = null;
-        
+
         GsonBuilder builder = new GsonBuilder();
         builder.excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT);
         Gson gson = builder.create();
-        
-       
+
         byte[] bytes = new byte[1024];
         Log.d("Service Request Trying Loading", "Lets See");
         @SuppressWarnings("unused")
         int length;
         try {
-            
+
             FileInputStream in = c.openFileInput(SAVED_REPORTS_FILE);
             InputStreamReader inputStreamReader = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -532,7 +491,7 @@ public class Open311 {
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
-            
+
             Log.d("Service Request Loading", sb.toString());
             service_requests = gson.fromJson(sb.toString(),
                     new TypeToken<ArrayList<ServiceRequest>>() {
@@ -545,7 +504,7 @@ public class Open311 {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
-            
+
         }
         return service_requests;
     }
@@ -602,29 +561,15 @@ public class Open311 {
         sr.endpoint = sEndpoint;
 
         ArrayList<ServiceRequest> saved_requests = loadServiceRequests(c);
-        
-        if(saved_requests == null)
+
+        if (saved_requests == null)
             saved_requests = new ArrayList<ServiceRequest>();
-        
+
         // Push the new report onto the start of the array
         saved_requests.add(0, sr);
 
         return saveServiceRequests(c, saved_requests);
 
-    }
-
-    /**
-     * Returns the response content from an HTTP request
-     * 
-     * @param url
-     * @return String
-     */
-    public static String loadStringFromUrl(String url, Context c)
-            throws ClientProtocolException, IOException, IllegalStateException {
-        HttpResponse r = getClient(c).execute(new HttpGet(url));
-        String response = EntityUtils.toString(r.getEntity());
-
-        return response;
     }
 
     /**
@@ -653,21 +598,24 @@ public class Open311 {
         }
         return url;
     }
-    
-    public static String getServiceRequestUrl(double minLat,double minLong,double maxLat,double maxLong) {
-        String url = mBaseUrl + "/requests" + "." + mFormat+"?bbox="+minLat+","+minLong+","+maxLat+","+maxLong;
+
+    public static String getServiceRequestUrl(double minLat, double minLong, double maxLat,
+            double maxLong) {
+        String url = mBaseUrl + "/requests" + "." + mFormat + "?bbox=" + minLat + "," + minLong
+                + "," + maxLat + "," + maxLong;
         if (mJurisdiction.length() > 0) {
             url = url + "&" + JURISDICTION + "=" + mJurisdiction;
         }
         return url;
     }
-    
-    public static String getServiceRequestUrl(String startDate,String endDate,String status) {
-        String url = mBaseUrl + "/requests" + "." + mFormat+"?start_date="+startDate+"&end_date="+endDate+"&status="+status;
+
+    public static String getServiceRequestUrl(String startDate, String endDate, String status) {
+        String url = mBaseUrl + "/requests" + "." + mFormat + "?start_date=" + startDate
+                + "&end_date=" + endDate + "&status=" + status;
         if (mJurisdiction.length() > 0) {
             url = url + "&" + JURISDICTION + "=" + mJurisdiction;
         }
         return url;
     }
-    
+
 }

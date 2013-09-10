@@ -19,9 +19,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.android.volley.VolleyError;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
 import com.google.gson.reflect.TypeToken;
@@ -136,7 +136,7 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
         // If no metadata
         if (!loadServiceDefinations(response))
         {
-            showLoader(false);            
+            showLoader(false);
             pager.setVisibility(View.VISIBLE);
             tabStrip.setVisibility(View.VISIBLE);
             Open311.prevEndpoint = Open311.sEndpoint.url;

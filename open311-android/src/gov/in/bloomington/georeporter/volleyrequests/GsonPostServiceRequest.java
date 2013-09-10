@@ -32,10 +32,10 @@ import gov.in.bloomington.georeporter.models.ServiceRequest;
 import gov.in.bloomington.georeporter.util.Media;
 import gov.in.bloomington.georeporter.util.Open311Parser;
 import gov.in.bloomington.georeporter.util.Open311XmlParser;
-import gov.in.bloomington.georeporter.util.json.JSONArray;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.ByteArrayOutputStream;
@@ -72,7 +72,6 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
             else
                 buildUrlEncodedEntitiy();
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -110,7 +109,7 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
                             pairs.add(new BasicNameValuePair(k, values
                                     .getString(i)));
                         } catch (JSONException e) {
-                            // TODO Auto-generated catch block
+
                             e.printStackTrace();
                         }
                     }
@@ -124,7 +123,7 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
                     pairs.add(new BasicNameValuePair(key, (String) o));
                 }
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
+
                 e.printStackTrace();
             }
         }
@@ -174,7 +173,7 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
                         try {
                             post.addPart(k, new StringBody(values.getString(i)));
                         } catch (JSONException e) {
-                            // TODO Auto-generated catch block
+
                             e.printStackTrace();
                         }
                     }
@@ -188,7 +187,7 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
                     post.addPart(key, new StringBody((String) o, charset));
                 }
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
+
                 e.printStackTrace();
             }
         }
@@ -234,18 +233,18 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
         // Chicago uses 201 Created
         if (status == HttpStatus.SC_OK || status == HttpStatus.SC_CREATED
                 || status == HttpStatus.SC_ACCEPTED) {
-            
-            if(Open311.mFormat.contentEquals(Open311.XML))
+
+            if (Open311.mFormat.contentEquals(Open311.XML))
             {
                 Open311XmlParser mParser = new Open311XmlParser();
                 try {
                     serviceRequests = mParser.parseRequests(parsed);
                     Log.d("Server Response Parsed", "Yes - XML");
                 } catch (XmlPullParserException e) {
-                    // TODO Auto-generated catch block
+
                     e.printStackTrace();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
+
                     e.printStackTrace();
                 }
             }
@@ -256,9 +255,7 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
                         }.getType());
                 Log.d("Server Response Parsed", "Yes - JSON");
             }
-            
 
-            
         } else {
             // The server indicated some error. See if they returned the
             // error description as JSON
@@ -271,9 +268,7 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
             } catch (JSONException e) {
                 Response.error(new ParseError(response));
             }
-            
-             
-            
+
         }
         return Response.success(serviceRequests, HttpHeaderParser.parseCacheHeaders(response));
     }

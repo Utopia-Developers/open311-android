@@ -25,7 +25,7 @@ public class ServicesAdapter extends BaseAdapter {
     public ServicesAdapter(ArrayList<ServiceEntityJson> services, Context c) {
         mServices = services;
         mInflater = LayoutInflater.from(c);
-        //Log.d("Serv1",mServices.size()+" ");
+        // Log.d("Serv1",mServices.size()+" ");
     }
 
     @Override

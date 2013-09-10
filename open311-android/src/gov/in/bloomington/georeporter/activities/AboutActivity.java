@@ -30,7 +30,7 @@ public class AboutActivity extends BaseFragmentActivity {
         webview.getSettings().setJavaScriptEnabled(true);
         webview.addJavascriptInterface(new WebAppInterface(), "Android");
         webview.loadUrl("file:///android_asset/about.html");
-        
+
     }
 
     private class WebAppInterface {
@@ -45,7 +45,7 @@ public class AboutActivity extends BaseFragmentActivity {
             return "";
         }
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {

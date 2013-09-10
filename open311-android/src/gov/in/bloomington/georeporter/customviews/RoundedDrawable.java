@@ -36,17 +36,16 @@ public class RoundedDrawable extends Drawable {
         mBitmapWidth = mBitmap.getWidth();
         mBitmapHeight = mBitmap.getHeight();
     }
-    
-    public RoundedDrawable(Bitmap bitmap,int width,int height) {
+
+    public RoundedDrawable(Bitmap bitmap, int width, int height) {
         mBitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
         mRectF = new RectF();
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
-        final BitmapShader shader = new BitmapShader(mBitmap , Shader.TileMode.CLAMP,
+        final BitmapShader shader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP,
                 Shader.TileMode.CLAMP);
-        mPaint.setShader(shader);       
-        
+        mPaint.setShader(shader);
 
         // NOTE: we assume bitmap is properly scaled to current density
         mBitmapWidth = width;

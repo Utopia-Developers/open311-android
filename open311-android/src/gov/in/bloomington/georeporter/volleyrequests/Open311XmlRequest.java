@@ -23,16 +23,14 @@ public class Open311XmlRequest<T> extends Request<T> {
     private final Listener<T> listener;
     private final String requestType;
 
-    
     private String CHARSET = "UTF-8";
-
 
     public Open311XmlRequest(String url, Listener<T> listener,
             String requestType, ErrorListener errorListener) {
         super(Method.GET, url, errorListener);
         this.listener = listener;
         this.requestType = requestType;
-       
+
     }
 
     @Override
@@ -40,20 +38,19 @@ public class Open311XmlRequest<T> extends Request<T> {
         try {
             String xml = new String(response.data,
                     HttpHeaderParser.parseCharset(response.headers));
-            
+
             Open311XmlParser xmlParser = new Open311XmlParser();
-            if(requestType.contentEquals(Open311XmlParser.SERVICE_REQUESTS))
+            if (requestType.contentEquals(Open311XmlParser.SERVICE_REQUESTS))
             {
                 return (Response<T>) Response.success(xmlParser.parseServices(xml),
                         HttpHeaderParser.parseCacheHeaders(response));
             }
-            else if(requestType.contentEquals(Open311XmlParser.SERVICE_DEFINITION))
+            else if (requestType.contentEquals(Open311XmlParser.SERVICE_DEFINITION))
             {
-                return  (Response<T>) Response.success(xmlParser.parseServiceDefinition(xml),
+                return (Response<T>) Response.success(xmlParser.parseServiceDefinition(xml),
                         HttpHeaderParser.parseCacheHeaders(response));
             }
-            
-            
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (XmlPullParserException e) {
@@ -62,7 +59,7 @@ public class Open311XmlRequest<T> extends Request<T> {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } 
+        }
         return null;
     }
 

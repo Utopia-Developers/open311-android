@@ -19,8 +19,9 @@ import com.google.gson.reflect.TypeToken;
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.util.Util;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -129,7 +130,7 @@ public class Preferences {
     public static ServerAttributeJson getCurrentServer(Context context) {
         Preferences.loadState(context);
         String serverUrl = mState.getString(CURRENT_SERVER, "");
-        ServerAttributeJson currentServer;
+        
         if (serverUrl != null) {
             ServerAttributeJson s = null;
 

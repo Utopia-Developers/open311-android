@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import gov.in.bloomington.georeporter.R;
@@ -17,7 +16,6 @@ import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.Preferences;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class NavigationDrawerAdapter extends BaseAdapter {
     private ArrayList<ServerAttributeJson> mServers;
@@ -187,7 +185,6 @@ public class NavigationDrawerAdapter extends BaseAdapter {
     }
 
     /*
-     * 
      * @see android.widget.Adapter#getView(int, android.view.View,
      * android.view.ViewGroup)
      */

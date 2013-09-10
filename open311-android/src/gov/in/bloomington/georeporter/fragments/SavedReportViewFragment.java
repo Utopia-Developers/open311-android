@@ -26,7 +26,8 @@ import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
-import gov.in.bloomington.georeporter.util.json.JSONException;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 
@@ -79,7 +80,7 @@ public class SavedReportViewFragment extends SherlockFragment {
         textView = (TextView) v.findViewById(R.id.endpoint);
         if (mServiceRequest.endpoint.name != null) {
             textView.setText(mServiceRequest.endpoint.name);
-        }        
+        }
 
         textView = (TextView) v.findViewById(R.id.description);
         if (mServiceRequest.service.getDescription() != null) {
@@ -109,7 +110,7 @@ public class SavedReportViewFragment extends SherlockFragment {
 
                     @Override
                     public void onResponse(String response) {
-                        Log.d("Server Response",response);
+                        Log.d("Server Response", response);
                         String id;
                         id = response;
                         if (id != null) {
@@ -130,7 +131,7 @@ public class SavedReportViewFragment extends SherlockFragment {
 
                                         @Override
                                         public void onResponse(String response) {
-                                            Log.d("Server Response",response);
+                                            Log.d("Server Response", response);
                                             if (response != null && response != "")
                                             {
                                                 ArrayList<RequestsJson> results = new Gson()

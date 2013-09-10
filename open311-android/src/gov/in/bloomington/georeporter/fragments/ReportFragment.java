@@ -32,8 +32,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -57,8 +55,6 @@ import com.google.gson.Gson;
 import com.utopia.accordionview.AccordionView;
 
 import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.activities.ChooseLocationActivity;
-import gov.in.bloomington.georeporter.activities.MainActivity;
 import gov.in.bloomington.georeporter.activities.SavedReportsActivity;
 import gov.in.bloomington.georeporter.fragments.ChooseLocationFragment.OnMapPositionClicked;
 import gov.in.bloomington.georeporter.json.AttributesJson;
@@ -69,17 +65,14 @@ import gov.in.bloomington.georeporter.models.Preferences;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
 import gov.in.bloomington.georeporter.util.Media;
 import gov.in.bloomington.georeporter.util.Util;
-import gov.in.bloomington.georeporter.util.json.JSONArray;
-import gov.in.bloomington.georeporter.util.json.JSONException;
 import gov.in.bloomington.georeporter.volleyrequests.GsonPostServiceRequest;
 
 import org.jraf.android.backport.switchwidget.Switch;
+import org.json.JSONArray;
+import org.json.JSONException;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;

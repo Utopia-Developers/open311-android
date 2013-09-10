@@ -23,15 +23,16 @@ import com.actionbarsherlock.app.SherlockFragment;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.models.Preferences;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.regex.Pattern;
 
 public class PersonalInfoFragment extends SherlockFragment {
     JSONObject mPersonalInfo = null;
     SharedPreferences mPreferences = null;
-    
+
     ViewGroup linearLayout;
     EditText firstName, lastName, emaiId, phoneNo;
     public static final String[] FIELDS = {
@@ -72,7 +73,7 @@ public class PersonalInfoFragment extends SherlockFragment {
         firstName.setText(mPersonalInfo.optString(FIELDS[0]));
         lastName.setText(mPersonalInfo.optString(FIELDS[1]));
         emaiId.setText(mPersonalInfo.optString(FIELDS[2]));
-        phoneNo.setText(mPersonalInfo.optString(FIELDS[3]));        
+        phoneNo.setText(mPersonalInfo.optString(FIELDS[3]));
         return v;
     }
 
@@ -127,6 +128,6 @@ public class PersonalInfoFragment extends SherlockFragment {
         Preferences.setPersonalInfo(mPersonalInfo, getActivity());
 
         super.onPause();
-    }   
-        
+    }
+
 }

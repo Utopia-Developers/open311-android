@@ -14,10 +14,10 @@ import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
 import gov.in.bloomington.georeporter.json.ValuesJson;
 import gov.in.bloomington.georeporter.models.Open311;
-import gov.in.bloomington.georeporter.util.json.JSONArray;
-import gov.in.bloomington.georeporter.util.json.JSONException;
-import gov.in.bloomington.georeporter.util.json.JSONObject;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -58,9 +58,9 @@ public class Open311XmlParser {
      * @return ArrayList<{@link ServiceEntityJson}>
      * @throws XmlPullParserException
      * @throws IOException
-     * 
      */
-    public ArrayList<ServiceEntityJson> parseServices(String xml) throws XmlPullParserException, IOException {
+    public ArrayList<ServiceEntityJson> parseServices(String xml) throws XmlPullParserException,
+            IOException {
         InputStream is;
         is = new ByteArrayInputStream(xml.getBytes("UTF-8"));
         parser.setInput(is, null);
@@ -75,7 +75,6 @@ public class Open311XmlParser {
      * @return {@link ServiceDefinationJson}
      * @throws XmlPullParserException
      * @throws IOException
-     * 
      */
     public ServiceDefinationJson parseServiceDefinition(String xml) throws XmlPullParserException,
             IOException {
@@ -95,7 +94,8 @@ public class Open311XmlParser {
      * @throws IOException
      * @throws JSONException
      */
-    public ArrayList<RequestsJson> parseRequests(String xml) throws XmlPullParserException, IOException {
+    public ArrayList<RequestsJson> parseRequests(String xml) throws XmlPullParserException,
+            IOException {
         InputStream is;
         is = new ByteArrayInputStream(xml.getBytes("UTF-8"));
         parser.setInput(is, null);
@@ -128,7 +128,8 @@ public class Open311XmlParser {
      * @throws IOException
      * @throws ArrayList<ServiceEntityJson>
      */
-    private ArrayList<ServiceEntityJson> parseServices(XmlPullParser parser) throws XmlPullParserException,
+    private ArrayList<ServiceEntityJson> parseServices(XmlPullParser parser)
+            throws XmlPullParserException,
             IOException {
         ArrayList<ServiceEntityJson> services = new ArrayList<ServiceEntityJson>();
         parser.require(XmlPullParser.START_TAG, ns, SERVICES);
@@ -152,9 +153,9 @@ public class Open311XmlParser {
      * @return ServiceDefinationJson
      * @throws XmlPullParserException
      * @throws IOException
-     * 
      */
-    private ServiceDefinationJson parseServiceDefinition(XmlPullParser parser) throws XmlPullParserException,
+    private ServiceDefinationJson parseServiceDefinition(XmlPullParser parser)
+            throws XmlPullParserException,
             IOException {
         ServiceDefinationJson serviceDefination = new ServiceDefinationJson();
         String service_code = null;
@@ -177,7 +178,6 @@ public class Open311XmlParser {
             }
         }
 
-        
         serviceDefination.setAttributes(serviceAttributes);
         return serviceDefination;
     }
@@ -192,7 +192,7 @@ public class Open311XmlParser {
     private ServiceEntityJson parseService(XmlPullParser parser) throws XmlPullParserException,
             IOException {
         parser.require(XmlPullParser.START_TAG, ns, SERVICE);
-        ServiceEntityJson service = new  ServiceEntityJson();
+        ServiceEntityJson service = new ServiceEntityJson();
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -208,7 +208,7 @@ public class Open311XmlParser {
                 service.setDescription(readElement(parser, Open311.DESCRIPTION));
             }
             else if (name.equals(Open311.GROUP)) {
-                service.setGroup( readElement(parser, Open311.GROUP));
+                service.setGroup(readElement(parser, Open311.GROUP));
             }
             else if (name.equals(Open311.METADATA)) {
                 service.setMetadata(Boolean.parseBoolean(readElement(parser, Open311.METADATA)));
@@ -225,10 +225,10 @@ public class Open311XmlParser {
      * @return ArrayList<AttributesJson>
      * @throws XmlPullParserException
      * @throws IOException
-     * 
      */
-    private ArrayList<AttributesJson> parseAttributes(XmlPullParser parser) throws XmlPullParserException,
-            IOException{
+    private ArrayList<AttributesJson> parseAttributes(XmlPullParser parser)
+            throws XmlPullParserException,
+            IOException {
         parser.require(XmlPullParser.START_TAG, ns, Open311.ATTRIBUTES);
         ArrayList<AttributesJson> attributes = new ArrayList<AttributesJson>();
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -249,10 +249,9 @@ public class Open311XmlParser {
      * @return AttributesJson
      * @throws XmlPullParserException
      * @throws IOException
-     * 
      */
     private AttributesJson parseAttribute(XmlPullParser parser) throws XmlPullParserException,
-            IOException{
+            IOException {
         parser.require(XmlPullParser.START_TAG, ns, ATTRIBUTE);
         AttributesJson attribute = new AttributesJson();
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -293,9 +292,9 @@ public class Open311XmlParser {
      * @return ArrayList<ValuesJson>
      * @throws XmlPullParserException
      * @throws IOException
-     * 
      */
-    private ArrayList<ValuesJson> parseValues(XmlPullParser parser) throws XmlPullParserException, IOException{
+    private ArrayList<ValuesJson> parseValues(XmlPullParser parser) throws XmlPullParserException,
+            IOException {
         ArrayList<ValuesJson> values = new ArrayList<ValuesJson>();
         parser.require(XmlPullParser.START_TAG, ns, Open311.VALUES);
 
@@ -316,14 +315,13 @@ public class Open311XmlParser {
 
     /**
      * @param parser
-     * @return ValuesJson 
+     * @return ValuesJson
      * @throws XmlPullParserException
      * @throws IOException
-     * 
      */
-    private ValuesJson parseValue(XmlPullParser parser) throws XmlPullParserException, IOException{
+    private ValuesJson parseValue(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, ns, Open311.VALUE);
-        ValuesJson  value = new ValuesJson ();
+        ValuesJson value = new ValuesJson();
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -349,7 +347,8 @@ public class Open311XmlParser {
      * @throws IOException
      * @throws JSONException
      */
-    private ArrayList<RequestsJson> parseRequests(XmlPullParser parser) throws XmlPullParserException,
+    private ArrayList<RequestsJson> parseRequests(XmlPullParser parser)
+            throws XmlPullParserException,
             IOException {
         ArrayList<RequestsJson> requests = new ArrayList<RequestsJson>();
         parser.require(XmlPullParser.START_TAG, ns, SERVICE_REQUESTS);
@@ -373,7 +372,6 @@ public class Open311XmlParser {
      * @return
      * @throws XmlPullParserException
      * @throws IOException
-     * 
      */
     private RequestsJson parseRequest(XmlPullParser parser) throws XmlPullParserException,
             IOException {
@@ -421,7 +419,7 @@ public class Open311XmlParser {
                 request.setUpdated_datetime(readElement(parser, Open311.UPDATED_DATETIME));
             }
             else if (name.equals(Open311.EXPECTED_DATETIME)) {
-                request.expected_datetime =  readElement(parser, Open311.EXPECTED_DATETIME);
+                request.expected_datetime = readElement(parser, Open311.EXPECTED_DATETIME);
             }
             else if (name.equals(Open311.AGENCY_RESPONSIBLE)) {
                 request.agency_responsible = readElement(parser, Open311.AGENCY_RESPONSIBLE);

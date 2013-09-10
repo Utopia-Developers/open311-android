@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+
 import com.actionbarsherlock.app.SherlockFragment;
 import com.rajul.staggeredgridview.StaggeredGridView;
 import com.rajul.staggeredgridview.StaggeredGridView.OnItemClickListener;
@@ -42,19 +43,17 @@ public class SavedReportsListFragment extends SherlockFragment implements OnItem
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        layout = inflater.inflate(R.layout.fragment_report_saved_list, container,false);
+        layout = inflater.inflate(R.layout.fragment_report_saved_list, container, false);
         mGridView = (StaggeredGridView) layout.findViewById(R.id.report_list);
         adapter = new SavedReportsAdapter(mServiceRequests, getActivity());
         mGridView.setAdapter(adapter);
         return mGridView;
     }
 
-    
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        
+
         colCount = this.getResources().getInteger(R.integer.column_no_saved_report);
         mGridView.setColumnCount(colCount);
         mGridView.setOnItemClickListener(this);

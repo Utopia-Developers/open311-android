@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -43,9 +42,7 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
     private AtomicInteger pendingRequests;
     private ProgressDialog progressDialog;
 
-    //private OnSetActionBarTitleListener titleSetCallback;
-
-    
+    // private OnSetActionBarTitleListener titleSetCallback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,13 +50,11 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
         layout = inflater.inflate(R.layout.fragment_main,
                 container, false);
 
-        /*splashImage = (ImageView) layout.findViewById(R.id.splash);
-        splashImage.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onTouchImage(v);
-            }
-        });*/
+        /*
+         * splashImage = (ImageView) layout.findViewById(R.id.splash);
+         * splashImage.setOnClickListener(new OnClickListener() {
+         * @Override public void onClick(View v) { onTouchImage(v); } });
+         */
         return layout;
     }
 
@@ -105,7 +100,6 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
 
     public void postResponseSetup(ArrayList<ServiceEntityJson> response)
     {
-        
 
         // If no metadata
         if (!loadServiceDefinations(response))
@@ -122,26 +116,23 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
 
     public void setupFragment()
     {
-        /*titleSetCallback = (OnSetActionBarTitleListener) getActivity();
-        ImageView splash = (ImageView) layout.findViewById(R.id.splash);
-        if (Open311.sEndpoint != null)
-        {
-            titleSetCallback.setActionBarTitle(Open311.sEndpoint.name);
-            String imageName = Open311.sEndpoint.splash_image;
-            Log.d("Image Name", imageName + "");
-            if (imageName != null) {
-
-                splash.setImageResource(getResources().getIdentifier(imageName,
-                        "drawable", getActivity().getPackageName()));
-                splash.setContentDescription(Open311.sEndpoint.name);
-            }
-        }*/
+        /*
+         * titleSetCallback = (OnSetActionBarTitleListener) getActivity();
+         * ImageView splash = (ImageView) layout.findViewById(R.id.splash); if
+         * (Open311.sEndpoint != null) {
+         * titleSetCallback.setActionBarTitle(Open311.sEndpoint.name); String
+         * imageName = Open311.sEndpoint.splash_image; Log.d("Image Name",
+         * imageName + ""); if (imageName != null) {
+         * splash.setImageResource(getResources().getIdentifier(imageName,
+         * "drawable", getActivity().getPackageName()));
+         * splash.setContentDescription(Open311.sEndpoint.name); } }
+         */
 
     }
 
     public void refresh()
     {
-        if(!Open311.isDataLoading)
+        if (!Open311.isDataLoading)
         {
             Open311.isDataLoading = true;
             Open311.prevEndpoint = null;
@@ -208,7 +199,6 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
             progressDialog = ProgressDialog.show(getActivity(),
                     getString(R.string.dialog_loading_services), "Please Wait", true);
         }
-        
 
     }
 
@@ -223,7 +213,7 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
         GsonGetRequest<ServiceDefinationJson> serviceDefinationRequestGson;
         Open311XmlRequest<ServiceDefinationJson> serviceDefinationRequestXML;
         String group = null;
-        if(Open311.sServiceGroups == null)
+        if (Open311.sServiceGroups == null)
             Open311.sServiceGroups = new HashMap<String, ArrayList<ServiceEntityJson>>();
         int len = response.size();
         for (int i = 0; i < len; i++) {
@@ -233,13 +223,13 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
             if (group == null) {
                 group = getString(R.string.uncategorized);
             }
-            
+
             if (!Open311.sGroups.contains(group)) {
                 Open311.sGroups.add(group);
                 temp = new ArrayList<ServiceEntityJson>();
                 temp.add(s);
                 Open311.sServiceGroups.put(group, temp);
-            }else
+            } else
             {
                 Open311.sServiceGroups.get(group).add(s);
             }
@@ -317,7 +307,7 @@ public class MainFragment extends SherlockFragment implements OnDataRefreshListe
                                 public void onErrorResponse(VolleyError error) {
                                     if (error.networkResponse != null)
                                         Open311.isDataLoading = false;
-                                        Log.d("Status GET", error.networkResponse.statusCode + "");
+                                    Log.d("Status GET", error.networkResponse.statusCode + "");
                                     progressDialog.dismiss();
                                     Util.displayCrashDialog(
                                             getActivity(),

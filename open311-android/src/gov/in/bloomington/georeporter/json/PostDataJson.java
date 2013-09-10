@@ -1,3 +1,4 @@
+
 package gov.in.bloomington.georeporter.json;
 
 import com.google.gson.annotations.SerializedName;
@@ -22,7 +23,5 @@ public class PostDataJson {
     public String media_url;
     public String description;
     public String requested_datetime;
-    
-    
-    
+
 }

@@ -16,11 +16,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.Button;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
@@ -65,38 +63,33 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
     public static final int UPDATE_GOOGLE_MAPS_REQUEST = 0;
 
     public static final int DEFAULT_ZOOM = 17;
-    
+
     /**
-     * Create a new instance of MyDialogFragment, providing "num"
-     * as an argument.
+     * Create a new instance of MyDialogFragment, providing "num" as an
+     * argument.
      */
-    static ChooseLocationFragment newInstance(Bundle bundle) {       
+    static ChooseLocationFragment newInstance(Bundle bundle) {
         ChooseLocationFragment f = new ChooseLocationFragment();
         f.setArguments(bundle);
         return f;
     }
-    
-    
 
-    
     @Override
-    public void onAttach(Activity activity) {        
+    public void onAttach(Activity activity) {
         super.onAttach(activity);
         FragmentManager fm = getChildFragmentManager();
-        mapFragment =  (EnhancedSupportMapFragment) fm.findFragmentById(R.id.map_fragment_select);
-        if ( mapFragment == null) {
+        mapFragment = (EnhancedSupportMapFragment) fm.findFragmentById(R.id.map_fragment_select);
+        if (mapFragment == null) {
             mapFragment = new EnhancedSupportMapFragment();
-            fm.beginTransaction().replace(R.id.map_fragment_select,  mapFragment).commit();
+            fm.beginTransaction().replace(R.id.map_fragment_select, mapFragment).commit();
         }
     }
 
-
-
-
     private OnMapPositionClicked mapPositionClickedListener;
+
     public interface OnMapPositionClicked
     {
-        public void positionClicked(String address,double latitude,double longitude);
+        public void positionClicked(String address, double latitude, double longitude);
     }
 
     @Override
@@ -109,28 +102,21 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
         setAddress.setOnClickListener(this);
         removeAddress.setOnClickListener(this);
         snapToAddress.setOnClickListener(this);
-        mapPositionClickedListener = (ReportFragment)getParentFragment();
-        setUpMapIfNeeded();    
-        
+        mapPositionClickedListener = (ReportFragment) getParentFragment();
+        setUpMapIfNeeded();
+
         return layout;
     }
-    
-    
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);               
+        super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NO_FRAME, R.style.MapDialogStyle);
         Bundle b = getArguments();
         addressVal = b.getString("MarkerAddress");
         setPosition = new LatLng(b.getDouble("Lat"), b.getDouble("Lng"));
         parentWidth = b.getInt("Width");
     }
-    
-    
-
-
-
 
     @Override
     public void onResume() {
@@ -161,7 +147,7 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
         // map.
         if (mMap == null) {
             // Try to obtain the map from the EnhancedSupportMapFragment.
-            
+
             mMap = mapFragment.getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
@@ -180,49 +166,48 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
     private void setUpMap() {
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setMyLocationEnabled(false);
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));   
-        if(addressVal!=null)
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM));
+        if (addressVal != null)
         {
             setMarker(addressVal, setPosition);
         }
     }
-    
+
     /**
-     * 
      * @param markerText
      * @param pos
-     * 
      */
-    public void setMarker(String markerText,LatLng pos)
+    public void setMarker(String markerText, LatLng pos)
     {
         this.markerText = markerText;
         if (addressMarker != null)
-            addressMarker.remove();        
+            addressMarker.remove();
 
         addressMarker = mMap
                 .addMarker(new MarkerOptions()
                         .position(setPosition)
                         .title("Address")
                         .snippet(markerText));
-        
+
         addressMarker.showInfoWindow();
         mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
-        mMap.moveCamera(CameraUpdateFactory.scrollBy(0, -(3 * getResources().getDimension(R.dimen.layout_margin))));
-        
+        mMap.moveCamera(CameraUpdateFactory.scrollBy(0,
+                -(3 * getResources().getDimension(R.dimen.layout_margin))));
+
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        int width  = parentWidth;
-        int height = getResources().getDimensionPixelSize(R.dimen.map_height);  
+        int width = parentWidth;
+        int height = getResources().getDimensionPixelSize(R.dimen.map_height);
         WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
         params.width = width;
-        params.height =  height;
+        params.height = height;
         params.gravity = Gravity.CENTER;
-        
-        getDialog().getWindow().setAttributes(params);        
-        
+
+        getDialog().getWindow().setAttributes(params);
+
         mLocationClient.connect();
     }
 
@@ -330,7 +315,6 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
         switch (v.getId())
         {
             case R.id.buttonAddLocAddr:
-               
 
                 setPosition = mMap.getCameraPosition().target;
                 if (setPosition == null)
@@ -338,15 +322,17 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
                     setPosition = new LatLng(0, 0);
                 }
 
-                markerText = String.format("Lat: %02f Long: %02f", setPosition.latitude,setPosition.longitude);
-                        
+                markerText = String.format("Lat: %02f Long: %02f", setPosition.latitude,
+                        setPosition.longitude);
+
                 setMarker(markerText, setPosition);
-                
-                mapPositionClickedListener.positionClicked(addressVal,setPosition.latitude,setPosition.longitude);
+
+                mapPositionClickedListener.positionClicked(addressVal, setPosition.latitude,
+                        setPosition.longitude);
                 new ReverseGeocodingTask().execute(setPosition);
                 break;
             case R.id.buttonRemoveLocAddr:
-                if(addressMarker!=null)
+                if (addressMarker != null)
                     addressMarker.remove();
                 break;
             case R.id.buttonSnapToAddress:
@@ -374,10 +360,9 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
                 addresses = geocoder.getFromLocation(latitude, longitude, 1);
             } catch (IOException e) {
                 e.printStackTrace();
-                
-            }            
-            
-            
+
+            }
+
             if (addresses != null && addresses.size() > 0) {
                 Address address = addresses.get(0);
                 return String.format("%s",
@@ -391,8 +376,9 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
             addressMarker.setSnippet(address);
             addressMarker.showInfoWindow();
             addressVal = address;
-            mMap.snapshot((ReportFragment)getParentFragment());
-            mapPositionClickedListener.positionClicked(address,setPosition.latitude,setPosition.longitude);
+            mMap.snapshot((ReportFragment) getParentFragment());
+            mapPositionClickedListener.positionClicked(address, setPosition.latitude,
+                    setPosition.longitude);
             dismiss();
         }
     }

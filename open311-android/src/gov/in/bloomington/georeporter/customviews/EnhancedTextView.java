@@ -9,8 +9,6 @@ import android.widget.TextView;
 
 import gov.in.bloomington.georeporter.R;
 
-
-
 public class EnhancedTextView extends TextView {
     private Context context;
     private Typeface typeface;
@@ -23,27 +21,26 @@ public class EnhancedTextView extends TextView {
                 attrs,
                 R.styleable.EnhancedTextView,
                 0, 0);
-        
+
         typefaceReference = a.getString(R.styleable.EnhancedTextView_font);
-        
+
         setFont(typefaceReference);
-        
-        
+
     }
-    
+
     public void setFont(String typeFacePath)
     {
-        if(!typefaceReference.contentEquals(typeFacePath))
+        if (!typefaceReference.contentEquals(typeFacePath))
             typefaceReference = typeFacePath;
-        
-        if(typefaceReference != null)
+
+        if (typefaceReference != null)
         {
             typeface = Typeface.createFromAsset(this.context.getAssets(), typefaceReference);
-            if(typeface !=null)
+            if (typeface != null)
             {
                 this.setTypeface(typeface);
             }
-        }   
+        }
     }
 
 }

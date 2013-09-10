@@ -109,8 +109,8 @@ public class EnhancedSupportMapFragment extends SupportMapFragment {
 
         // texture view
         if (hasTextureViewSupport) { // If we support texture view and the
-        // drawing view is a TextureView then
-        // tweak it and return the fragment view
+            // drawing view is a TextureView then
+            // tweak it and return the fragment view
 
             if (drawingView instanceof TextureView) {
 

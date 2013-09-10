@@ -51,10 +51,9 @@ public class ReportActivity extends BaseFragmentActivity
                 chooseGroup = new ChooseGroupFragment();
                 Log.d("Frag", "Creating Grp Frag.");
                 getSupportFragmentManager().beginTransaction()
-                .add(R.id.content_frame, chooseGroup)
-                .commit();
+                        .add(R.id.content_frame, chooseGroup)
+                        .commit();
             }
-            
 
         }
         else {

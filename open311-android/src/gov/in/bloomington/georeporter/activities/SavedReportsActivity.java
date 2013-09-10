@@ -9,17 +9,13 @@
 package gov.in.bloomington.georeporter.activities;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.actionbarsherlock.view.MenuItem;
 
 import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.fragments.SavedReportViewFragment;
 import gov.in.bloomington.georeporter.fragments.SavedReportsListFragment;
 
-public class SavedReportsActivity extends BaseFragmentActivity{
+public class SavedReportsActivity extends BaseFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,18 +23,16 @@ public class SavedReportsActivity extends BaseFragmentActivity{
         super.setupNavigationDrawer();
         title = getString(R.string.menu_archive);
         getSupportActionBar().setTitle(title);
-        if(getSupportFragmentManager().findFragmentById(R.id.content_frame)==null)
+        if (getSupportFragmentManager().findFragmentById(R.id.content_frame) == null)
         {
             SavedReportsListFragment listFragment = new SavedReportsListFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.content_frame, listFragment)                
+                    .add(R.id.content_frame, listFragment)
                     .commit();
         }
-        
 
     }
 
-    
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
