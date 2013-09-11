@@ -145,6 +145,7 @@ public class Open311 {
     public static String prevEndpoint;
     public static HashMap<String, ServiceDefinationJson> sServiceDefinitions;
     public static ArrayList<String> sGroups;
+    public static ArrayList<ServiceRequest> mServiceRequests;
     public static JSONObject mPersonalInfo;
 
     public static RequestQueue requestQueue = null;

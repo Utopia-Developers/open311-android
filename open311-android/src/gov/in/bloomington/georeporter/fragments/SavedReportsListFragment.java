@@ -28,7 +28,6 @@ import java.util.ArrayList;
 
 public class SavedReportsListFragment extends SherlockFragment implements OnItemClickListener,
         OnItemLongClickListener, com.actionbarsherlock.view.ActionMode.Callback {
-    private ArrayList<ServiceRequest> mServiceRequests;
     private boolean mDataChanged = false;
     private StaggeredGridView mGridView;
     private int colCount;
@@ -40,14 +39,14 @@ public class SavedReportsListFragment extends SherlockFragment implements OnItem
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mServiceRequests = Open311.loadServiceRequests(getActivity());
+        Open311.mServiceRequests = Open311.loadServiceRequests(getActivity());        
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         layout = inflater.inflate(R.layout.fragment_report_saved_list, container, false);
         mGridView = (StaggeredGridView) layout.findViewById(R.id.report_list);
-        adapter = new SavedReportsAdapter(mServiceRequests, getActivity());
+        adapter = new SavedReportsAdapter(Open311.mServiceRequests, getActivity());
         mGridView.setAdapter(adapter);
         return mGridView;
     }
@@ -70,14 +69,14 @@ public class SavedReportsListFragment extends SherlockFragment implements OnItem
     @Override
     public void onPause() {
         if (mDataChanged) {
-            Open311.saveServiceRequests(getActivity(), mServiceRequests);
+            Open311.saveServiceRequests(getActivity(), Open311.mServiceRequests);
         }
         super.onPause();
     }
 
     private void refreshAdapter() {
         SavedReportsAdapter a = (SavedReportsAdapter) mGridView.getAdapter();
-        a.updateSavedReports(mServiceRequests);
+        a.updateSavedReports(Open311.mServiceRequests);
     }
 
     @Override
@@ -121,7 +120,7 @@ public class SavedReportsListFragment extends SherlockFragment implements OnItem
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_delete:                
-                mServiceRequests.remove(position);
+                Open311.mServiceRequests.remove(position);
                 mDataChanged = true;
                 refreshAdapter();                        
                 mode.finish(); // Action picked, so close the CAB

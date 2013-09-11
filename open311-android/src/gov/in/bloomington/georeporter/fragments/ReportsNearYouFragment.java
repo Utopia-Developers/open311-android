@@ -78,8 +78,8 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
     private HashMap<String, Marker> markerHash;
     private HashMap<Marker, RequestsJson> markerDataHash;
     private boolean initialDataFetched;
-    
-    private String startDate,stopDate;
+
+    private String startDate, stopDate;
     private SimpleDateFormat sdf;
     final String isodateformat = "yyyy-MM-dd'T'HH:mm:ssZ";
 
@@ -142,12 +142,34 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
         else
         {
             Calendar c = Calendar.getInstance();
-            sdf = new SimpleDateFormat(isodateformat,Locale.US);
+            sdf = new SimpleDateFormat(isodateformat, Locale.US);
             c.setTime(new Date()); // Now use today date.
             stopDate = sdf.format(c.getTime());
             c.add(Calendar.DATE, -30); // last month
             startDate = sdf.format(c.getTime());
         }
+        RequestsJson data;
+        // Go through the user reports.
+        if(Open311.mServiceRequests == null)
+            Open311.mServiceRequests = Open311.loadServiceRequests(getActivity());
+        
+        if(Open311.mServiceRequests!=null)
+        {
+            for (int i = 0; i < Open311.mServiceRequests.size(); i++)
+            {
+                data = Open311.mServiceRequests.get(i).service_request;
+                // We need Lat and Long
+                if (!markerHash.containsKey(data.getService_request_id()) && data.getLat() != null
+                        && data.getLong() != null)
+                {
+                    Marker temp = createMarker(data, true);
+                    markerHash.put(data.getService_request_id(), temp);
+                    markerDataHash.put(temp, data);
+                }
+            }
+        }
+        
+
     }
 
     public void setVisibleRegionBounds()
@@ -198,7 +220,7 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
 
         if (data.getUpdated_datetime() != null)
         {
-            sdf= new SimpleDateFormat(isodateformat,Locale.US);            
+            sdf = new SimpleDateFormat(isodateformat, Locale.US);
             Date d = null;
             try {
                 d = sdf.parse(data.getUpdated_datetime());
@@ -217,7 +239,8 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
     public void fetchData()
     {
         String url = Open311.sEndpoint.bbox ? Open311
-                .getServiceRequestUrl(bottom, left, top, right) : Open311.getServiceRequestUrl(startDate,
+                .getServiceRequestUrl(bottom, left, top, right) : Open311.getServiceRequestUrl(
+                startDate,
                 stopDate, "open");
         Log.d("URL", url);
         request = new GsonGetRequest<ArrayList<RequestsJson>>(url,
@@ -231,11 +254,12 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
                         for (int i = 0; i < response.size(); i++)
                         {
                             data = response.get(i);
-                            //We need Lat and Long
-                            if (!markerHash.containsKey(data.getService_request_id()) && data.getLat()!=null && data.getLong()!=null)
+                            // We need Lat and Long
+                            if (!markerHash.containsKey(data.getService_request_id())
+                                    && data.getLat() != null && data.getLong() != null)
                             {
                                 count++;
-                                Marker temp = createMarker(data);
+                                Marker temp = createMarker(data, false);
                                 markerHash.put(data.getService_request_id(), temp);
                                 markerDataHash.put(temp, data);
                             }
@@ -251,12 +275,17 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
         Open311.requestQueue.add(request);
     }
 
-    public Marker createMarker(RequestsJson data)
+    public Marker createMarker(RequestsJson data, boolean isUserMarker)
     {
         MarkerOptions options = new MarkerOptions();
         options.position(new LatLng(Double.parseDouble(data.getLat()), Double.parseDouble(data
                 .getLong())));
-        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        if (isUserMarker && data.getStatus().contentEquals("open"))
+            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        else if (isUserMarker)
+            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+        else
+            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         Marker marker = mMap.addMarker(options);
         return marker;
     }
