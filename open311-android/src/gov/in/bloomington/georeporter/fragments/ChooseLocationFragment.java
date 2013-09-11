@@ -192,7 +192,7 @@ public class ChooseLocationFragment extends DialogFragment implements LocationLi
         addressMarker.showInfoWindow();
         mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
         mMap.moveCamera(CameraUpdateFactory.scrollBy(0,
-                -(3 * getResources().getDimension(R.dimen.layout_margin))));
+                -(3 * getResources().getDimension(R.dimen.layout_margin))));       
 
     }
 

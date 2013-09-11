@@ -14,7 +14,8 @@ public class LocationUtils {
     public static final int FASTEST_INTERVAL_IN_SECONDS = 1;
     // A fast frequency ceiling in milliseconds
     public static final long FASTEST_INTERVAL =
-            MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;
+            MILLISECONDS_PER_SECOND * FASTEST_INTERVAL_IN_SECONDS;    
+    
 
     public static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 100;
 

@@ -65,6 +65,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -600,7 +602,8 @@ public class Open311 {
     }
 
     public static String getServiceRequestUrl(double minLat, double minLong, double maxLat,
-            double maxLong) {
+            double maxLong) {       
+        
         String url = mBaseUrl + "/requests" + "." + mFormat + "?bbox=" + minLat + "," + minLong
                 + "," + maxLat + "," + maxLong;
         if (mJurisdiction.length() > 0) {
@@ -610,6 +613,7 @@ public class Open311 {
     }
 
     public static String getServiceRequestUrl(String startDate, String endDate, String status) {
+        
         String url = mBaseUrl + "/requests" + "." + mFormat + "?start_date=" + startDate
                 + "&end_date=" + endDate + "&status=" + status;
         if (mJurisdiction.length() > 0) {
