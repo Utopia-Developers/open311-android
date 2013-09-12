@@ -36,6 +36,8 @@ public class SavedReportsAdapter extends BaseAdapter {
     private DateFormat mDateFormat;
     private SimpleDateFormat mISODate;
     private Context context;
+    private RoundedDrawable defaultLogo;
+    private int size;
 
     @SuppressLint("SimpleDateFormat")
     public SavedReportsAdapter(ArrayList<ServiceRequest> serviceRequests, Context c) {
@@ -44,6 +46,9 @@ public class SavedReportsAdapter extends BaseAdapter {
         mDateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
         mISODate = new SimpleDateFormat(Open311.DATETIME_FORMAT);
         context = c;
+        size = context.getResources().getDimensionPixelSize(R.dimen.logo);
+        defaultLogo = new RoundedDrawable(BitmapFactory.decodeResource(
+                context.getResources(), R.drawable.ic_launcher), size, size);        
     }
 
     @Override
@@ -56,9 +61,6 @@ public class SavedReportsAdapter extends BaseAdapter {
     @Override
     public ServiceRequest getItem(int position) {
         ServiceRequest request = mServiceRequests.get(position);
-
-        // TODO this is just test
-        Log.d("Service Request - position", new Gson().toJson(request));
         return request;
     }
 
@@ -69,7 +71,7 @@ public class SavedReportsAdapter extends BaseAdapter {
 
     private static class ViewHolder {
         TextView serviceName, status, date, address, endpoint;
-        ImageView media, logo;
+        ImageView media, logo,statusImage;
     }
 
     @Override
@@ -85,6 +87,7 @@ public class SavedReportsAdapter extends BaseAdapter {
             holder.endpoint = (TextView) convertView.findViewById(R.id.endpoint);
             holder.media = (ImageView) convertView.findViewById(R.id.media);
             holder.logo = (ImageView) convertView.findViewById(R.id.imageViewEndpoint);
+            holder.statusImage = (ImageView) convertView.findViewById(R.id.imageViewStatus);
             convertView.setTag(holder);
         }
         else {
@@ -100,10 +103,11 @@ public class SavedReportsAdapter extends BaseAdapter {
             holder.date.setText(mDateFormat.format(mISODate.parse(sr.post_data
                     .optString(ServiceRequest.REQUESTED_DATETIME))));
             holder.media.setImageBitmap(sr.getMediaBitmap(80, 80, mInflater.getContext()));
-            int size = context.getResources().getDimensionPixelSize(R.dimen.logo);
-            // TODO Depending on the Endpoint show a image
-            holder.logo.setImageDrawable(new RoundedDrawable(BitmapFactory.decodeResource(
-                    context.getResources(), R.drawable.ic_camera_action), size, size));
+            if(!sr.service_request.getStatus().contentEquals("open"))
+                holder.statusImage.setImageResource(R.drawable.closedissue);
+            
+            // TODO Depending on the endpoint show the endpoint logo else show default logo
+            holder.logo.setImageDrawable(defaultLogo);
         } catch (ParseException e) {
             e.printStackTrace();
         }

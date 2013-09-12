@@ -750,8 +750,9 @@ public class ReportFragment extends SherlockFragment implements OnClickListener,
                                 }
                                 else {
                                     Intent intent = new Intent(getActivity(),
-                                            SavedReportsActivity.class);
+                                            SavedReportsActivity.class);                                    
                                     startActivity(intent);
+                                    getActivity().onBackPressed();
                                 }
                             }
                         }, mServiceRequest, mMediaPath);

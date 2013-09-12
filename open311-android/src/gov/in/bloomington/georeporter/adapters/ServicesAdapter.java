@@ -30,7 +30,7 @@ public class ServicesAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mServices.size();
+        return mServices == null ? 0 : mServices.size();
     }
 
     @Override

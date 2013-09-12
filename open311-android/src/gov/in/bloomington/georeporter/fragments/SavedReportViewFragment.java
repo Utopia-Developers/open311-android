@@ -6,6 +6,7 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,10 +20,17 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import gov.in.bloomington.georeporter.R;
+import gov.in.bloomington.georeporter.customviews.EnhancedSupportMapFragment;
+import gov.in.bloomington.georeporter.customviews.RoundedDrawable;
 import gov.in.bloomington.georeporter.json.RequestsJson;
 import gov.in.bloomington.georeporter.models.Open311;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
@@ -33,9 +41,13 @@ import java.util.ArrayList;
 
 public class SavedReportViewFragment extends SherlockFragment {
     private static final String POSITION = "position";
-    private ArrayList<ServiceRequest> mServiceRequests;
     private ServiceRequest mServiceRequest;
     private int mPosition;
+    private GoogleMap mMap;
+    private EnhancedSupportMapFragment mapFragment;
+    private View layout;
+    private RoundedDrawable defaultLogo;
+    private int size;
 
     public static SavedReportViewFragment newInstance(int position) {
         SavedReportViewFragment fragment = new SavedReportViewFragment();
@@ -49,15 +61,20 @@ public class SavedReportViewFragment extends SherlockFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPosition = getArguments().getInt(POSITION);
-
-        mServiceRequests = Open311.loadServiceRequests(getActivity());
-        mServiceRequest = mServiceRequests.get(mPosition);
-
+        if (Open311.mServiceRequests == null)
+            Open311.mServiceRequests = Open311.loadServiceRequests(getActivity());
+        mServiceRequest = Open311.mServiceRequests.get(mPosition);
+        size = getActivity().getResources().getDimensionPixelSize(R.dimen.logo);
+        defaultLogo = new RoundedDrawable(BitmapFactory.decodeResource(
+                getActivity().getResources(), R.drawable.ic_launcher), size, size);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_report_saved, container, false);
+        layout = inflater.inflate(R.layout.fragment_report_saved, container, false);
+        mapFragment = (EnhancedSupportMapFragment) getFragmentManager().findFragmentById(
+                R.id.map_fragment);
+        return layout;
     }
 
     @Override
@@ -65,6 +82,60 @@ public class SavedReportViewFragment extends SherlockFragment {
         refreshViewData();
         refreshFromServer();
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setUpMapIfNeeded();
+    }
+
+    private void setUpMapIfNeeded() {
+        // Do a null check to confirm that we have not already instantiated the
+        // map.
+        if (mMap == null) {
+            // Try to obtain the map from the EnhancedSupportMapFragment.
+
+            mMap = mapFragment.getMap();
+            // Check if we were successful in obtaining the map.
+            if (mMap != null) {
+                setUpMap();
+            }
+        }
+    }
+
+    /**
+     * This is where we can add markers or lines, add listeners or move the
+     * camera.
+     * <p>
+     * This should only be called once and when we are sure that {@link #mMap}
+     * is not null.
+     */
+    private void setUpMap() {
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mMap.setMyLocationEnabled(false);
+        if (mServiceRequest.service_request.getLat() != null
+                && mServiceRequest.service_request.getLong() != null)
+        {
+            LatLng addressLoc = new LatLng(Double.parseDouble(mServiceRequest.service_request
+                    .getLat()), Double.parseDouble(mServiceRequest.service_request.getLong()));
+            MarkerOptions options = new MarkerOptions();
+            options.title(mServiceRequest.service_request.getService_name());
+            if (mServiceRequest.service_request.getAddress() != null)
+                options.snippet(mServiceRequest.service_request.getAddress());
+            else
+                options.snippet("Lat " + mServiceRequest.service_request.getLat() + " Long "
+                        + mServiceRequest.service_request.getLong());
+            options.position(addressLoc);
+            Marker addr = mMap.addMarker(options);
+            addr.showInfoWindow();
+
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(addressLoc, 17));
+        }
+        else
+        {
+            mapFragment.getView().setVisibility(View.GONE);
+        }
     }
 
     private void refreshViewData() {
@@ -94,6 +165,15 @@ public class SavedReportViewFragment extends SherlockFragment {
         if (mServiceRequest.service_request.getStatus() != null) {
             textView.setText(mServiceRequest.service_request.getStatus());
         }
+
+        ImageView status = (ImageView) v.findViewById(R.id.imageViewStatus);
+        if (!mServiceRequest.service_request.getStatus().contentEquals("open"))
+            status.setImageResource(R.drawable.closedissue);
+
+        ImageView logo = (ImageView) v.findViewById(R.id.imageViewEndpoint);
+        // TODO Depending on the endpoint show the endpoint logo else show
+        // default logo
+        logo.setImageDrawable(defaultLogo);
     }
 
     public void refreshFromServer()
@@ -140,9 +220,9 @@ public class SavedReportViewFragment extends SherlockFragment {
                                                                 new TypeToken<ArrayList<RequestsJson>>() {
                                                                 }.getType());
                                                 mServiceRequest.service_request = results.get(0);
-                                                mServiceRequests.add(mServiceRequest);
+                                                Open311.mServiceRequests.add(mServiceRequest);
                                                 Open311.saveServiceRequests(getActivity(),
-                                                        mServiceRequests);
+                                                        Open311.mServiceRequests);
                                                 refreshViewData();
                                             }
 
