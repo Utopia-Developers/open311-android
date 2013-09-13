@@ -19,7 +19,7 @@ public class LocationUtils {
 
     public static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 100;
 
-    /*
+    /**
      * We define accuracy as the radius of 68% confidence. In other words, if
      * you draw a circle centered at this location's latitude and longitude, and
      * with a radius equal to the accuracy, then there is a 68% probability that

@@ -87,11 +87,10 @@ public class Preferences {
      * will be stored as JSON strings in settings.
      * 
      * @param c
-     * @return JSONArray
+     * @return ArrayList<ServerAttributeJson>
      */
     public static ArrayList<ServerAttributeJson> getCustomServers(Context c) {
         Preferences.loadSettings(c);
-        // TODO
         if (gson == null)
             gson = new Gson();
 
@@ -109,7 +108,6 @@ public class Preferences {
      */
     public static void setCustomServers(ArrayList<ServerAttributeJson> custom_servers, Context c) {
         Preferences.loadSettings(c);
-        // TODO
         if (gson == null)
             gson = new Gson();
 
@@ -125,16 +123,15 @@ public class Preferences {
      * Check for the server by name and fully reload the JSON each time.
      * 
      * @param context
-     * @return ServerAttributeJson
+     * @return {@link ServerAttributeJson}
      */
     public static ServerAttributeJson getCurrentServer(Context context) {
         Preferences.loadState(context);
         String serverUrl = mState.getString(CURRENT_SERVER, "");
-        
+
         if (serverUrl != null) {
             ServerAttributeJson s = null;
 
-            // TODO
             if (gson == null)
                 gson = new Gson();
 
@@ -157,7 +154,7 @@ public class Preferences {
      * 
      * @param servers
      * @param URL
-     * @return JSONObject
+     * @return {@link ServerAttributeJson}
      */
     private static ServerAttributeJson findServerByUrl(
             ArrayList<ServerAttributeJson> servers, String url) {
@@ -182,7 +179,7 @@ public class Preferences {
      * want to use the most up to date version.
      * 
      * @param server
-     * @param c void
+     * @param c
      */
     public static void setCurrentServer(ServerAttributeJson server, Context c) {
         Preferences.loadState(c);

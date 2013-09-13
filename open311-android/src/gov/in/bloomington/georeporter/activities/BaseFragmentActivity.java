@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
@@ -61,9 +60,12 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
     private LayoutInflater inflater;
     private boolean returnNow;
     private int mOrignallyAvailableServers;
-    public int totalServers,deleteListPosition;
+    public int totalServers, deleteListPosition;
     protected Gson gson;
-    // Servers
+
+    /**
+     * Just the custom servers
+     */
     protected ArrayList<ServerAttributeJson> mCustomServers = null;
     /**
      * Available and Custom servers combined into one array
@@ -132,16 +134,14 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
         mListAdapter = new NavigationDrawerAdapter(mServers, this);
         mDrawerList.setAdapter(mListAdapter);
         mDrawerList.setOnItemClickListener(mClickListener);
-        mDrawerList.setOnItemLongClickListener(mLongClickListener);        
+        mDrawerList.setOnItemLongClickListener(mLongClickListener);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-                .getMenuInfo();
         Intent intent;
         switch (item.getItemId()) {
-           case android.R.id.home:
+            case android.R.id.home:
                 intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
@@ -154,9 +154,8 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
     }
 
     /**
-     * Adds a new server JSONObject to Preferences This only updates the
-     * Preferences data. You still need make sure that the screen actually
-     * reflects this change.
+     * Adds a new {@link ServerAttributeJson} to Preferences and reflects the
+     * change on screen
      * 
      * @param dialog
      */
@@ -226,6 +225,10 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
 
     }
 
+    /**
+     * Long click on the drawer to open contextual action bar to delete custom
+     * servers.
+     */
     private class NavigationDrawerOnLongItemClickListener implements OnItemLongClickListener
     {
 
@@ -236,16 +239,17 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
             }
             // Only show the delete menu for the custom servers.
             // Servers from available_servers cannot be deleted.
-            
             int reqPos = 0;
             if (mCustomServers == null)
                 reqPos = -1;
             else
-                reqPos = (mServers.size() - mCustomServers.size());            
-            Log.d("ActionPos",mServers.size()+" " + position+" "+reqPos+ " "+ mCustomServers.size());
+                reqPos = (mServers.size() - mCustomServers.size());
+            Log.d("ActionPos", mServers.size() + " " + position + " " + reqPos + " "
+                    + mCustomServers.size());
             if (position > reqPos
-                    && position <= mServers.size()) {                
-                // Start the CAB using the ActionMode.Callback implemented by the class
+                    && position <= mServers.size()) {
+                // Start the CAB using the ActionMode.Callback implemented by
+                // the class
                 mActionMode = startActionMode(BaseFragmentActivity.this);
                 view.setSelected(true);
                 deleteListPosition = position;
@@ -258,6 +262,9 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
 
     }
 
+    /**
+     * Click on an item to select that server or action or add server
+     */
     private class NavigationDrawerItemClickListener implements OnItemClickListener
     {
 
@@ -412,12 +419,12 @@ public abstract class BaseFragmentActivity extends SherlockFragmentActivity impl
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_delete:                
+            case R.id.menu_delete:
                 int position = (deleteListPosition - mOrignallyAvailableServers) - 1;
                 Log.d("Delete Pos", deleteListPosition + " " + position);
                 mCustomServers.remove(position);
                 Preferences.setCustomServers(mCustomServers, BaseFragmentActivity.this);
-                mListAdapter.removeServer(deleteListPosition, deleteListPosition- 1);                               
+                mListAdapter.removeServer(deleteListPosition, deleteListPosition - 1);
                 mode.finish(); // Action picked, so close the CAB
                 return true;
             default:

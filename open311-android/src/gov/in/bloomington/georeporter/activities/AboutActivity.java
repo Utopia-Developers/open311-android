@@ -38,8 +38,7 @@ public class AboutActivity extends BaseFragmentActivity {
         public String getVersion() {
             try {
                 return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-            } catch (NameNotFoundException e) {
-                // TODO Auto-generated catch block
+            } catch (NameNotFoundException e) {                
                 e.printStackTrace();
             }
             return "";

@@ -22,9 +22,9 @@ public class Util {
     /**
      * Returns the content of a raw resource as a string
      * 
+     * @return String
      * @param Context c
      * @param AndroidResource resource
-     * @return String
      */
     public static String file_get_contents(Context c, int resource) {
         InputStream in = c.getResources().openRawResource(resource);
@@ -36,8 +36,7 @@ public class Util {
                 s.append(l);
             }
             in.close();
-        } catch (IOException e) {
-            // TODO: handle exception
+        } catch (IOException e) {            
             e.printStackTrace();
         }
         return s.toString();

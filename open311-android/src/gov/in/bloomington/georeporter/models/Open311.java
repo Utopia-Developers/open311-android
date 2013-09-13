@@ -7,69 +7,34 @@
 package gov.in.bloomington.georeporter.models;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.os.Build;
 import android.util.Log;
 
-import ch.boye.httpclientandroidlib.HttpResponse;
-import ch.boye.httpclientandroidlib.HttpStatus;
-import ch.boye.httpclientandroidlib.HttpVersion;
-import ch.boye.httpclientandroidlib.NameValuePair;
 import ch.boye.httpclientandroidlib.client.ClientProtocolException;
-import ch.boye.httpclientandroidlib.client.entity.UrlEncodedFormEntity;
-import ch.boye.httpclientandroidlib.client.methods.HttpGet;
-import ch.boye.httpclientandroidlib.client.methods.HttpPost;
-import ch.boye.httpclientandroidlib.conn.scheme.PlainSocketFactory;
-import ch.boye.httpclientandroidlib.conn.scheme.Scheme;
-import ch.boye.httpclientandroidlib.entity.mime.MultipartEntity;
-import ch.boye.httpclientandroidlib.entity.mime.content.ByteArrayBody;
-import ch.boye.httpclientandroidlib.entity.mime.content.StringBody;
-import ch.boye.httpclientandroidlib.impl.client.DefaultHttpClient;
-import ch.boye.httpclientandroidlib.message.BasicNameValuePair;
-import ch.boye.httpclientandroidlib.params.CoreConnectionPNames;
-import ch.boye.httpclientandroidlib.params.CoreProtocolPNames;
-import ch.boye.httpclientandroidlib.util.EntityUtils;
-
 import com.android.volley.RequestQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import gov.in.bloomington.georeporter.R;
-import gov.in.bloomington.georeporter.json.RequestResponseJson;
 import gov.in.bloomington.georeporter.json.ServerAttributeJson;
 import gov.in.bloomington.georeporter.json.ServiceDefinationJson;
 import gov.in.bloomington.georeporter.json.ServiceEntityJson;
-import gov.in.bloomington.georeporter.util.Media;
-import gov.in.bloomington.georeporter.util.Open311Parser;
 import gov.in.bloomington.georeporter.volleyrequests.GsonGetRequest;
 import gov.in.bloomington.georeporter.volleyrequests.GsonPostServiceRequest;
 import gov.in.bloomington.georeporter.volleyrequests.Open311XmlRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class Open311 {
     /**
@@ -160,13 +125,9 @@ public class Open311 {
     public static String mApiKey;
     public static String mFormat = "json";
 
-    private static DefaultHttpClient mClient = null;
-    private static final int TIMEOUT = 3000;
-
     private static Open311 mInstance;
 
     public static int selectedActionPosition = -1;
-
 
     public static synchronized Open311 getInstance() {
         if (mInstance == null) {
@@ -174,8 +135,6 @@ public class Open311 {
         }
         return mInstance;
     }
-
-    
 
     // TODO Doc
     public static void setCurrentServerDetails(ServerAttributeJson cuurentServer)
@@ -185,45 +144,6 @@ public class Open311 {
         mApiKey = cuurentServer.api_key;
         mFormat = cuurentServer.format;
     }
-
-    /**
-     * Loads all the service information from the endpoint Endpoints will have a
-     * service_list, plus, for each service, there may be a service_definition.
-     * To make the user experience smoother, we are downloading and saving all
-     * the possible service information at once. Returns false if there was a
-     * problem
-     * 
-     * @param current_server A single entry from /raw/available_servers
-     * @return Boolean
-     */
-    /*
-     * public static Boolean setEndpoint(ServerAttributeJson current_server,
-     * Context context) { sReady = false; mBaseUrl = null; mJurisdiction = null;
-     * mApiKey = null; mFormat = null; sGroups = new ArrayList<String>();
-     * sServiceList = null; sServiceDefinitions = new HashMap<String,
-     * ServiceDefinationJson>(); try { //Open311Parser mParser = new
-     * Open311Parser(mFormat); // TODO if(mFormat.contentEquals(Open311.JSON)) {
-     * ArrayList<ServiceDefinationJson> a = null; sServiceRequest = new
-     * GsonGetRequest<ArrayList<ServiceEntityJson>>(getServiceListUrl(), new
-     * TypeToken<ArrayList<ServiceEntityJson>>() { }.getType(), null, new
-     * Listener<ArrayList<ServiceEntityJson>>() {
-     * @Override public void onResponse(ArrayList<ServiceEntityJson> response) {
-     * sServiceList = response; } }, new ErrorListener() {
-     * @Override public void onErrorResponse(VolleyError error) { } }); } // Go
-     * through all the services and pull out the seperate groups // Also, while
-     * we're running through, load any service_definitions String group = "";
-     * int len = sServiceList.size(); for (int i = 0; i < len; i++) {
-     * ServiceEntityJson s = sServiceList.get(i); // services may have an empty
-     * string for the group parameter group = s.getGroup(); if
-     * (group.equals("")) { group = context.getString(R.string.uncategorized); }
-     * if (!sGroups.contains(group)) { sGroups.add(group); } // Add Service
-     * Definitions to mServiceDefinitions if (s.getMetadata() == true) { String
-     * code = s.getService_code(); //TODO ServiceDefinationJson definition =
-     * getServiceDefinition(code, context); if (definition != null) {
-     * sServiceDefinitions.put(code, definition); } } } } catch (Exception e) {
-     * Log.d("Ready", sReady.toString()); e.printStackTrace(); return false; }
-     * sEndpoint = current_server; sReady = true; return sReady; }
-     */
 
     /**
      * Returns the services for a given group
@@ -244,7 +164,6 @@ public class Open311 {
         if (sServiceDefinitions.containsKey(service_code)) {
             return sServiceDefinitions.get(service_code);
         }
-        // TODO
         return null;
     }
 
@@ -265,61 +184,6 @@ public class Open311 {
      * @throws ClientProtocolException
      * @throws Open311Exception
      */
-/*
-    public static ArrayList<RequestResponseJson> postServiceRequest(ServiceRequest sr,
-            Context context, String mediaPath) throws JSONException,
-            ClientProtocolException, IOException, Open311Exception {
-        HttpPost request = new HttpPost(mBaseUrl + "/requests." + mFormat);
-        ArrayList<RequestResponseJson> serviceRequests = null;
-        if (mediaPath != null) {
-            request.setEntity(prepareMultipartEntity(sr, context, mediaPath));
-        } else {
-            request.setEntity(prepareUrlEncodedEntity(sr));
-        }
-        HttpResponse r = getClient(context).execute(request);
-        String responseString = EntityUtils.toString(r.getEntity());
-
-        Log.d("Server Response", responseString);
-
-        int status = r.getStatusLine().getStatusCode();
-        // The spec does not declare what exact status codes to use
-        // Bloomington uses 200 Okay
-        // Chicago uses 201 Created
-        if (status == HttpStatus.SC_OK || status == HttpStatus.SC_CREATED
-                || status == HttpStatus.SC_ACCEPTED) {
-            Open311Parser mParser = new Open311Parser(mFormat);
-
-            // TODO
-            serviceRequests = new Gson().fromJson(responseString,
-                    new TypeToken<ArrayList<RequestResponseJson>>() {
-                    }.getType());
-
-            Log.d("Server Response Parsed", "Yes");
-        } else {
-            // The server indicated some error. See if they returned the
-            // error description as JSON
-            String dialogMessage;
-            try {
-                Open311Parser mParser = new Open311Parser(mFormat);
-                JSONArray errors = mParser.parseErrors(responseString);
-                dialogMessage = errors.getJSONObject(0).getString(
-                        Open311.DESCRIPTION);
-            } catch (JSONException e) {
-                switch (status) {
-                    case 403:
-                        dialogMessage = context.getResources().getString(
-                                R.string.error_403);
-                        break;
-                    default:
-                        dialogMessage = context.getResources().getString(
-                                R.string.failure_posting_service);
-                }
-            }
-            throw new Open311Exception(dialogMessage);
-        }
-        return serviceRequests;
-    }
-    */
 
     public static String getServiceRequestId(String token) {
         return "";
@@ -333,60 +197,6 @@ public class Open311 {
      * @throws UnsupportedEncodingException UrlEncodedFormEntity
      * @throws JSONException
      */
-    private static UrlEncodedFormEntity prepareUrlEncodedEntity(
-            ServiceRequest sr) throws UnsupportedEncodingException,
-            JSONException {
-        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-        // This could cause a JSONException, but we let this one bubble up the
-        // stack
-        // If we don't have a service_code, we don't have a valid POST
-        pairs.add(new BasicNameValuePair(SERVICE_CODE, sr.service
-                .getService_code()));
-
-        if (mJurisdiction.length() > 0) {
-            pairs.add(new BasicNameValuePair(JURISDICTION, mJurisdiction));
-        }
-        if (mApiKey.length() > 0) {
-            pairs.add(new BasicNameValuePair(API_KEY, mApiKey));
-        }
-
-        JSONObject data = sr.post_data;
-        Iterator<?> keys = data.keys();
-        while (keys.hasNext()) {
-            String key = (String) keys.next();
-            Object o;
-            try {
-                o = data.get(key);
-                // Add MULTIVALUELIST values
-                if (o instanceof JSONArray) {
-                    String k = key + "[]"; // Key name to POST multiple values
-                    JSONArray values = (JSONArray) o;
-                    int len = values.length();
-                    for (int i = 0; i < len; i++) {
-                        try {
-                            pairs.add(new BasicNameValuePair(k, values
-                                    .getString(i)));
-                        } catch (JSONException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                // All other fields can just be plain key-value pairs
-                else {
-                    // Lat and Long need to be converted to string
-                    if (o instanceof Double) {
-                        o = Double.toString((Double) o);
-                    }
-                    pairs.add(new BasicNameValuePair(key, (String) o));
-                }
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        return new UrlEncodedFormEntity(pairs, UTF_8);
-    }
 
     /**
      * Prepares a POST that includes a media attachment
@@ -398,73 +208,6 @@ public class Open311 {
      * @throws UnsupportedEncodingException MultipartEntity
      * @throws JSONException
      */
-    private static MultipartEntity prepareMultipartEntity(ServiceRequest sr,
-            Context context, String mediaPath)
-            throws UnsupportedEncodingException, JSONException {
-        MultipartEntity post = new MultipartEntity();
-        // This could cause a JSONException, but we let this one bubble up the
-        // stack
-        // If we don't have a service_code, we don't have a valid POST
-        post.addPart(SERVICE_CODE,
-                new StringBody(sr.service.getService_code()));
-
-        if (mJurisdiction != null) {
-            post.addPart(JURISDICTION, new StringBody(mJurisdiction));
-        }
-        if (mApiKey != null) {
-            post.addPart(API_KEY, new StringBody(mApiKey));
-        }
-        JSONObject data = sr.post_data;
-        Iterator<?> keys = data.keys();
-        while (keys.hasNext()) {
-            String key = (String) keys.next();
-            Object o;
-            try {
-                o = data.get(key);
-                // Attach media to the post
-                // Do not read from the data object.
-                // Instead, use the mediaPath that is passed in.
-                // This relies on the fact that there can only be one media
-                // attachment per ServiceRequest.
-                if (key == MEDIA) {
-                    final Bitmap media = Media.decodeSampledBitmap(mediaPath,
-                            Media.UPLOAD_WIDTH, Media.UPLOAD_HEIGHT, context);
-                    final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    media.compress(CompressFormat.PNG, 100, stream);
-                    final byte[] binaryData = stream.toByteArray();
-                    post.addPart(Open311.MEDIA, new ByteArrayBody(binaryData,
-                            Media.UPLOAD_FILENAME));
-                }
-                // Attach MULTIVALUELIST values
-                else if (o instanceof JSONArray) {
-                    String k = key + "[]"; // Key name to POST multiple values
-                    JSONArray values = (JSONArray) o;
-                    int len = values.length();
-                    for (int i = 0; i < len; i++) {
-                        try {
-                            post.addPart(k, new StringBody(values.getString(i)));
-                        } catch (JSONException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                // All other fields can be attached as plain key-value pairs
-                else {
-                    if (o instanceof Double) {
-                        o = Double.toString((Double) o);
-                    }
-                    Charset charset = Charset.forName(UTF_8);
-                    post.addPart(key, new StringBody((String) o, charset));
-                }
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
-        return post;
-    }
 
     /**
      * Reads the saved reports file into a JSONArray Reports are stored as a
@@ -504,7 +247,6 @@ public class Open311 {
             Log.w("Open311.loadServiceRequests",
                     "Saved Reports File does not exist");
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
 
@@ -518,7 +260,6 @@ public class Open311 {
         try {
             c.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -543,10 +284,8 @@ public class Open311 {
             out.close();
             return true;
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return false;
@@ -602,9 +341,16 @@ public class Open311 {
         return url;
     }
 
+    /**
+     * http://endpoint/services/requests.format?bbox=minLat,minLong,maxLat,
+     * maxLong
+     * 
+     * @param service_code
+     * @return String
+     */
     public static String getServiceRequestUrl(double minLat, double minLong, double maxLat,
-            double maxLong) {       
-        
+            double maxLong) {
+
         String url = mBaseUrl + "/requests" + "." + mFormat + "?bbox=" + minLat + "," + minLong
                 + "," + maxLat + "," + maxLong;
         if (mJurisdiction.length() > 0) {
@@ -613,8 +359,15 @@ public class Open311 {
         return url;
     }
 
+    /**
+     * http://endpoint/services/requests.format?start_date=ISO Format&
+     * end_date=ISO Format&status={open|close}&jurisdiction_id=jid
+     * 
+     * @param service_code
+     * @return String
+     */
     public static String getServiceRequestUrl(String startDate, String endDate, String status) {
-        
+
         String url = mBaseUrl + "/requests" + "." + mFormat + "?start_date=" + startDate
                 + "&end_date=" + endDate + "&status=" + status;
         if (mJurisdiction.length() > 0) {

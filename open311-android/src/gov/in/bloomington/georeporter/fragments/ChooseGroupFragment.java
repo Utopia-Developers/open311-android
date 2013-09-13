@@ -6,7 +6,6 @@
 
 package gov.in.bloomington.georeporter.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -43,7 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChooseGroupFragment extends SherlockFragment implements OnDataRefreshListener,
         OnClickListener {
-    private OnGroupSelectedListener mListener;
+    
     private View layout;
     private GroupsFragmentStatePagerAdapter adapter;
     private ViewPager pager;
@@ -84,11 +83,6 @@ public class ChooseGroupFragment extends SherlockFragment implements OnDataRefre
         public void onGroupSelected(String group, boolean single);
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mListener = (OnGroupSelectedListener) activity;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

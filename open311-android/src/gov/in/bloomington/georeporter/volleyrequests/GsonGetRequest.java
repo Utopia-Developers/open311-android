@@ -62,6 +62,7 @@ public class GsonGetRequest<T> extends Request<T> {
         listener.onResponse(response);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
         try {

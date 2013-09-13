@@ -37,8 +37,7 @@ public class Open311Parser {
                 Open311XmlParser mParser = new Open311XmlParser();
                 // return mParser.parseServices(response);
             }
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
+        } catch (JSONException e) {            
             e.printStackTrace();
         }
         return null;
@@ -56,8 +55,7 @@ public class Open311Parser {
                 Open311XmlParser mParser = new Open311XmlParser();
                 // return mParser.parseServiceDefinition(xml);
             }
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
+        } catch (JSONException e) {            
             e.printStackTrace();
         }
         return null;
@@ -75,8 +73,7 @@ public class Open311Parser {
                 Open311XmlParser mParser = new Open311XmlParser();
                 // return mParser.parseRequests(xml);
             }
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
+        } catch (JSONException e) {            
             e.printStackTrace();
         }
         return null;
@@ -94,16 +91,14 @@ public class Open311Parser {
                 Open311XmlParser mParser = new Open311XmlParser();
                 return mParser.parseErrors(xml);
             }
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
+        } catch (JSONException e) {            
             e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            // TODO Auto-generated catch block
+        } catch (XmlPullParserException e) {            
             e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
+        } catch (IOException e) {            
             e.printStackTrace();
         }
         return null;
     }
 }
+

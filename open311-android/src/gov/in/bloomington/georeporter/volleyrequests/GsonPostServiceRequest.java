@@ -46,6 +46,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Volley adapter for JSON requests that will be parsed into Java objects by
+ * Gson.
+ */
 public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
     private MultipartEntity post;
     private final Listener<ArrayList<RequestsJson>> mListener;
@@ -54,6 +58,16 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
     private Context context;
     private UrlEncodedFormEntity postUrl;
 
+    /**
+     * Make a POST request and return a parsed object from JSON.
+     * 
+     * @param context Android Context
+     * @param url URL of the request to make
+     * @param errorListener Returns the errors
+     * @param listener Gets the parsed Java response
+     * @param servicerequest The Service Request to be posted
+     * @param mediapath The Mediapath of the image to be posted
+     */
     public GsonPostServiceRequest(Context context, String url, ErrorListener errorListener,
             Listener<ArrayList<RequestsJson>> listener, ServiceRequest serviceRequest,
             String mediaPath) {
@@ -77,6 +91,10 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
 
     }
 
+    /**
+     * Create a URL Encoded Entity when Media is not present
+     * @throws UnsupportedEncodingException
+     */
     private void buildUrlEncodedEntitiy() throws UnsupportedEncodingException {
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
         // This could cause a JSONException, but we let this one bubble up the
@@ -130,6 +148,10 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
         postUrl = new UrlEncodedFormEntity(pairs, Open311.UTF_8);
     }
 
+    /**
+     * Create a Multipart Entity containing the media.
+     * @throws UnsupportedEncodingException
+     */
     private void buildMultipartEntity() throws UnsupportedEncodingException {
         // This could cause a JSONException, but we let this one bubble up the
         // stack
@@ -187,7 +209,6 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
                     post.addPart(key, new StringBody((String) o, charset));
                 }
             } catch (JSONException e) {
-
                 e.printStackTrace();
             }
         }
@@ -241,10 +262,8 @@ public class GsonPostServiceRequest extends Request<ArrayList<RequestsJson>> {
                     serviceRequests = mParser.parseRequests(parsed);
                     Log.d("Server Response Parsed", "Yes - XML");
                 } catch (XmlPullParserException e) {
-
                     e.printStackTrace();
                 } catch (IOException e) {
-
                     e.printStackTrace();
                 }
             }

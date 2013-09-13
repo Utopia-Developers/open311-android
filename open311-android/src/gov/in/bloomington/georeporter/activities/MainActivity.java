@@ -12,7 +12,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -22,7 +21,6 @@ import com.github.espiandev.showcaseview.ShowcaseView;
 
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.fragments.ChooseGroupFragment;
-import gov.in.bloomington.georeporter.fragments.ChooseGroupFragment.OnGroupSelectedListener;
 import gov.in.bloomington.georeporter.fragments.ChooseGroupFragment.OnSetActionBarTitleListener;
 import gov.in.bloomington.georeporter.fragments.ChooseServiceFragment.OnServiceSelectedListener;
 import gov.in.bloomington.georeporter.fragments.ReportFragment;
@@ -34,7 +32,6 @@ import gov.in.bloomington.georeporter.models.Preferences;
 import gov.in.bloomington.georeporter.models.ServiceRequest;
 
 public class MainActivity extends BaseFragmentActivity implements OnSetActionBarTitleListener,
-        OnGroupSelectedListener,
         OnServiceSelectedListener, PanelSlideListener {
 
     private ServerAttributeJson current_server;
@@ -45,7 +42,13 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
     private boolean paneOpen;
     private ShowcaseView sv;
 
+    /**
+     * Listens for a refresh to be requested
+     */
     public interface OnDataRefreshListener {
+        /**
+         * Called when a refresh is requested
+         */
         public void onRefreshRequested();
     }
 
@@ -60,10 +63,13 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
         slidingPane.setShadowResource(R.drawable.shadow);
         slidingPane.openPane();
         current_server = Preferences.getCurrentServer(MainActivity.this);
+
         // Needs to be called to setup the Nav drawer
         super.setupNavigationDrawer();
         title = "GeoReporter";
         Open311.selectedActionPosition = totalServers + 3;
+
+        // Called when app installed for the first time
         if (current_server == null)
         {
             mListAdapter.isServerSelected = false;
@@ -72,14 +78,16 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
             ShowcaseView.ConfigOptions co = new ShowcaseView.ConfigOptions();
             co.hideOnClickOutside = true;
 
+            // Shows the showcase screen
             sv = ShowcaseView.insertShowcaseView(mDrawerLayout.getChildAt(1), this,
                     "Select a Server.",
                     "Please Select one of the servers or add your own sever to get started.", co);
             DisplayMetrics dm = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(dm);
             int Y = dm.heightPixels / 2 + 60;
-
             int X = getResources().getDimensionPixelOffset(R.dimen.navdrawer_width) / 2;
+
+            // Show the hand gesture
             sv.animateGesture(X + 100, Y, X, Y);
         }
         else
@@ -113,6 +121,9 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
 
     }
 
+    /**
+     * Sets the actionbar title
+     */
     public void setActionBarTitle(String title)
     {
         this.title = title;
@@ -126,8 +137,6 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content
         // view
-
-        Log.d("Prepare", "Prep " + paneOpen);
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
         menu.findItem(R.id.menu_refresh).setVisible(!(drawerOpen || paneOpen));
         return super.onPrepareOptionsMenu(menu);
@@ -172,14 +181,8 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
     }
 
     @Override
-    public void onGroupSelected(String group, boolean single) {
-
-    }
-
-    @Override
     public void onServiceSelected(ServiceEntityJson service) {
         title = service.getService_name();
-
         if (mActionBar == null)
             mActionBar = getSupportActionBar();
         mActionBar.setTitle(title);
@@ -196,7 +199,9 @@ public class MainActivity extends BaseFragmentActivity implements OnSetActionBar
     @Override
     public void onBackPressed() {
         int backstack = getSupportFragmentManager().getBackStackEntryCount();
-        Log.d("Backstack", backstack + " " + slidingPane.isOpen());
+        // Log.d("Backstack", backstack + " " + slidingPane.isOpen());
+
+        //If the sliding pane is open,close it
         if (backstack == 0 && !slidingPane.isOpen())
             slidingPane.openPane();
         else

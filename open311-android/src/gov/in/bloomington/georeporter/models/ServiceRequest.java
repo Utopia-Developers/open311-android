@@ -65,7 +65,7 @@ public class ServiceRequest {
      */
     public ServiceDefinationJson service_definition;
     /**
-     * The JSON response from GET Service Request
+     * The java object of the response from GET Service Request
      */
     public RequestsJson service_request;
     /**
@@ -82,7 +82,8 @@ public class ServiceRequest {
      * data and should only be used for initial startup. Subsequent loads should
      * be done using the JSON String version
      * 
-     * @param s A single service from GET Service List
+     * @param server A single service from GET Service List
+     * @param c Context
      */
     public ServiceRequest(ServiceEntityJson s, Context c) {
         service = s;
@@ -124,8 +125,7 @@ public class ServiceRequest {
      * restoring from saveInstanceState()
      * 
      * @param serviceData
-     */
-    // TODO
+     */    
     public ServiceRequest(Bundle serviceData) {
         gson = new Gson();
         if (serviceData.containsKey(ENDPOINT))

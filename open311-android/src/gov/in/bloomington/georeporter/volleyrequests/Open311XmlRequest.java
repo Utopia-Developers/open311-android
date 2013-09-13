@@ -33,6 +33,7 @@ public class Open311XmlRequest<T> extends Request<T> {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
         try {
@@ -53,11 +54,9 @@ public class Open311XmlRequest<T> extends Request<T> {
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            // TODO Auto-generated catch block
+        } catch (XmlPullParserException e) {            
             e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
+        } catch (IOException e) {            
             e.printStackTrace();
         }
         return null;
@@ -68,6 +67,7 @@ public class Open311XmlRequest<T> extends Request<T> {
         listener.onResponse(response);
     }
 
+    @SuppressWarnings("unchecked")
     public T parseServices(XmlPullParser parser)
             throws XmlPullParserException, IOException {
         ArrayList<ServiceEntityJson> servicesList = new ArrayList<ServiceEntityJson>();
