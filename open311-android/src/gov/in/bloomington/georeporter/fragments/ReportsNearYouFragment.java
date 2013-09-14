@@ -126,7 +126,7 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
         {
             Open311.requestQueue = Volley.newRequestQueue(getActivity(), new OkHttpStack());
         }
-        if (Open311.sEndpoint.bbox)
+        if (Open311.sEndpoint!=null && Open311.sEndpoint.bbox)
         {
             visibleRegion = mMap.getProjection().getVisibleRegion();
             mMap.setOnCameraChangeListener(this);
