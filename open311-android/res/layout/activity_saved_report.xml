@@ -19,6 +19,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="#222222"
+        android:cacheColorHint="#222222"
         android:choiceMode="singleChoice"
         android:divider="@color/navdrawer_listview_divider_colour"
         android:dividerHeight="@dimen/navdrawer_divider_height" />
