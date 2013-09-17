@@ -13,6 +13,9 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import gov.in.bloomington.georeporter.fragments.ChooseServiceFragment;
 import gov.in.bloomington.georeporter.models.Open311;
 
+/**
+ * Keeps track of and displays the appropriate Service List in the various groups
+ */
 public class GroupsFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
 
     private Context context;
@@ -28,6 +31,9 @@ public class GroupsFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         return (Open311.sGroups == null) ? 0 : Open311.sGroups.size();
     }
 
+    /**
+     * Returns the appropriate ChooseServiceFragment
+     */
     @Override
     public ChooseServiceFragment getItem(int position) {
         String serviceName = Open311.sGroups.get(position);
@@ -35,6 +41,9 @@ public class GroupsFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         return ChooseServiceFragment.newInstance(Open311.getServices(serviceName));
     }
 
+    /**
+     * Returns title of the group
+     */
     @Override
     public CharSequence getPageTitle(int position) {
         if (Open311.sGroups == null)

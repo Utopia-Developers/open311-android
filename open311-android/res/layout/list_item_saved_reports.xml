@@ -10,7 +10,8 @@
         android:layout_height="50dp"
         android:layout_marginLeft="@dimen/layout_margin_small"
         android:layout_marginRight="@dimen/layout_margin_small"
-        android:layout_marginTop="@dimen/layout_margin_small" />
+        android:layout_marginTop="@dimen/layout_margin_small"
+        android:contentDescription="@string/endpoint" />
 
     <ImageView
         android:id="@+id/media"
@@ -20,7 +21,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/layout_margin_small"
         android:adjustViewBounds="true"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/uploaded_image" />
 
     <TextView
         android:id="@+id/service_name"

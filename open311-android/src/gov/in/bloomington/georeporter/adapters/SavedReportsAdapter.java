@@ -17,8 +17,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-
 import gov.in.bloomington.georeporter.R;
 import gov.in.bloomington.georeporter.customviews.RoundedDrawable;
 import gov.in.bloomington.georeporter.models.Open311;

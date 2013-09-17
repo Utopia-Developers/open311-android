@@ -65,5 +65,8 @@
         <string name="attach_media">Attach</string>
         <string name="set_loc">Set Location</string>
         <string name="post_anon">Would you like to post this issue anonomously?</string>
+        <string name="crosshair">Crosshair</string>
+        <string name="endpoint">Endpoint</string>
+        <string name="uploaded_image">Uploaded Image</string>
 
 </resources>

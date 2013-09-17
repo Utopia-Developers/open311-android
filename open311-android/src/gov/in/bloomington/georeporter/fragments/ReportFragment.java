@@ -188,8 +188,7 @@ public class ReportFragment extends SherlockFragment implements OnClickListener,
             media.setOnClickListener(this);
             mediaUpload = (ImageView) media.findViewById(R.id.media_upload);
             contentView.addView(temp);
-
-            Log.d("Media", "true" + contentView.getChildCount());
+            
         }
 
         // TODO Handle Case if Media Not supported

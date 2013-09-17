@@ -38,6 +38,11 @@ public class NavigationDrawerAdapter extends BaseAdapter {
     public boolean isServerSelected;
     public Context context;
 
+    /**
+     * Builds the adapter for all the views
+     * @param d
+     * @param c
+     */
     public NavigationDrawerAdapter(ArrayList<ServerAttributeJson> d, Context c) {
         mServers = d;
         mInflater = LayoutInflater.from(c);
@@ -74,8 +79,7 @@ public class NavigationDrawerAdapter extends BaseAdapter {
                     tempItem.itemResource = R.drawable.ic_action_add_server;
                     tempItem.layoutId = TYPE_LIST_ACTION_ADD_SERVER;
                     break;
-                case 3:
-                    // TODO Selected Item Resource
+                case 3:                    
                     tempItem.itemResource = R.drawable.ic_action_home;
                     tempItem.itemResourceSelected = R.drawable.ic_action_home_selected;
                     tempItem.layoutId = TYPE_LIST_ACTION;
@@ -113,6 +117,9 @@ public class NavigationDrawerAdapter extends BaseAdapter {
         return false;
     }
 
+    /**
+     * All Title Views are not clickable
+     */
     @Override
     public boolean isEnabled(int position) {
         AdapterList tempItem = mList.get(position);
@@ -128,11 +135,18 @@ public class NavigationDrawerAdapter extends BaseAdapter {
             return false;
     }
 
+    /**
+     * Returns the type of view at that position
+     */
     @Override
     public int getItemViewType(int position) {
         return mList.get(position).layoutId;
     }
 
+    /**
+     * Adds a server and calls the notifydatasetchanged() to redraw the listview
+     * @param server
+     */
     public void addServer(ServerAttributeJson server)
     {
         tempItem = new AdapterList();
@@ -146,7 +160,10 @@ public class NavigationDrawerAdapter extends BaseAdapter {
         mServers.add(server);
     }
 
-    public void logMlistEntirely()
+    /**
+     * Debuging function
+     */
+    private void logMlistEntirely()
     {
         AdapterList temp;
         for (int i = 0; i < mList.size(); i++)
@@ -157,6 +174,11 @@ public class NavigationDrawerAdapter extends BaseAdapter {
 
     }
 
+    /**
+     * Removes a server at the specified positions and calls the notifydatasetchanged() to redraw the listview
+     * @param listPosition
+     * @param serverPosition
+     */    
     public void removeServer(int listPosition, int serverPosition)
     {
         mList.remove(listPosition);
@@ -305,7 +327,7 @@ public class NavigationDrawerAdapter extends BaseAdapter {
     }
 
     /**
-     * The Class which holds the entire Navigation List attributes
+     * The Class which holds the entire Navigation List attributes for eachview
      */
     private class AdapterList
     {

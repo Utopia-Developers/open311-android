@@ -124,7 +124,7 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
         {
             Open311.requestQueue = Volley.newRequestQueue(getActivity(), new OkHttpStack());
         }
-        if (Open311.sEndpoint!=null && Open311.sEndpoint.bbox)
+        if (Open311.sEndpoint != null && Open311.sEndpoint.bbox)
         {
             visibleRegion = mMap.getProjection().getVisibleRegion();
             mMap.setOnCameraChangeListener(this);
@@ -148,10 +148,10 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
         }
         RequestsJson data;
         // Go through the user reports.
-        if(Open311.mServiceRequests == null)
+        if (Open311.mServiceRequests == null)
             Open311.mServiceRequests = Open311.loadServiceRequests(getActivity());
-        
-        if(Open311.mServiceRequests!=null)
+
+        if (Open311.mServiceRequests != null)
         {
             for (int i = 0; i < Open311.mServiceRequests.size(); i++)
             {
@@ -166,10 +166,12 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
                 }
             }
         }
-        
 
     }
 
+    /**
+     * Sets the maps visible boundaries into appropriate variables.
+     */
     public void setVisibleRegionBounds()
     {
         prevTopLeft = topLeft;
@@ -184,6 +186,12 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
                     + " " + prevTopLeft.longitude);
     }
 
+    /**
+     * Checks if fetching data is appropriate i.e. has the map moved above a
+     * threshold to warrant downloading new data. Only if server supports
+     * bounded box requests.Else the last one month data is fetched in one go at
+     * the beginning.
+     */
     public void fetchNewReports()
     {
         float distance;
@@ -200,6 +208,12 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
         }
     }
 
+    /**
+     * Fills in the marker's data into the infowindow view v.
+     * 
+     * @param marker
+     * @param v
+     */
     public void renderMarker(Marker marker, View v)
     {
         RequestsJson data = markerDataHash.get(marker);
@@ -234,6 +248,9 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
 
     }
 
+    /**
+     * Fetches the marker data
+     */
     public void fetchData()
     {
         String url = Open311.sEndpoint.bbox ? Open311
@@ -273,6 +290,13 @@ public class ReportsNearYouFragment extends SherlockFragment implements Location
         Open311.requestQueue.add(request);
     }
 
+    /**
+     * Create a Marker on the map out of the data passed
+     * 
+     * @param data
+     * @param isUserMarker
+     * @return Marker
+     */
     public Marker createMarker(RequestsJson data, boolean isUserMarker)
     {
         MarkerOptions options = new MarkerOptions();

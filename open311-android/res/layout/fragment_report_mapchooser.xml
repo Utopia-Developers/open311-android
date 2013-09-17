@@ -15,7 +15,8 @@
         android:layout_width="@dimen/crossair_size"
         android:layout_height="@dimen/crossair_size"
         android:layout_centerInParent="true"
-        android:src="@drawable/crosshairs" />
+        android:src="@drawable/crosshairs"
+        android:contentDescription="@string/crosshair" />
 
     <LinearLayout
         android:layout_width="match_parent"
